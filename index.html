@@ -401,6 +401,23 @@
     <div id="overlay">
       <div class="modal" id="modalContent"></div>
     </div>
+
+    <div id="startScreen" style="position:absolute; inset:0; z-index:30; display:flex; align-items:center; justify-content:center; background:linear-gradient(rgba(8,24,42,0.35), rgba(8,24,42,0.55)); padding:20px;">
+      <div class="modal" style="max-width:680px; text-align:center;">
+        <h1 style="margin:0 0 10px; font-size:42px;">🎣 Рыбалка</h1>
+        <p style="font-size:20px; margin-bottom:16px;">Образовательная игра: ловите рыбу, решайте задания и набирайте очки.</p>
+        <div style="background:#eef5fb; border-radius:18px; padding:16px 18px; text-align:left; margin-bottom:18px; line-height:1.55;">
+          <div><b>Как играть:</b></div>
+          <div>• Удерживайте <b>ВНИЗ</b> или клавишу <b>↓ / S</b>, чтобы опускать удочку.</div>
+          <div>• Удерживайте <b>ВВЕРХ</b> или клавишу <b>↑ / W</b>, чтобы поднимать удочку.</div>
+          <div>• Поймали рыбу — решите задание, чтобы добавить её в улов.</div>
+          <div>• Мусор отнимает очки.</div>
+        </div>
+        <div class="row" style="justify-content:center;">
+          <button id="startGameBtn" class="primaryBtn" style="font-size:22px; padding:16px 28px;">Начать игру</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -501,6 +518,8 @@
     };
 
     const el = {
+      startScreen: document.getElementById('startScreen'),
+      startGameBtn: document.getElementById('startGameBtn'),
       entities: document.getElementById('entities'),
       line: document.getElementById('line'),
       hook: document.getElementById('hook'),
@@ -520,7 +539,7 @@
     };
 
     const state = {
-      running: true,
+      running: false,
       lowering: false,
       raising: false,
       inTask: false,
@@ -922,16 +941,18 @@
       const spent = Math.round((performance.now() - state.startedAt) / 1000);
       el.overlay.classList.add('show');
       el.modal.innerHTML = `
-        <h2>${win ? 'Игра завершена!' : 'Конец игры'}</h2>
-        <p>${reason}</p>
-        <div id="finalStats">
+        <h2 style="font-size:34px; margin-bottom:8px;">${win ? 'Победа!' : 'Игра окончена'}</h2>
+        <p style="font-size:19px; margin-bottom:14px;">${reason}</p>
+        <div id="finalStats" style="background:#eef5fb; border-radius:18px; padding:16px 18px; margin-top:10px;">
           <div><b>Поймано рыб:</b> ${state.totalCaught}</div>
           <div><b>Собрано мусора:</b> ${state.totalTrash}</div>
           <div><b>Общие очки:</b> ${state.score}</div>
           <div><b>Время игры:</b> ${spent} сек.</div>
           <div><b>Достигнутый уровень:</b> ${currentLevel().id}</div>
         </div>
-        <div class="row" style="margin-top:16px;"><button id="restartBtn" class="primaryBtn">Начать заново</button></div>
+        <div class="row" style="margin-top:18px; justify-content:center;">
+          <button id="restartBtn" class="primaryBtn">Играть снова</button>
+        </div>
       `;
       document.getElementById('restartBtn').addEventListener('click', restartGame);
     }
@@ -952,10 +973,11 @@
       state.lineLength = GAME_CONFIG.settings.rod.startLengthPx;
       state.startedAt = performance.now();
       el.overlay.classList.remove('show');
+      el.startScreen.style.display = 'none';
       applyBackground();
       resetEntities();
       updateHUD();
-      setMessage('Новая игра началась. Удочка исправлена, рыбы снова в воде.');
+      setMessage('Игра началась. Ловите рыбу и решайте задания!');
       lastTs = performance.now();
       requestAnimationFrame(loop);
     }
@@ -1031,7 +1053,7 @@
       resetEntities();
       updateHUD();
       renderRod(performance.now());
-      requestAnimationFrame(loop);
+      el.startGameBtn.addEventListener('click', restartGame);
     }
 
     init();

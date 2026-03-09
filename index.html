@@ -333,9 +333,9 @@
 
     <div id="message">Удерживайте «Вниз», чтобы опустить удочку, и «Вверх», чтобы поднять её.</div>
     <div id="controlHint" class="card">Управление: удерживайте кнопку «Вниз» или клавишу ↓ / S, чтобы плавно опускать удочку. Удерживайте кнопку «Вверх» или клавишу ↑ / W, чтобы поднимать её обратно. Отпустите — удочка остановится.</div>
-    <div style="position:absolute; bottom:18px; right:18px; z-index:12; display:flex; gap:12px; flex-direction:column;">
-      <button id="upBtn" style="border:none;border-radius:999px;width:120px;height:72px;font-size:18px;font-weight:800;cursor:pointer;color:#0c2740;background:radial-gradient(circle at 30% 30%, #d6f5ff, #7dd3fc 70%);box-shadow:0 12px 28px rgba(0,0,0,0.28);user-select:none;touch-action:none;">ВВЕРХ</button>
-      <button id="holdBtn">ВНИЗ</button>
+    <div id="rodControls" style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); z-index:12; display:flex; gap:28px; align-items:center;">
+      <button id="upBtn" style="border:none;border-radius:999px;width:120px;height:80px;font-size:18px;font-weight:800;cursor:pointer;color:#0c2740;background:radial-gradient(circle at 30% 30%, #d6f5ff, #7dd3fc 70%);box-shadow:0 12px 28px rgba(0,0,0,0.28);user-select:none;touch-action:none;">ВВЕРХ</button>
+      <button id="holdBtn" style="border:none;border-radius:999px;width:120px;height:80px;font-size:18px;font-weight:800;cursor:pointer;color:#0c2740;background:radial-gradient(circle at 30% 30%, #fff7c7, #ffd54a 70%);box-shadow:0 12px 28px rgba(0,0,0,0.28);user-select:none;touch-action:none;">ВНИЗ</button>
     </div>
 
     <div id="scene">

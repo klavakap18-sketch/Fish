@@ -309,8 +309,10 @@
 
     @media (max-width: 900px) {
       #hud { grid-template-columns: repeat(3, 1fr); }
-      #holdBtn { width: 96px; height: 96px; font-size: 16px; }
-      #progressWrap { width: calc(100vw - 24px); top: 176px; }
+      #upBtn, #holdBtn { width: 116px !important; height: 64px !important; font-size: 17px !important; }
+      #rodControls { bottom: 12px !important; }
+      #progressWrap { width: calc(100vw - 176px); top: 176px; }
+      #depthWrap { top: 176px !important; width: 140px !important; }
       #message { top: 206px; right: 12px; }
     }
   </style>
@@ -326,6 +328,18 @@
       <div class="card"><div class="label">Время</div><div class="value" id="timeValue">0</div></div>
     </div>
 
+    <div id="depthWrap" class="card" style="position:absolute; top:96px; right:12px; width:140px; z-index:10;">
+      <div style="font-weight:700; margin-bottom:8px;">Глубина</div>
+      <div style="height:180px; width:26px; border-radius:999px; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.15); position:relative; overflow:hidden; margin-bottom:8px;">
+        <div id="depthFill" style="position:absolute; left:0; right:0; bottom:0; height:0%; background:linear-gradient(180deg, #8be9fd, #1d9bf0); transition:height 0.12s linear;"></div>
+        <div id="depthMarker" style="position:absolute; left:-6px; right:-6px; height:4px; border-radius:999px; background:#ffd54a; bottom:0; box-shadow:0 0 10px rgba(255,213,74,0.8); transition:bottom 0.12s linear;"></div>
+      </div>
+      <div class="label">Текущая</div>
+      <div class="value" id="depthValue">0%</div>
+      <div class="label" style="margin-top:8px;">Макс.</div>
+      <div class="value" id="depthMaxValue">100%</div>
+    </div>
+
     <div id="progressWrap">
       <div style="font-weight:700; margin-bottom:8px;">Прогресс уровня</div>
       <div id="progressBar"><div id="progressFill"></div></div>
@@ -333,9 +347,11 @@
 
     <div id="message">Удерживайте «Вниз», чтобы опустить удочку, и «Вверх», чтобы поднять её.</div>
     <div id="controlHint" class="card">Управление: удерживайте кнопку «Вниз» или клавишу ↓ / S, чтобы плавно опускать удочку. Удерживайте кнопку «Вверх» или клавишу ↑ / W, чтобы поднимать её обратно. Отпустите — удочка остановится.</div>
-    <div id="rodControls" style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); z-index:12; display:flex; gap:28px; align-items:center;">
-      <button id="upBtn" style="border:none;border-radius:999px;width:120px;height:80px;font-size:18px;font-weight:800;cursor:pointer;color:#0c2740;background:radial-gradient(circle at 30% 30%, #d6f5ff, #7dd3fc 70%);box-shadow:0 12px 28px rgba(0,0,0,0.28);user-select:none;touch-action:none;">ВВЕРХ</button>
-      <button id="holdBtn" style="border:none;border-radius:999px;width:120px;height:80px;font-size:18px;font-weight:800;cursor:pointer;color:#0c2740;background:radial-gradient(circle at 30% 30%, #fff7c7, #ffd54a 70%);box-shadow:0 12px 28px rgba(0,0,0,0.28);user-select:none;touch-action:none;">ВНИЗ</button>
+    <div id="rodControls" class="card" style="position:absolute; bottom:18px; left:50%; transform:translateX(-50%); z-index:12; display:flex; flex-direction:column; gap:14px; align-items:center; padding:14px 18px; border-radius:24px;">
+      <div style="font-size:12px; opacity:0.85; font-weight:700; letter-spacing:0.04em;">УПРАВЛЕНИЕ УДОЧКОЙ</div>
+      <button id="upBtn" style="border:none;border-radius:22px;width:140px;height:76px;font-size:20px;font-weight:800;cursor:pointer;color:#0c2740;background:radial-gradient(circle at 30% 30%, #d6f5ff, #7dd3fc 70%);box-shadow:0 12px 28px rgba(0,0,0,0.28);user-select:none;touch-action:none;">▲ ВВЕРХ</button>
+      <div style="width:14px; height:22px; border-radius:999px; background:rgba(255,255,255,0.28);"></div>
+      <button id="holdBtn" style="border:none;border-radius:22px;width:140px;height:76px;font-size:20px;font-weight:800;cursor:pointer;color:#0c2740;background:radial-gradient(circle at 30% 30%, #fff7c7, #ffd54a 70%);box-shadow:0 12px 28px rgba(0,0,0,0.28);user-select:none;touch-action:none;">▼ ВНИЗ</button>
     </div>
 
     <div id="scene">
@@ -457,22 +473,11 @@
       }
     };
 
-    const el = {
-      game: document.getElementById('game'),
-      entities: document.getElementById('entities'),
-      line: document.getElementById('line'),
-      hook: document.getElementById('hook'),
-      overlay: document.getElementById('overlay'),
-      modal: document.getElementById('modalContent'),
-      holdBtn: document.getElementById('holdBtn'),
-      message: document.getElementById('message'),
-      scoreValue: document.getElementById('scoreValue'),
-      levelValue: document.getElementById('levelValue'),
-      caughtValue: document.getElementById('caughtValue'),
-      trashValue: document.getElementById('trashValue'),
-      attemptsValue: document.getElementById('attemptsValue'),
-      timeValue: document.getElementById('timeValue'),
-      progressFill: document.getElementById('progressFill')
+    const el = {$1progressFill: document.getElementById('progressFill'),
+      depthFill: document.getElementById('depthFill'),
+      depthMarker: document.getElementById('depthMarker'),
+      depthValue: document.getElementById('depthValue'),
+      depthMaxValue: document.getElementById('depthMaxValue')
     };
 
     const state = {
@@ -533,6 +538,15 @@
       el.timeValue.textContent = Math.max(0, Math.ceil(state.levelRemainingTime));
       const need = currentLevel().fishRequired;
       el.progressFill.style.width = `${Math.min(100, state.levelCaught / need * 100)}%`;
+
+      const maxDepth = window.innerHeight * GAME_CONFIG.settings.rod.maxDepthRatio;
+      const minDepth = GAME_CONFIG.settings.rod.minLengthPx;
+      const depthRatio = ((state.lineLength - minDepth) / Math.max(1, (maxDepth - minDepth)));
+      const depthPercent = Math.round(clamp(depthRatio, 0, 1) * 100);
+      el.depthFill.style.height = `${depthPercent}%`;
+      el.depthMarker.style.bottom = `${depthPercent}%`;
+      el.depthValue.textContent = `${depthPercent}%`;
+      el.depthMaxValue.textContent = '100%';
     }
 
     function applyBackground() {
@@ -614,8 +628,12 @@
       const maxDepth = window.innerHeight * GAME_CONFIG.settings.rod.maxDepthRatio;
       const sway = Math.sin(time * GAME_CONFIG.settings.rod.swaySpeed) * GAME_CONFIG.settings.rod.swayAmplitude;
       const length = clamp(state.lineLength, GAME_CONFIG.settings.rod.minLengthPx, maxDepth);
+      const isMoving = state.lowering || state.raising;
       el.line.style.height = `${length}px`;
       el.line.style.transform = `translateX(${sway}px)`;
+      el.line.style.width = isMoving ? '4px' : '3px';
+      el.line.style.background = isMoving ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.8)';
+      el.line.style.boxShadow = isMoving ? '0 0 12px rgba(255,255,255,0.45)' : 'none';
       state.hookX = window.innerWidth * GAME_CONFIG.settings.rod.minXRatio + 85 + sway;
       state.hookY = state.lineBaseY + length;
       el.hook.style.left = `${state.hookX - 10}px`;
@@ -861,7 +879,7 @@
       applyBackground();
       resetEntities();
       updateHUD();
-      setMessage(`Уровень ${currentLevel().id}. Новые рыбы и больше мусора!`, 'ok');
+      setMessage(`Уровень ${currentLevel().id}. Новые рыбы и больше мусора. Следите за глубиной справа!`, 'ok');
     }
 
     function finishGame(win, reason) {
@@ -906,7 +924,7 @@
       applyBackground();
       resetEntities();
       updateHUD();
-      setMessage('Новая игра началась. Ловите рыбу и решайте задания!');
+      setMessage('Новая игра началась. Управляйте удочкой через нижнюю панель и следите за шкалой глубины.');
       lastTs = performance.now();
       requestAnimationFrame(loop);
     }
@@ -958,6 +976,7 @@
 
       window.addEventListener('resize', () => {
         renderRod(performance.now());
+        updateHUD();
       });
     }
 

@@ -152,22 +152,37 @@
 
     #rod {
       position: absolute;
-      left: 20%;
-      top: 6%;
-      width: 16px;
-      height: 120px;
+      left: 19%;
+      top: 5.5%;
+      width: 18px;
+      height: 158px;
       transform: rotate(28deg);
       transform-origin: top center;
       z-index: 4;
+      pointer-events: none;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.18));
     }
 
     #rod::before {
       content: "";
       position: absolute;
       inset: 0;
-      border-radius: 12px;
-      background: linear-gradient(#6b4f32, #8d6e63);
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #6a4727 0%, #8a5c34 20%, #c48a52 48%, #7b512d 78%, #5c3b20 100%);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08), inset -3px 0 8px rgba(0,0,0,0.18);
+    }
+
+    #rod::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: 20px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 3px solid #d6b36a;
+      background: radial-gradient(circle at 35% 35%, #fff2b3, #c9972f 70%);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     }
 
     #line {
@@ -176,22 +191,44 @@
       top: 13%;
       width: 3px;
       height: 40px;
-      background: rgba(255,255,255,0.8);
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(221,235,255,0.78));
       transform-origin: top center;
       z-index: 3;
       border-radius: 999px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.18);
     }
 
     #hook {
       position: absolute;
-      width: 20px;
-      height: 20px;
-      border: 3px solid #f5f7fa;
+      width: 24px;
+      height: 24px;
+      z-index: 5;
+      pointer-events: none;
+      filter: drop-shadow(0 3px 3px rgba(0,0,0,0.28));
+    }
+
+    #hook::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 4px solid #f4f7fb;
       border-top-color: transparent;
       border-left-color: transparent;
       border-radius: 50%;
-      z-index: 5;
-      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25));
+      transform: rotate(10deg);
+      background: transparent;
+    }
+
+    #hook::after {
+      content: "";
+      position: absolute;
+      right: 1px;
+      bottom: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50% 50% 50% 0;
+      background: #f4f7fb;
+      transform: rotate(35deg);
     }
 
     .entity {
@@ -200,7 +237,6 @@
       user-select: none;
       font-size: 34px;
       z-index: 2;
-      transition: transform 0.12s linear;
     }
 
     .fish.caught { animation: pop 0.5s ease; }
@@ -576,9 +612,10 @@
           kind: 'fish',
           label: type.label,
           emoji: type.emoji,
-          x: rand(-w, w),
+          x: rand(0, w),
           y: rand(h * 0.35, h * 0.78),
           speed: rand(GAME_CONFIG.settings.fish.minSpeed, GAME_CONFIG.settings.fish.maxSpeed) * diff.speed,
+          phase: rand(0, Math.PI * 2),
           width: 36,
           height: 36,
           active: true
@@ -597,7 +634,7 @@
             kind: 'trash',
             label: type.label,
             emoji: type.emoji,
-            x: rand(-w, w),
+            x: rand(0, w + 200),
             y: rand(h * 0.4, h * 0.82),
             speed: rand(GAME_CONFIG.settings.trash.minSpeed, GAME_CONFIG.settings.trash.maxSpeed) * diff.speed,
             width: 34,
@@ -623,33 +660,52 @@
 
     function renderEntity(entity) {
       if (!entity.node) return;
-      entity.node.style.transform = `translate(${entity.x}px, ${entity.y}px)`;
+      const t = performance.now();
+      const bobX = entity.kind === 'fish' ? Math.sin((t * 0.004) + (entity.phase || 0)) * 4 : 0;
+      const bobY = entity.kind === 'fish' ? Math.cos((t * 0.0032) + (entity.phase || 0)) * 3 : 0;
+      entity.node.style.transform = `translate(${entity.x + bobX}px, ${entity.y + bobY}px)`;
     }
 
     function renderRod(time) {
       const maxDepth = window.innerHeight * GAME_CONFIG.settings.rod.maxDepthRatio;
       const sway = Math.sin(time * GAME_CONFIG.settings.rod.swaySpeed) * GAME_CONFIG.settings.rod.swayAmplitude;
+      const idleWave = Math.sin(time * 0.0035) * 2.5;
       const length = clamp(state.lineLength, GAME_CONFIG.settings.rod.minLengthPx, maxDepth);
       const isMoving = state.lowering || state.raising;
       el.line.style.height = `${length}px`;
-      el.line.style.transform = `translateX(${sway}px)`;
+      el.line.style.transform = `translateX(${sway}px) scaleX(${isMoving ? 1.15 : 1})`;
       el.line.style.width = isMoving ? '4px' : '3px';
-      el.line.style.background = isMoving ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.8)';
-      el.line.style.boxShadow = isMoving ? '0 0 12px rgba(255,255,255,0.45)' : 'none';
-      state.hookX = window.innerWidth * GAME_CONFIG.settings.rod.minXRatio + 85 + sway;
+      el.line.style.background = isMoving ? 'linear-gradient(180deg, rgba(255,255,255,1), rgba(221,235,255,0.82))' : 'linear-gradient(180deg, rgba(255,255,255,0.92), rgba(221,235,255,0.78))';
+      el.line.style.boxShadow = isMoving ? '0 0 12px rgba(255,255,255,0.45)' : '0 0 10px rgba(255,255,255,0.18)';
+      const rodTilt = 28 + Math.sin(time * 0.0022) * 1.8 + (state.lowering ? 1.2 : 0) - (state.raising ? 1.2 : 0);
+      document.getElementById('rod').style.transform = `rotate(${rodTilt}deg)`;
+      state.hookX = window.innerWidth * GAME_CONFIG.settings.rod.minXRatio + 85 + sway + idleWave;
       state.hookY = state.lineBaseY + length;
-      el.hook.style.left = `${state.hookX - 10}px`;
-      el.hook.style.top = `${state.hookY - 6}px`;
+      el.hook.style.left = `${state.hookX - 12}px`;
+      el.hook.style.top = `${state.hookY - 8}px`;
+      el.hook.style.transform = `rotate(${12 + Math.sin(time * 0.004) * 8}deg)`;
     }
 
     function moveEntities(dt) {
-      const w = window.innerWidth;
+      const h = window.innerHeight;
       for (const entity of state.entities) {
         if (!entity.active) continue;
         entity.x -= entity.speed * dt;
-        if (entity.x < -60) {
-          entity.x = w + 60;
-          entity.y = rand(window.innerHeight * 0.35, window.innerHeight * 0.82);
+        if (entity.kind === 'fish') {
+          entity.y += Math.sin((performance.now() * 0.0025) + (entity.phase || 0)) * 0.18;
+        }
+        if (entity.x < -120) {
+          entity.active = false;
+          if (entity.node) entity.node.style.opacity = '0';
+          const respawnDelay = entity.kind === 'fish' ? rand(900, 2200) : rand(1200, 2600);
+          setTimeout(() => {
+            entity.x = window.innerWidth + rand(80, 320);
+            entity.y = rand(h * 0.35, h * 0.82);
+            entity.active = true;
+            if (entity.node) entity.node.style.opacity = '1';
+            renderEntity(entity);
+          }, respawnDelay);
+          continue;
         }
         renderEntity(entity);
       }
@@ -705,7 +761,7 @@
     }
 
     function respawnEntity(entity) {
-      entity.x = window.innerWidth + 60;
+      entity.x = window.innerWidth + rand(80, 260);
         entity.y = rand(window.innerHeight * 0.35, window.innerHeight * 0.8);
       entity.active = true;
       entity.node.className = `entity ${entity.kind}`;
@@ -857,9 +913,10 @@
           kind: 'fish',
           label: type.label,
           emoji: type.emoji,
-          x: window.innerWidth + 60,
+          x: window.innerWidth + rand(80, 260),
           y: rand(window.innerHeight * 0.35, window.innerHeight * 0.78),
           speed: rand(GAME_CONFIG.settings.fish.minSpeed, GAME_CONFIG.settings.fish.maxSpeed) * difficultyScale().speed,
+          phase: rand(0, Math.PI * 2),
           width: 36,
           height: 36,
           active: true
@@ -926,7 +983,7 @@
       applyBackground();
       resetEntities();
       updateHUD();
-      setMessage('Новая игра началась. Управляйте удочкой через нижнюю панель и следите за шкалой глубины.');
+      setMessage('Новая игра началась. Управляйте удочкой кнопками внизу и ловите рыбу настоящим крючком.');
       lastTs = performance.now();
       requestAnimationFrame(loop);
     }

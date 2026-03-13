@@ -452,6 +452,21 @@
 
     #finalStats { line-height: 1.7; }
 
+    .flyFish {
+      position: absolute;
+      z-index: 18;
+      pointer-events: none;
+      font-size: 38px;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2));
+      animation: fishToHud 900ms cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    @keyframes fishToHud {
+      0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+      40% { transform: translate(var(--mid-x), var(--mid-y)) scale(1.35) rotate(-12deg); opacity: 1; }
+      100% { transform: translate(var(--end-x), var(--end-y)) scale(0.35) rotate(18deg); opacity: 0; }
+    }
+
     @media (max-width: 900px) {
       #hud { grid-template-columns: repeat(3, 1fr); }
       #rodControls { gap: 16px; bottom: 12px; }
@@ -479,7 +494,50 @@
     </div>
 
     <div id="message">Удерживайте «Вниз», чтобы опустить удочку, и «Вверх», чтобы поднять её.</div>
+    <div id="biteBanner" style="position:absolute; top:190px; left:50%; transform:translateX(-50%) scale(0.9); z-index:16; padding:14px 28px; border-radius:999px; background:linear-gradient(135deg, rgba(255,213,74,0.96), rgba(255,159,67,0.96)); color:#17324c; font-size:30px; font-weight:900; letter-spacing:0.03em; box-shadow:0 14px 30px rgba(0,0,0,0.22); opacity:0; pointer-events:none; transition:opacity 0.2s ease, transform 0.2s ease;">🎣 КЛЮЁТ!</div>
     <div id="controlHint" class="card">Управление: удерживайте кнопку «Вниз» или клавишу ↓ / S, чтобы плавно опускать удочку. Удерживайте кнопку «Вверх» или клавишу ↑ / W, чтобы поднимать её обратно. Отпустите — удочка остановится.</div>
+
+    <button id="openEditorBtn" class="card" style="position:absolute; right:14px; bottom:16px; z-index:14; border:none; color:#fff; cursor:pointer; font-weight:800;">⚙ Редактор заданий</button>
+
+    <div id="teacherEditor" style="position:absolute; inset:auto 14px 110px auto; width:min(460px, calc(100vw - 28px)); max-height:70vh; overflow:auto; z-index:24; background:rgba(255,255,255,0.96); color:#17324c; border-radius:22px; padding:18px; box-shadow:0 24px 70px rgba(0,0,0,0.28); display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:12px;">
+        <div>
+          <div style="font-size:24px; font-weight:900;">Редактор заданий</div>
+          <div style="font-size:14px; opacity:0.75;">Изменения сразу применяются в игре.</div>
+        </div>
+        <button id="closeEditorBtn" class="secondaryBtn" style="padding:10px 14px;">Закрыть</button>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+        <label style="display:flex; flex-direction:column; gap:6px; font-weight:700;">Тип
+          <select id="editorTaskType" style="padding:10px; border-radius:12px; border:1px solid #c8d7e6;">
+            <option value="math">Математика</option>
+            <option value="question">Вопрос</option>
+          </select>
+        </label>
+        <label style="display:flex; flex-direction:column; gap:6px; font-weight:700;">Сложность
+          <select id="editorDifficulty" style="padding:10px; border-radius:12px; border:1px solid #c8d7e6;">
+            <option value="easy">Лёгкая</option>
+            <option value="medium" selected>Средняя</option>
+            <option value="hard">Сложная</option>
+          </select>
+        </label>
+      </div>
+      <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; margin-bottom:10px;">Текст задания
+        <input id="editorPrompt" style="padding:12px; border-radius:12px; border:1px solid #c8d7e6;" placeholder="Например: 8 + 5" />
+      </label>
+      <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; margin-bottom:10px;">Правильный ответ
+        <input id="editorAnswer" style="padding:12px; border-radius:12px; border:1px solid #c8d7e6;" placeholder="Например: 13" />
+      </label>
+      <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; margin-bottom:12px;">Варианты ответа (через ;, необязательно)
+        <input id="editorOptions" style="padding:12px; border-radius:12px; border:1px solid #c8d7e6;" placeholder="10;13;15;18" />
+      </label>
+      <div class="row" style="margin-bottom:16px;">
+        <button id="addTaskBtn" class="primaryBtn">Добавить задание</button>
+        <button id="exportTasksBtn" class="secondaryBtn">Экспорт JSON</button>
+      </div>
+      <div style="font-size:18px; font-weight:800; margin-bottom:10px;">Список заданий</div>
+      <div id="editorTaskList" style="display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
 
     <div id="rodControls">
       <button id="upBtn" class="rodBtn">▲ ВВЕРХ</button>
@@ -636,25 +694,19 @@
       }
     };
 
-    const el = {
-      startScreen: document.getElementById('startScreen'),
-      startGameBtn: document.getElementById('startGameBtn'),
-      entities: document.getElementById('entities'),
-      line: document.getElementById('line'),
-      hook: document.getElementById('hook'),
-      rod: document.getElementById('rod'),
-      overlay: document.getElementById('overlay'),
-      modal: document.getElementById('modalContent'),
-      upBtn: document.getElementById('upBtn'),
-      downBtn: document.getElementById('downBtn'),
-      message: document.getElementById('message'),
-      scoreValue: document.getElementById('scoreValue'),
-      levelValue: document.getElementById('levelValue'),
-      caughtValue: document.getElementById('caughtValue'),
-      trashValue: document.getElementById('trashValue'),
-      attemptsValue: document.getElementById('attemptsValue'),
-      timeValue: document.getElementById('timeValue'),
-      progressFill: document.getElementById('progressFill')
+    const el = {$1progressFill: document.getElementById('progressFill'),
+      biteBanner: document.getElementById('biteBanner'),
+      openEditorBtn: document.getElementById('openEditorBtn'),
+      teacherEditor: document.getElementById('teacherEditor'),
+      closeEditorBtn: document.getElementById('closeEditorBtn'),
+      editorTaskType: document.getElementById('editorTaskType'),
+      editorDifficulty: document.getElementById('editorDifficulty'),
+      editorPrompt: document.getElementById('editorPrompt'),
+      editorAnswer: document.getElementById('editorAnswer'),
+      editorOptions: document.getElementById('editorOptions'),
+      addTaskBtn: document.getElementById('addTaskBtn'),
+      exportTasksBtn: document.getElementById('exportTasksBtn'),
+      editorTaskList: document.getElementById('editorTaskList')
     };
 
     const state = {
@@ -914,10 +966,20 @@
       updateHUD();
     }
 
+    function showBiteBanner() {
+      el.biteBanner.style.opacity = '1';
+      el.biteBanner.style.transform = 'translateX(-50%) scale(1)';
+      setTimeout(() => {
+        el.biteBanner.style.opacity = '0';
+        el.biteBanner.style.transform = 'translateX(-50%) scale(0.9)';
+      }, 900);
+    }
+
     function handleFishCatch(entity) {
       entity.active = false;
       entity.node.classList.add('caught');
       state.activeEntityId = entity.id;
+      showBiteBanner();
       openTask(entity);
     }
 
@@ -1006,13 +1068,33 @@
       else failTask('Неверный ответ. Рыба уплыла.');
     }
 
+    function animateFishToHud(fish) {
+      if (!fish || !fish.node) return;
+      const fishRect = fish.node.getBoundingClientRect();
+      const targetRect = document.getElementById('caughtValue').getBoundingClientRect();
+      const flyer = document.createElement('div');
+      flyer.className = 'flyFish';
+      flyer.textContent = fish.emoji;
+      flyer.style.left = `${fishRect.left}px`;
+      flyer.style.top = `${fishRect.top}px`;
+      flyer.style.setProperty('--mid-x', `${(targetRect.left - fishRect.left) * 0.45}px`);
+      flyer.style.setProperty('--mid-y', `${(targetRect.top - fishRect.top) * 0.2 - 50}px`);
+      flyer.style.setProperty('--end-x', `${targetRect.left - fishRect.left}px`);
+      flyer.style.setProperty('--end-y', `${targetRect.top - fishRect.top}px`);
+      document.body.appendChild(flyer);
+      flyer.addEventListener('animationend', () => flyer.remove());
+    }
+
     function completeTask() {
       const fish = state.entities.find(x => x.id === state.activeEntityId);
       state.score += (fish?.pointValue || GAME_CONFIG.settings.scoreFishCorrect);
       state.totalCaught += 1;
       state.levelCaught += 1;
       setMessage(`Отлично! ${fish?.label || 'Рыба'} поймана. +${fish?.pointValue || GAME_CONFIG.settings.scoreFishCorrect} очков`, 'ok');
-      if (fish && fish.node) fish.node.remove();
+      if (fish && fish.node) {
+        animateFishToHud(fish);
+        fish.node.remove();
+      }
       state.entities = state.entities.filter(x => x.id !== state.activeEntityId);
       closeTask();
       refillFishIfNeeded();
@@ -1132,6 +1214,85 @@
       requestAnimationFrame(loop);
     }
 
+    function getEditableTasks() {
+      const items = [];
+      for (const taskType of Object.keys(GAME_CONFIG.taskPools)) {
+        for (const difficulty of Object.keys(GAME_CONFIG.taskPools[taskType])) {
+          GAME_CONFIG.taskPools[taskType][difficulty].forEach((task, index) => {
+            items.push({ taskType, difficulty, index, task });
+          });
+        }
+      }
+      return items;
+    }
+
+    function renderTaskEditor() {
+      const items = getEditableTasks();
+      el.editorTaskList.innerHTML = '';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.style.border = '1px solid #d8e4ef';
+        card.style.borderRadius = '14px';
+        card.style.padding = '12px';
+        card.style.background = '#f8fbff';
+        const optionsText = item.task.options ? item.task.options.join(', ') : '—';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+            <div>
+              <div style="font-size:12px; font-weight:800; opacity:0.7; text-transform:uppercase;">${item.taskType} · ${item.difficulty}</div>
+              <div style="font-size:17px; font-weight:800; margin:4px 0 6px;">${item.task.prompt}</div>
+              <div><b>Ответ:</b> ${item.task.answer}</div>
+              <div><b>Варианты:</b> ${optionsText}</div>
+            </div>
+            <button class="secondaryBtn" data-remove-task="${item.taskType}|${item.difficulty}|${item.index}" style="padding:10px 12px;">Удалить</button>
+          </div>
+        `;
+        el.editorTaskList.appendChild(card);
+      });
+      el.editorTaskList.querySelectorAll('[data-remove-task]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const [taskType, difficulty, index] = btn.dataset.removeTask.split('|');
+          GAME_CONFIG.taskPools[taskType][difficulty].splice(Number(index), 1);
+          renderTaskEditor();
+        });
+      });
+    }
+
+    function addTaskFromEditor() {
+      const taskType = el.editorTaskType.value;
+      const difficulty = el.editorDifficulty.value;
+      const prompt = el.editorPrompt.value.trim();
+      const answer = el.editorAnswer.value.trim();
+      const optionsRaw = el.editorOptions.value.trim();
+      if (!prompt || !answer) {
+        setMessage('Заполните текст задания и правильный ответ.', 'bad');
+        return;
+      }
+      const task = { prompt, answer };
+      if (optionsRaw) {
+        task.options = optionsRaw.split(';').map(v => v.trim()).filter(Boolean);
+      }
+      GAME_CONFIG.taskPools[taskType][difficulty].push(task);
+      el.editorPrompt.value = '';
+      el.editorAnswer.value = '';
+      el.editorOptions.value = '';
+      renderTaskEditor();
+      setMessage('Задание добавлено в редактор.', 'ok');
+    }
+
+    function exportTasksJson() {
+      const blob = new Blob([JSON.stringify(GAME_CONFIG.taskPools, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'fishing_tasks.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setMessage('JSON с заданиями экспортирован.', 'ok');
+    }
+
     function attachControls() {
       const startLower = (e) => {
         e.preventDefault?.();
@@ -1168,6 +1329,15 @@
         if (e.key === 'ArrowUp' || key === 'w') state.raising = false;
       });
       window.addEventListener('resize', () => renderRod(performance.now()));
+      el.openEditorBtn.addEventListener('click', () => {
+        el.teacherEditor.style.display = 'block';
+        renderTaskEditor();
+      });
+      el.closeEditorBtn.addEventListener('click', () => {
+        el.teacherEditor.style.display = 'none';
+      });
+      el.addTaskBtn.addEventListener('click', addTaskFromEditor);
+      el.exportTasksBtn.addEventListener('click', exportTasksJson);
     }
 
     let lastTs = performance.now();
@@ -1203,6 +1373,7 @@
       resetEntities();
       updateHUD();
       renderRod(performance.now());
+      renderTaskEditor();
       el.startGameBtn.addEventListener('click', restartGame);
     }
 

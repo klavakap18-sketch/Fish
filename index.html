@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Рыбалка — прототип</title>
+  <title>Рыбалка — рабочая версия</title>
   <style>
     :root {
       --sky: #bfe7ff;
       --water-top: #59b8ff;
       --water-bottom: #0d5a9c;
       --sand: #d6c18e;
-      --ui: rgba(8, 24, 42, 0.8);
-      --panel: rgba(255,255,255,0.92);
+      --ui: rgba(8, 24, 42, 0.82);
+      --panel: rgba(255,255,255,0.96);
     }
-
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -22,53 +21,39 @@
       color: #fff;
       overflow: hidden;
     }
-
     #game {
       width: 100vw;
       height: 100vh;
       position: relative;
       overflow: hidden;
     }
-
     #hud {
       position: absolute;
-      top: 12px;
-      left: 12px;
-      right: 12px;
+      top: 10px;
+      left: 10px;
+      right: 10px;
       display: grid;
-      grid-template-columns: repeat(6, minmax(90px, 1fr));
+      grid-template-columns: repeat(6, minmax(100px, 1fr));
       gap: 10px;
-      z-index: 10;
+      z-index: 20;
     }
-
     .card {
       background: var(--ui);
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 14px;
-      padding: 10px 12px;
+      padding: 10px 14px;
       backdrop-filter: blur(8px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
-
-    .card .label {
-      font-size: 12px;
-      opacity: 0.8;
-      margin-bottom: 4px;
-    }
-
-    .card .value {
-      font-size: 20px;
-      font-weight: 700;
-    }
-
+    .card .label { font-size: 12px; opacity: 0.82; margin-bottom: 4px; }
+    .card .value { font-size: 20px; font-weight: 800; }
     #progressWrap {
       position: absolute;
       top: 96px;
       left: 12px;
-      width: 300px;
-      z-index: 10;
+      width: 340px;
+      z-index: 20;
     }
-
     #progressBar {
       height: 16px;
       border-radius: 999px;
@@ -76,74 +61,107 @@
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.15);
     }
-
     #progressFill {
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, #ffe082, #ffca28);
       transition: width 0.25s ease;
     }
-
     #message {
       position: absolute;
-      top: 138px;
+      top: 142px;
       left: 12px;
       padding: 10px 14px;
       border-radius: 12px;
       background: rgba(8,24,42,0.72);
-      z-index: 10;
-      min-width: 220px;
-      font-weight: 600;
+      z-index: 20;
+      min-width: 240px;
+      font-weight: 700;
     }
-
+    #biteBanner {
+      position: absolute;
+      top: 190px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.92);
+      z-index: 26;
+      padding: 14px 28px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255,213,74,0.97), rgba(255,159,67,0.97));
+      color: #17324c;
+      font-size: 30px;
+      font-weight: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+      box-shadow: 0 14px 30px rgba(0,0,0,.25);
+    }
     #controlHint {
       position: absolute;
-      bottom: 16px;
       left: 12px;
-      z-index: 10;
-      max-width: 420px;
+      bottom: 16px;
+      max-width: 430px;
+      z-index: 20;
       line-height: 1.35;
     }
-
     #rodControls {
       position: absolute;
-      bottom: 20px;
+      bottom: 22px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 12;
+      z-index: 22;
       display: flex;
+      gap: 34px;
       align-items: center;
       justify-content: center;
-      gap: 34px;
     }
-
     .rodBtn {
       border: none;
       border-radius: 999px;
-      width: 150px;
-      height: 82px;
+      width: 170px;
+      height: 86px;
       font-size: 20px;
-      font-weight: 800;
+      font-weight: 900;
       cursor: pointer;
       color: #0c2740;
       box-shadow: 0 12px 28px rgba(0,0,0,0.28);
       user-select: none;
       touch-action: none;
     }
-
-    #upBtn {
-      background: radial-gradient(circle at 30% 30%, #d6f5ff, #7dd3fc 70%);
-    }
-
-    #downBtn {
-      background: radial-gradient(circle at 30% 30%, #fff7c7, #ffd54a 70%);
-    }
-
-    #scene {
+    #upBtn { background: radial-gradient(circle at 30% 30%, #d6f5ff, #7dd3fc 70%); }
+    #downBtn { background: radial-gradient(circle at 30% 30%, #fff7c7, #ffd54a 70%); }
+    #openEditorBtn {
       position: absolute;
-      inset: 0;
+      right: 14px;
+      bottom: 16px;
+      z-index: 24;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
     }
-
+    #teacherEditor {
+      position: absolute;
+      right: 14px;
+      bottom: 110px;
+      width: min(460px, calc(100vw - 28px));
+      max-height: 70vh;
+      overflow: auto;
+      z-index: 30;
+      background: rgba(255,255,255,0.97);
+      color: #17324c;
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.28);
+      display: none;
+    }
+    #scene { position: absolute; inset: 0; }
+    #shore {
+      position: absolute;
+      top: 22%; left: 0; right: 0;
+      height: 6px;
+      background: rgba(255,255,255,0.25);
+      z-index: 4;
+    }
     #waterEffects {
       position: absolute;
       inset: 0;
@@ -151,12 +169,9 @@
       z-index: 1;
       overflow: hidden;
     }
-
     #surfaceWaves {
       position: absolute;
-      left: -10%;
-      right: -10%;
-      top: 26%;
+      left: -10%; right: -10%; top: 26%;
       height: 42px;
       background:
         radial-gradient(circle at 10% 60%, rgba(255,255,255,0.18) 0 24%, transparent 25%),
@@ -164,10 +179,9 @@
         radial-gradient(circle at 45% 58%, rgba(255,255,255,0.18) 0 23%, transparent 24%),
         radial-gradient(circle at 66% 42%, rgba(255,255,255,0.14) 0 20%, transparent 21%),
         radial-gradient(circle at 84% 60%, rgba(255,255,255,0.18) 0 24%, transparent 25%);
-      opacity: 0.85;
+      opacity: .85;
       animation: wavesDrift 11s linear infinite;
     }
-
     .lightRay {
       position: absolute;
       top: 12%;
@@ -176,192 +190,124 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.03));
       clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%);
       filter: blur(2px);
-      opacity: 0.5;
+      opacity: .5;
       animation: rayPulse 5.5s ease-in-out infinite;
     }
-
     .bubble {
       position: absolute;
       bottom: 12%;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8), rgba(255,255,255,0.16) 65%, rgba(255,255,255,0.06) 100%);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
-      opacity: 0.75;
+      opacity: .75;
       animation: bubbleRise linear infinite;
     }
-
     #plants {
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 12%;
+      left: 0; right: 0; bottom: 12%;
       height: 22%;
-      z-index: 1;
+      z-index: 2;
       pointer-events: none;
     }
-
     .plant {
       position: absolute;
       bottom: 0;
       width: 18px;
       border-radius: 18px 18px 0 0;
       transform-origin: bottom center;
-      background: linear-gradient(180deg, rgba(65, 184, 131, 0.96), rgba(14, 103, 78, 0.98));
-      box-shadow: inset -3px 0 5px rgba(0,0,0,0.14);
+      background: linear-gradient(180deg, rgba(65,184,131,.96), rgba(14,103,78,.98));
+      box-shadow: inset -3px 0 5px rgba(0,0,0,.14);
       animation: swayPlant ease-in-out infinite;
     }
-
-    @keyframes wavesDrift {
-      0% { transform: translateX(0); }
-      50% { transform: translateX(4%); }
-      100% { transform: translateX(0); }
-    }
-
-    @keyframes rayPulse {
-      0%, 100% { opacity: 0.32; transform: translateY(0) scaleX(1); }
-      50% { opacity: 0.58; transform: translateY(8px) scaleX(1.08); }
-    }
-
-    @keyframes bubbleRise {
-      0% { transform: translateY(0) translateX(0) scale(0.9); opacity: 0; }
-      12% { opacity: 0.7; }
-      100% { transform: translateY(-72vh) translateX(22px) scale(1.15); opacity: 0; }
-    }
-
-    @keyframes swayPlant {
-      0%, 100% { transform: rotate(-3deg); }
-      50% { transform: rotate(5deg); }
-    }
-
-    #shore {
-      position: absolute;
-      top: 22%;
-      left: 0;
-      right: 0;
-      height: 6px;
-      background: rgba(255,255,255,0.25);
-    }
-
     #seabed {
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      left: 0; right: 0; bottom: 0;
       height: 12%;
-      background: linear-gradient(#c9b17b, var(--sand));
+      background: linear-gradient(#c9b17b, #d6c18e);
+      z-index: 3;
     }
-
     #rod {
       position: absolute;
-      left: 19%;
-      top: 5.5%;
-      width: 18px;
-      height: 158px;
+      left: 19%; top: 5.5%;
+      width: 18px; height: 158px;
       transform: rotate(28deg);
       transform-origin: top center;
-      z-index: 4;
+      z-index: 10;
       pointer-events: none;
       filter: drop-shadow(0 8px 12px rgba(0,0,0,0.18));
     }
-
     #rod::before {
       content: "";
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       border-radius: 16px;
       background: linear-gradient(180deg, #6a4727 0%, #8a5c34 20%, #c48a52 48%, #7b512d 78%, #5c3b20 100%);
       box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08), inset -3px 0 8px rgba(0,0,0,0.18);
     }
-
     #rod::after {
       content: "";
       position: absolute;
-      right: -10px;
-      top: 20px;
-      width: 20px;
-      height: 20px;
+      right: -10px; top: 20px;
+      width: 20px; height: 20px;
       border-radius: 50%;
       border: 3px solid #d6b36a;
       background: radial-gradient(circle at 35% 35%, #fff2b3, #c9972f 70%);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     }
-
     #line {
       position: absolute;
       left: calc(20% + 85px);
       top: 13%;
       width: 3px;
       height: 40px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(221,235,255,0.78));
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(221,235,255,.78));
       transform-origin: top center;
-      z-index: 3;
+      z-index: 9;
       border-radius: 999px;
       box-shadow: 0 0 10px rgba(255,255,255,0.18);
     }
-
     #hook {
       position: absolute;
-      width: 24px;
-      height: 24px;
-      z-index: 5;
+      width: 24px; height: 24px;
+      z-index: 11;
       pointer-events: none;
-      filter: drop-shadow(0 3px 3px rgba(0,0,0,0.28));
+      filter: drop-shadow(0 3px 3px rgba(0,0,0,.28));
     }
-
     #hook::before {
       content: "";
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       border: 4px solid #f4f7fb;
       border-top-color: transparent;
       border-left-color: transparent;
       border-radius: 50%;
       transform: rotate(10deg);
-      background: transparent;
     }
-
     #hook::after {
       content: "";
       position: absolute;
-      right: 1px;
-      bottom: 0;
-      width: 7px;
-      height: 7px;
+      right: 1px; bottom: 0;
+      width: 7px; height: 7px;
       border-radius: 50% 50% 50% 0;
       background: #f4f7fb;
       transform: rotate(35deg);
     }
-
     .entity {
       position: absolute;
       will-change: transform, opacity;
       user-select: none;
       font-size: 34px;
-      z-index: 2;
+      z-index: 8;
     }
-
-    .fish {
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.14));
+    .fish { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.14)); }
+    .fish.rare { filter: drop-shadow(0 0 10px rgba(255,215,64,0.42)); }
+    .fish.caught { animation: pop .5s ease; }
+    .trash.hit { animation: spinOut .6s ease; }
+    .flyFish {
+      position: fixed;
+      z-index: 40;
+      pointer-events: none;
+      font-size: 38px;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,.2));
+      animation: fishToHud 900ms cubic-bezier(.2,.8,.2,1) forwards;
     }
-
-    .fish.rare {
-      filter: drop-shadow(0 0 10px rgba(255, 215, 64, 0.42));
-    }
-
-    .fish.caught { animation: pop 0.5s ease; }
-    .trash.hit { animation: spinOut 0.6s ease; }
-
-    @keyframes pop {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4) translateY(-8px); }
-      100% { transform: scale(0.2); opacity: 0; }
-    }
-
-    @keyframes spinOut {
-      0% { transform: rotate(0deg) scale(1); opacity: 1; }
-      100% { transform: rotate(220deg) scale(0.2); opacity: 0; }
-    }
-
     #overlay {
       position: absolute;
       inset: 0;
@@ -369,13 +315,13 @@
       align-items: center;
       justify-content: center;
       background: rgba(3, 13, 24, 0.62);
-      z-index: 20;
+      z-index: 36;
       padding: 20px;
     }
-
     #overlay.show { display: flex; }
-
     .modal {
+      position: relative;
+      z-index: 2;
       width: min(560px, 96vw);
       background: var(--panel);
       color: #10263c;
@@ -383,10 +329,8 @@
       padding: 22px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.35);
     }
-
     .modal h2 { margin: 0 0 8px; }
     .modal p { margin: 0 0 12px; }
-
     #taskTimerBar {
       height: 12px;
       background: #dfe9f2;
@@ -394,20 +338,12 @@
       overflow: hidden;
       margin: 12px 0 18px;
     }
-
     #taskTimerFill {
-      height: 100%;
-      width: 100%;
+      height: 100%; width: 100%;
       background: linear-gradient(90deg, #69db7c, #fcc419, #ff6b6b);
-      transition: width 0.1s linear;
+      transition: width .1s linear;
     }
-
-    #taskTitle {
-      font-size: 30px;
-      font-weight: 800;
-      margin: 10px 0 18px;
-    }
-
+    #taskTitle { font-size: 30px; font-weight: 800; margin: 10px 0 18px; }
     #answerInput {
       width: 100%;
       padding: 14px 16px;
@@ -417,14 +353,12 @@
       outline: none;
       margin-bottom: 12px;
     }
-
     #options {
       display: grid;
       grid-template-columns: repeat(2, minmax(120px, 1fr));
       gap: 10px;
       margin-bottom: 12px;
     }
-
     .optBtn, .primaryBtn, .secondaryBtn {
       border: none;
       border-radius: 14px;
@@ -433,40 +367,53 @@
       font-weight: 700;
       cursor: pointer;
     }
-
-    .optBtn, .secondaryBtn {
-      background: #eaf2f8;
-      color: #17324c;
-    }
-
-    .primaryBtn {
-      background: #1677ff;
-      color: white;
-    }
-
-    .row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
+    .optBtn, .secondaryBtn { background: #eaf2f8; color: #17324c; }
+    .primaryBtn { background: #1677ff; color: white; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
     #finalStats { line-height: 1.7; }
-
-    .flyFish {
+    #startScreen {
       position: absolute;
-      z-index: 18;
-      pointer-events: none;
-      font-size: 38px;
-      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2));
-      animation: fishToHud 900ms cubic-bezier(.2,.8,.2,1) forwards;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(rgba(8,24,42,0.35), rgba(8,24,42,0.55));
+      padding: 20px;
+      pointer-events: auto;
     }
-
+    @keyframes pop {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4) translateY(-8px); }
+      100% { transform: scale(0.2); opacity: 0; }
+    }
+    @keyframes spinOut {
+      0% { transform: rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: rotate(220deg) scale(0.2); opacity: 0; }
+    }
     @keyframes fishToHud {
       0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
       40% { transform: translate(var(--mid-x), var(--mid-y)) scale(1.35) rotate(-12deg); opacity: 1; }
       100% { transform: translate(var(--end-x), var(--end-y)) scale(0.35) rotate(18deg); opacity: 0; }
     }
-
+    @keyframes wavesDrift {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(4%); }
+      100% { transform: translateX(0); }
+    }
+    @keyframes rayPulse {
+      0%, 100% { opacity: .32; transform: translateY(0) scaleX(1); }
+      50% { opacity: .58; transform: translateY(8px) scaleX(1.08); }
+    }
+    @keyframes bubbleRise {
+      0% { transform: translateY(0) translateX(0) scale(.9); opacity: 0; }
+      12% { opacity: .7; }
+      100% { transform: translateY(-72vh) translateX(22px) scale(1.15); opacity: 0; }
+    }
+    @keyframes swayPlant {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(5deg); }
+    }
     @media (max-width: 900px) {
       #hud { grid-template-columns: repeat(3, 1fr); }
       #rodControls { gap: 16px; bottom: 12px; }
@@ -474,6 +421,8 @@
       #progressWrap { width: calc(100vw - 24px); top: 176px; }
       #message { top: 206px; right: 12px; min-width: 0; max-width: calc(100vw - 24px); }
       #controlHint { max-width: 280px; }
+      #openEditorBtn { bottom: 92px; }
+      #teacherEditor { bottom: 160px; }
     }
   </style>
 </head>
@@ -489,17 +438,17 @@
     </div>
 
     <div id="progressWrap">
-      <div style="font-weight:700; margin-bottom:8px;">Прогресс уровня</div>
+      <div style="font-weight:800; margin-bottom:8px;">Прогресс уровня</div>
       <div id="progressBar"><div id="progressFill"></div></div>
     </div>
 
     <div id="message">Удерживайте «Вниз», чтобы опустить удочку, и «Вверх», чтобы поднять её.</div>
-    <div id="biteBanner" style="position:absolute; top:190px; left:50%; transform:translateX(-50%) scale(0.9); z-index:16; padding:14px 28px; border-radius:999px; background:linear-gradient(135deg, rgba(255,213,74,0.96), rgba(255,159,67,0.96)); color:#17324c; font-size:30px; font-weight:900; letter-spacing:0.03em; box-shadow:0 14px 30px rgba(0,0,0,0.22); opacity:0; pointer-events:none; transition:opacity 0.2s ease, transform 0.2s ease;">🎣 КЛЮЁТ!</div>
+    <div id="biteBanner">🎣 КЛЮЁТ!</div>
     <div id="controlHint" class="card">Управление: удерживайте кнопку «Вниз» или клавишу ↓ / S, чтобы плавно опускать удочку. Удерживайте кнопку «Вверх» или клавишу ↑ / W, чтобы поднимать её обратно. Отпустите — удочка остановится.</div>
 
-    <button id="openEditorBtn" class="card" style="position:absolute; right:14px; bottom:16px; z-index:14; border:none; color:#fff; cursor:pointer; font-weight:800;">⚙ Редактор заданий</button>
+    <button id="openEditorBtn" class="card">⚙ Редактор заданий</button>
 
-    <div id="teacherEditor" style="position:absolute; inset:auto 14px 110px auto; width:min(460px, calc(100vw - 28px)); max-height:70vh; overflow:auto; z-index:24; background:rgba(255,255,255,0.96); color:#17324c; border-radius:22px; padding:18px; box-shadow:0 24px 70px rgba(0,0,0,0.28); display:none;">
+    <div id="teacherEditor">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:12px;">
         <div>
           <div style="font-size:24px; font-weight:900;">Редактор заданий</div>
@@ -579,7 +528,7 @@
       <div class="modal" id="modalContent"></div>
     </div>
 
-    <div id="startScreen" style="position:absolute; inset:0; z-index:30; display:flex; align-items:center; justify-content:center; background:linear-gradient(rgba(8,24,42,0.35), rgba(8,24,42,0.55)); padding:20px;">
+    <div id="startScreen">
       <div class="modal" style="max-width:680px; text-align:center;">
         <h1 style="margin:0 0 10px; font-size:42px;">🎣 Рыбалка</h1>
         <p style="font-size:20px; margin-bottom:16px;">Образовательная игра: ловите рыбу, решайте задания и набирайте очки.</p>
@@ -591,7 +540,7 @@
           <div>• Мусор отнимает очки.</div>
         </div>
         <div class="row" style="justify-content:center;">
-          <button id="startGameBtn" class="primaryBtn" style="font-size:22px; padding:16px 28px;">Начать игру</button>
+          <button id="startGameBtn" class="primaryBtn" type="button" style="font-size:22px; padding:16px 28px; cursor:pointer; position:relative; z-index:3;">Начать игру</button>
         </div>
       </div>
     </div>
@@ -599,15 +548,8 @@
 
   <script>
     const GAME_CONFIG = {
-      meta: {
-        title: 'Рыбалка',
-        version: '0.2-fixed',
-        locale: 'ru'
-      },
       settings: {
         difficulty: 'medium',
-        soundEnabled: true,
-        musicEnabled: false,
         answerMode: 'mixed',
         taskType: 'mixed',
         scoreStart: 10,
@@ -694,8 +636,19 @@
       }
     };
 
-    const el = {$1progressFill: document.getElementById('progressFill'),
+    const el = {
+      scoreValue: document.getElementById('scoreValue'),
+      levelValue: document.getElementById('levelValue'),
+      caughtValue: document.getElementById('caughtValue'),
+      trashValue: document.getElementById('trashValue'),
+      attemptsValue: document.getElementById('attemptsValue'),
+      timeValue: document.getElementById('timeValue'),
+      progressFill: document.getElementById('progressFill'),
+      message: document.getElementById('message'),
       biteBanner: document.getElementById('biteBanner'),
+      controlHint: document.getElementById('controlHint'),
+      upBtn: document.getElementById('upBtn'),
+      downBtn: document.getElementById('downBtn'),
       openEditorBtn: document.getElementById('openEditorBtn'),
       teacherEditor: document.getElementById('teacherEditor'),
       closeEditorBtn: document.getElementById('closeEditorBtn'),
@@ -706,7 +659,15 @@
       editorOptions: document.getElementById('editorOptions'),
       addTaskBtn: document.getElementById('addTaskBtn'),
       exportTasksBtn: document.getElementById('exportTasksBtn'),
-      editorTaskList: document.getElementById('editorTaskList')
+      editorTaskList: document.getElementById('editorTaskList'),
+      entities: document.getElementById('entities'),
+      rod: document.getElementById('rod'),
+      line: document.getElementById('line'),
+      hook: document.getElementById('hook'),
+      overlay: document.getElementById('overlay'),
+      modal: document.getElementById('modalContent'),
+      startScreen: document.getElementById('startScreen'),
+      startGameBtn: document.getElementById('startGameBtn')
     };
 
     const state = {
@@ -739,11 +700,9 @@
       if (d === 'hard') return { speed: 1.25, taskTime: 0.85 };
       return { speed: 1, taskTime: 1 };
     }
-
     function currentLevel() {
       return GAME_CONFIG.levels[Math.min(state.levelIndex, GAME_CONFIG.levels.length - 1)];
     }
-
     function rand(min, max) { return Math.random() * (max - min) + min; }
     function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
@@ -765,7 +724,7 @@
       el.attemptsValue.textContent = state.attempts;
       el.timeValue.textContent = Math.max(0, Math.ceil(state.levelRemainingTime));
       const need = currentLevel().fishRequired;
-      el.progressFill.style.width = `${Math.min(100, state.levelCaught / need * 100)}%`;
+      el.progressFill.style.width = `${Math.min(100, (state.levelCaught / need) * 100)}%`;
     }
 
     function applyBackground() {
@@ -795,7 +754,8 @@
       const bobX = entity.kind === 'fish' ? Math.sin((t * 0.004) + entity.phase) * 4 : 0;
       const bobY = entity.kind === 'fish' ? Math.cos((t * 0.0032) + entity.phase) * 3 : 0;
       const directionScale = entity.kind === 'fish' ? -1 : 1;
-      entity.node.style.transform = `translate(${entity.x + bobX}px, ${entity.y + bobY}px) scaleX(${directionScale}) rotate(${entity.kind === 'fish' ? Math.sin((t * 0.0025) + entity.phase) * 3 : 0}deg)`;
+      const rot = entity.kind === 'fish' ? Math.sin((t * 0.0025) + entity.phase) * 3 : 0;
+      entity.node.style.transform = `translate(${entity.x + bobX}px, ${entity.y + bobY}px) scaleX(${directionScale}) rotate(${rot}deg)`;
     }
 
     function resetEntities() {
@@ -805,7 +765,6 @@
       const h = window.innerHeight;
       const diff = difficultyScale();
       const fishTypes = getFishTypesForLevel();
-
       for (let i = 0; i < GAME_CONFIG.settings.fish.spawnCount; i++) {
         const type = pick(fishTypes);
         const entity = {
@@ -832,7 +791,6 @@
         createEntityDom(entity);
         state.entities.push(entity);
       }
-
       if (GAME_CONFIG.settings.trash.enabled) {
         for (let i = 0; i < GAME_CONFIG.settings.trash.spawnCount; i++) {
           if (Math.random() > currentLevel().trashProbability) continue;
@@ -866,7 +824,6 @@
       el.line.style.height = `${length}px`;
       el.line.style.transform = `translateX(${sway}px) scaleX(${isMoving ? 1.15 : 1})`;
       el.line.style.width = isMoving ? '4px' : '3px';
-      el.line.style.background = isMoving ? 'linear-gradient(180deg, rgba(255,255,255,1), rgba(221,235,255,0.82))' : 'linear-gradient(180deg, rgba(255,255,255,0.92), rgba(221,235,255,0.78))';
       el.line.style.boxShadow = isMoving ? '0 0 12px rgba(255,255,255,0.45)' : '0 0 10px rgba(255,255,255,0.18)';
       const rodTilt = 28 + Math.sin(time * 0.0022) * 1.8 + (state.lowering ? 1.2 : 0) - (state.raising ? 1.2 : 0);
       el.rod.style.transform = `rotate(${rodTilt}deg)`;
@@ -893,6 +850,7 @@
         entity.active = true;
         entity.respawning = false;
         entity.node.style.opacity = '1';
+        entity.node.className = `entity ${entity.kind}${entity.rarity === 'rare' ? ' rare' : ''}`;
         renderEntity(entity);
       }, delay);
     }
@@ -911,9 +869,7 @@
           entity.y += Math.sin((performance.now() * 0.0025) + entity.phase) * 0.18;
           entity.y += Math.sin((performance.now() * 0.0012) + entity.phase * 1.7) * 0.26;
           entity.y += entity.verticalDrift * 0.015 * dt * 60;
-          if (entity.y < h * 0.34 || entity.y > h * 0.79) {
-            entity.verticalDrift *= -1;
-          }
+          if (entity.y < h * 0.34 || entity.y > h * 0.79) entity.verticalDrift *= -1;
         }
         entity.x -= entity.speed * dt;
         if (entity.x < -120) {
@@ -927,12 +883,7 @@
     function intersects(entity) {
       const hookRect = { x: state.hookX - 10, y: state.hookY - 10, w: 20, h: 20 };
       const entityRect = { x: entity.x, y: entity.y, w: entity.width, h: entity.height };
-      return !(
-        hookRect.x + hookRect.w < entityRect.x ||
-        hookRect.x > entityRect.x + entityRect.w ||
-        hookRect.y + hookRect.h < entityRect.y ||
-        hookRect.y > entityRect.y + entityRect.h
-      );
+      return !(hookRect.x + hookRect.w < entityRect.x || hookRect.x > entityRect.x + entityRect.w || hookRect.y + hookRect.h < entityRect.y || hookRect.y > entityRect.y + entityRect.h);
     }
 
     function checkCollisions() {
@@ -958,12 +909,9 @@
       state.score -= GAME_CONFIG.settings.scoreTrashPenalty;
       entity.node.classList.add('hit');
       setMessage(`Ой! Попался мусор: ${entity.label}. -${GAME_CONFIG.settings.scoreTrashPenalty} очка`, 'bad');
-      setTimeout(() => {
-        entity.node.className = 'entity trash';
-        scheduleRespawn(entity);
-      }, 500);
-      if (state.score <= 0) return finishGame(false, 'Очки упали до нуля.');
+      setTimeout(() => scheduleRespawn(entity), 500);
       updateHUD();
+      if (state.score <= 0) finishGame(false, 'Очки упали до нуля.');
     }
 
     function showBiteBanner() {
@@ -971,7 +919,7 @@
       el.biteBanner.style.transform = 'translateX(-50%) scale(1)';
       setTimeout(() => {
         el.biteBanner.style.opacity = '0';
-        el.biteBanner.style.transform = 'translateX(-50%) scale(0.9)';
+        el.biteBanner.style.transform = 'translateX(-50%) scale(0.92)';
       }, 900);
     }
 
@@ -988,7 +936,8 @@
       const mode = GAME_CONFIG.settings.taskType;
       const answerMode = GAME_CONFIG.settings.answerMode;
       const poolKey = mode === 'mixed' ? (Math.random() > 0.5 ? 'math' : 'question') : mode;
-      const task = structuredClone(pick(GAME_CONFIG.taskPools[poolKey][difficulty]));
+      const source = GAME_CONFIG.taskPools[poolKey][difficulty];
+      const task = structuredClone(pick(source));
       if (!task.options && (answerMode === 'choice' || (answerMode === 'mixed' && Math.random() > 0.5))) {
         const correct = task.answer;
         const distractors = new Set([correct]);
@@ -1006,8 +955,7 @@
       state.inTask = true;
       const task = buildTask();
       const diff = difficultyScale();
-      const level = currentLevel();
-      task.timeLimit = Math.max(4, (level.taskTimeSec || GAME_CONFIG.settings.timePerTaskSec) * diff.taskTime);
+      task.timeLimit = Math.max(4, (currentLevel().taskTimeSec || GAME_CONFIG.settings.timePerTaskSec) * diff.taskTime);
       state.activeTask = task;
       state.lastTaskStartedAt = performance.now();
       el.overlay.classList.add('show');
@@ -1018,8 +966,7 @@
     function renderTaskModal(task, entity) {
       const optionsHtml = task.answerMode === 'choice'
         ? `<div id="options">${task.options.map(opt => `<button class="optBtn" data-answer="${String(opt).replace(/"/g, '&quot;')}">${opt}</button>`).join('')}</div>`
-        : `<input id="answerInput" placeholder="Введите ответ" autocomplete="off" />
-           <div class="row"><button id="submitAnswer" class="primaryBtn">Ответить</button></div>`;
+        : `<input id="answerInput" placeholder="Введите ответ" autocomplete="off" /><div class="row"><button id="submitAnswer" class="primaryBtn">Ответить</button></div>`;
       el.modal.innerHTML = `
         <h2>Клюёт! ${entity.emoji}</h2>
         <p>Решите задание, чтобы добавить рыбу в улов.</p>
@@ -1045,7 +992,7 @@
         if (!state.inTask || !state.activeTask) return;
         const passed = (performance.now() - state.lastTaskStartedAt) / 1000;
         const left = Math.max(0, state.activeTask.timeLimit - passed);
-        const percent = left / state.activeTask.timeLimit * 100;
+        const percent = (left / state.activeTask.timeLimit) * 100;
         const bar = document.getElementById('taskTimerFill');
         if (bar) bar.style.width = `${percent}%`;
         if (left <= 0) {
@@ -1071,7 +1018,7 @@
     function animateFishToHud(fish) {
       if (!fish || !fish.node) return;
       const fishRect = fish.node.getBoundingClientRect();
-      const targetRect = document.getElementById('caughtValue').getBoundingClientRect();
+      const targetRect = el.caughtValue.getBoundingClientRect();
       const flyer = document.createElement('div');
       flyer.className = 'flyFish';
       flyer.textContent = fish.emoji;
@@ -1104,10 +1051,7 @@
 
     function failTask(msg) {
       const fish = state.entities.find(x => x.id === state.activeEntityId);
-      if (fish) {
-        fish.node.className = 'entity fish';
-        scheduleRespawn(fish);
-      }
+      if (fish) scheduleRespawn(fish);
       if (GAME_CONFIG.settings.scoreWrongPenalty > 0) state.score -= GAME_CONFIG.settings.scoreWrongPenalty;
       setMessage(msg, 'bad');
       closeTask();
@@ -1182,9 +1126,7 @@
           <div><b>Время игры:</b> ${spent} сек.</div>
           <div><b>Достигнутый уровень:</b> ${currentLevel().id}</div>
         </div>
-        <div class="row" style="margin-top:18px; justify-content:center;">
-          <button id="restartBtn" class="primaryBtn">Играть снова</button>
-        </div>
+        <div class="row" style="margin-top:18px; justify-content:center;"><button id="restartBtn" class="primaryBtn">Играть снова</button></div>
       `;
       document.getElementById('restartBtn').addEventListener('click', restartGame);
     }
@@ -1206,9 +1148,11 @@
       state.startedAt = performance.now();
       el.overlay.classList.remove('show');
       el.startScreen.style.display = 'none';
+      el.teacherEditor.style.display = 'none';
       applyBackground();
       resetEntities();
       updateHUD();
+      renderRod(performance.now());
       setMessage('Игра началась. Ловите рыбу и решайте задания!');
       lastTs = performance.now();
       requestAnimationFrame(loop);
@@ -1218,24 +1162,21 @@
       const items = [];
       for (const taskType of Object.keys(GAME_CONFIG.taskPools)) {
         for (const difficulty of Object.keys(GAME_CONFIG.taskPools[taskType])) {
-          GAME_CONFIG.taskPools[taskType][difficulty].forEach((task, index) => {
-            items.push({ taskType, difficulty, index, task });
-          });
+          GAME_CONFIG.taskPools[taskType][difficulty].forEach((task, index) => items.push({ taskType, difficulty, index, task }));
         }
       }
       return items;
     }
 
     function renderTaskEditor() {
-      const items = getEditableTasks();
       el.editorTaskList.innerHTML = '';
-      items.forEach(item => {
+      getEditableTasks().forEach(item => {
         const card = document.createElement('div');
+        const optionsText = item.task.options ? item.task.options.join(', ') : '—';
         card.style.border = '1px solid #d8e4ef';
         card.style.borderRadius = '14px';
         card.style.padding = '12px';
         card.style.background = '#f8fbff';
-        const optionsText = item.task.options ? item.task.options.join(', ') : '—';
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
             <div>
@@ -1245,8 +1186,7 @@
               <div><b>Варианты:</b> ${optionsText}</div>
             </div>
             <button class="secondaryBtn" data-remove-task="${item.taskType}|${item.difficulty}|${item.index}" style="padding:10px 12px;">Удалить</button>
-          </div>
-        `;
+          </div>`;
         el.editorTaskList.appendChild(card);
       });
       el.editorTaskList.querySelectorAll('[data-remove-task]').forEach(btn => {
@@ -1269,9 +1209,7 @@
         return;
       }
       const task = { prompt, answer };
-      if (optionsRaw) {
-        task.options = optionsRaw.split(';').map(v => v.trim()).filter(Boolean);
-      }
+      if (optionsRaw) task.options = optionsRaw.split(';').map(v => v.trim()).filter(Boolean);
       GAME_CONFIG.taskPools[taskType][difficulty].push(task);
       el.editorPrompt.value = '';
       el.editorAnswer.value = '';
@@ -1294,26 +1232,10 @@
     }
 
     function attachControls() {
-      const startLower = (e) => {
-        e.preventDefault?.();
-        if (state.gameOver || state.inTask) return;
-        state.lowering = true;
-        state.raising = false;
-      };
-      const stopLower = (e) => {
-        e.preventDefault?.();
-        state.lowering = false;
-      };
-      const startRaise = (e) => {
-        e.preventDefault?.();
-        if (state.gameOver || state.inTask) return;
-        state.raising = true;
-        state.lowering = false;
-      };
-      const stopRaise = (e) => {
-        e.preventDefault?.();
-        state.raising = false;
-      };
+      const startLower = (e) => { e.preventDefault?.(); if (state.gameOver || state.inTask) return; state.lowering = true; state.raising = false; };
+      const stopLower = (e) => { e.preventDefault?.(); state.lowering = false; };
+      const startRaise = (e) => { e.preventDefault?.(); if (state.gameOver || state.inTask) return; state.raising = true; state.lowering = false; };
+      const stopRaise = (e) => { e.preventDefault?.(); state.raising = false; };
       ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => el.downBtn.addEventListener(evt, startLower));
       ['pointerup', 'pointerleave', 'mouseup', 'touchend', 'touchcancel'].forEach(evt => el.downBtn.addEventListener(evt, stopLower));
       ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => el.upBtn.addEventListener(evt, startRaise));
@@ -1329,15 +1251,20 @@
         if (e.key === 'ArrowUp' || key === 'w') state.raising = false;
       });
       window.addEventListener('resize', () => renderRod(performance.now()));
-      el.openEditorBtn.addEventListener('click', () => {
-        el.teacherEditor.style.display = 'block';
-        renderTaskEditor();
-      });
-      el.closeEditorBtn.addEventListener('click', () => {
-        el.teacherEditor.style.display = 'none';
-      });
+      el.openEditorBtn.addEventListener('click', () => { el.teacherEditor.style.display = 'block'; renderTaskEditor(); });
+      el.closeEditorBtn.addEventListener('click', () => { el.teacherEditor.style.display = 'none'; });
       el.addTaskBtn.addEventListener('click', addTaskFromEditor);
       el.exportTasksBtn.addEventListener('click', exportTasksJson);
+      el.startGameBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        restartGame();
+      });
+      el.startScreen.addEventListener('click', (e) => {
+        if (e.target === el.startScreen) {
+          restartGame();
+        }
+      });
     }
 
     let lastTs = performance.now();
@@ -1351,14 +1278,8 @@
         if (state.raising) state.lineLength -= GAME_CONFIG.settings.rod.raiseSpeedPxPerSec * dt;
         state.lineLength = clamp(state.lineLength, GAME_CONFIG.settings.rod.minLengthPx, maxDepth);
         state.levelRemainingTime -= dt;
-        if (state.levelRemainingTime <= 0) {
-          finishGame(false, 'Закончилось время уровня.');
-          return;
-        }
-        if (state.attempts >= GAME_CONFIG.settings.maxAttemptsPerLevel) {
-          finishGame(false, 'Закончились попытки на уровне.');
-          return;
-        }
+        if (state.levelRemainingTime <= 0) return finishGame(false, 'Закончилось время уровня.');
+        if (state.attempts >= GAME_CONFIG.settings.maxAttemptsPerLevel) return finishGame(false, 'Закончились попытки на уровне.');
         moveEntities(dt);
         checkCollisions();
         updateHUD();
@@ -1374,7 +1295,6 @@
       updateHUD();
       renderRod(performance.now());
       renderTaskEditor();
-      el.startGameBtn.addEventListener('click', restartGame);
     }
 
     init();

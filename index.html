@@ -605,7 +605,7 @@
         </div>
         <div id="difficultyHint" style="margin-bottom:16px; font-weight:700; color:#17324c;">Сейчас выбрана сложность: <b>средняя</b>.</div>
         <div class="row" style="justify-content:center;">
-          <button id="startGameBtn" class="primaryBtn" type="button" style="font-size:22px; padding:16px 28px;">Начать игру</button>
+          <button id="startGameBtn" class="primaryBtn" type="button" onclick="window.startGame && window.startGame(event)" style="font-size:22px; padding:16px 28px; cursor:pointer; position:relative; z-index:101;">Начать игру</button>
         </div>
       </div>
     </div>
@@ -1271,16 +1271,17 @@
     }
 
     function init() {
+      window.startGame = function(event) {
+        event?.preventDefault?.();
+        event?.stopPropagation?.();
+        restartGame();
+      };
       attachControls();
       resetEntities();
       updateHUD();
       renderRod(performance.now());
       applyDifficultyUI();
-      el.startGameBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        restartGame();
-      });
+      el.startGameBtn.addEventListener('click', window.startGame);
       el.startScreen.addEventListener('click', (e) => {
         if (e.target === el.startScreen) restartGame();
       });

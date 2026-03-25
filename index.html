@@ -120,6 +120,24 @@
       max-width: 460px;
       line-height: 1.35;
       z-index: 20;
+      display: none;
+    }
+
+    #helpBtn {
+      position: absolute;
+      left: 12px;
+      bottom: 14px;
+      z-index: 26;
+      width: 54px;
+      height: 54px;
+      border: none;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #d8ebff 70%);
+      color: #16324d;
+      font-size: 24px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
     }
 
     #rodControls {
@@ -526,6 +544,7 @@
 
     <div id="message" class="card">Удерживайте «Вниз», чтобы опустить удочку, и «Вверх», чтобы поднять её.</div>
     <div id="biteBanner">🎣 КЛЮЁТ!</div>
+    <button id="helpBtn" type="button" aria-label="Показать управление">❓</button>
     <div id="controlHint" class="card">Управление: удерживайте кнопку «Вниз» или клавишу ↓ / S, чтобы плавно опускать удочку. Удерживайте кнопку «Вверх» или клавишу ↑ / W, чтобы поднимать её обратно. Отпустите — удочка остановится.</div>
 
     <div id="rodControls">
@@ -569,9 +588,14 @@
     </div>
 
     <div id="startScreen">
-      <div class="modal" style="max-width:680px; text-align:center;">
+      <div class="modal" style="max-width:720px; text-align:center;">
         <h1 style="margin:0 0 10px; font-size:42px;">🎣 Рыбалка</h1>
         <p style="font-size:20px; margin-bottom:16px;">Образовательная игра: ловите рыбу, решайте задания и набирайте очки.</p>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:18px;">
+          <button id="difficultyEasy" class="secondaryBtn difficultyBtn" type="button" data-difficulty="easy" style="padding:16px 12px;">Лёгкий</button>
+          <button id="difficultyMedium" class="primaryBtn difficultyBtn" type="button" data-difficulty="medium" style="padding:16px 12px;">Средний</button>
+          <button id="difficultyHard" class="secondaryBtn difficultyBtn" type="button" data-difficulty="hard" style="padding:16px 12px;">Сложный</button>
+        </div>
         <div style="background:#eef5fb; border-radius:18px; padding:16px 18px; text-align:left; margin-bottom:18px; line-height:1.55; color:#17324c;">
           <div><b>Как играть:</b></div>
           <div>• Удерживайте <b>ВНИЗ</b> или клавишу <b>↓ / S</b>, чтобы опускать удочку.</div>
@@ -579,6 +603,7 @@
           <div>• Поймали рыбу — решите задание, чтобы добавить её в улов.</div>
           <div>• Мусор отнимает очки.</div>
         </div>
+        <div id="difficultyHint" style="margin-bottom:16px; font-weight:700; color:#17324c;">Сейчас выбрана сложность: <b>средняя</b>.</div>
         <div class="row" style="justify-content:center;">
           <button id="startGameBtn" class="primaryBtn" type="button" style="font-size:22px; padding:16px 28px;">Начать игру</button>
         </div>
@@ -671,26 +696,11 @@
       }
     };
 
-    const el = {
-      entities: document.getElementById('entities'),
-      line: document.getElementById('line'),
-      hook: document.getElementById('hook'),
-      rod: document.getElementById('rod'),
-      overlay: document.getElementById('overlay'),
-      modal: document.getElementById('modalContent'),
-      upBtn: document.getElementById('upBtn'),
-      downBtn: document.getElementById('downBtn'),
-      startScreen: document.getElementById('startScreen'),
-      startGameBtn: document.getElementById('startGameBtn'),
-      message: document.getElementById('message'),
-      biteBanner: document.getElementById('biteBanner'),
-      scoreValue: document.getElementById('scoreValue'),
-      levelValue: document.getElementById('levelValue'),
-      caughtValue: document.getElementById('caughtValue'),
-      trashValue: document.getElementById('trashValue'),
-      attemptsValue: document.getElementById('attemptsValue'),
-      timeValue: document.getElementById('timeValue'),
-      progressFill: document.getElementById('progressFill')
+    const el = {$1progressFill: document.getElementById('progressFill'),
+      helpBtn: document.getElementById('helpBtn'),
+      controlHint: document.getElementById('controlHint'),
+      difficultyHint: document.getElementById('difficultyHint'),
+      difficultyButtons: Array.from(document.querySelectorAll('.difficultyBtn'))
     };
 
     const state = {
@@ -719,9 +729,25 @@
 
     function difficultyScale() {
       const d = GAME_CONFIG.settings.difficulty;
-      if (d === 'easy') return { speed: 0.85, taskTime: 1.25 };
-      if (d === 'hard') return { speed: 1.25, taskTime: 0.85 };
-      return { speed: 1, taskTime: 1 };
+      if (d === 'easy') return { speed: 0.78, taskTime: 1.45, trash: 0.75 };
+      if (d === 'hard') return { speed: 1.35, taskTime: 0.75, trash: 1.2 };
+      return { speed: 1, taskTime: 1, trash: 1 };
+    }
+
+    function difficultyLabel(value) {
+      if (value === 'easy') return 'лёгкая';
+      if (value === 'hard') return 'сложная';
+      return 'средняя';
+    }
+
+    function applyDifficultyUI() {
+      el.difficultyButtons.forEach(btn => {
+        const active = btn.dataset.difficulty === GAME_CONFIG.settings.difficulty;
+        btn.className = `${active ? 'primaryBtn' : 'secondaryBtn'} difficultyBtn`;
+      });
+      if (el.difficultyHint) {
+        el.difficultyHint.innerHTML = `Сейчас выбрана сложность: <b>${difficultyLabel(GAME_CONFIG.settings.difficulty)}</b>.`;
+      }
     }
 
     function currentLevel() {
@@ -812,7 +838,7 @@
 
       if (GAME_CONFIG.settings.trash.enabled) {
         for (let i = 0; i < GAME_CONFIG.settings.trash.spawnCount; i++) {
-          if (Math.random() > currentLevel().trashProbability) continue;
+          if (Math.random() > currentLevel().trashProbability * difficultyScale().trash) continue;
           const type = pick(GAME_CONFIG.settings.trash.types);
           const entity = {
             id: `trash-${Date.now()}-${i}`,
@@ -1151,10 +1177,11 @@
       state.startedAt = performance.now();
       el.overlay.classList.remove('show');
       el.startScreen.style.display = 'none';
+      el.controlHint.style.display = 'none';
       resetEntities();
       updateHUD();
       renderRod(performance.now());
-      setMessage('Игра началась. Ловите рыбу и решайте задания!');
+      setMessage(`Игра началась. Сложность: ${difficultyLabel(GAME_CONFIG.settings.difficulty)}.`);
       lastTs = performance.now();
       requestAnimationFrame(loop);
     }
@@ -1248,6 +1275,7 @@
       resetEntities();
       updateHUD();
       renderRod(performance.now());
+      applyDifficultyUI();
       el.startGameBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -1256,10 +1284,21 @@
       el.startScreen.addEventListener('click', (e) => {
         if (e.target === el.startScreen) restartGame();
       });
+      el.helpBtn.addEventListener('click', () => {
+        const visible = el.controlHint.style.display === 'block';
+        el.controlHint.style.display = visible ? 'none' : 'block';
+      });
+      el.difficultyButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          GAME_CONFIG.settings.difficulty = btn.dataset.difficulty;
+          applyDifficultyUI();
+          resetEntities();
+          updateHUD();
+        });
+      });
     }
 
     init();
   </script>
 </body>
 </html>
-

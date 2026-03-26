@@ -383,81 +383,7 @@
           <div class="note">Нужны прямые ссылки на mp3/ogg. GitHub raw тоже подходит.</div>
         </section>
 
-        <section class="section">
-          <h3>Задания (3 столбца)</h3>
-          <div class="note" style="margin:0 0 12px;">Вставляй из Excel: строки по заданиям. В «Верно» можно несколько вариантов через <b>|</b>. В режиме «Ввод» столбец «Неверно» игнорируется.</div>
-          <div class="grid">
-            <div class="field">
-              <label for="bulkA">Вопрос (A)</label>
-              <textarea id="bulkA" placeholder="Dog ___ fast.&#10;Cat ___ milk.&#10;https://img.com/cat.png"></textarea>
-            </div>
-            <div class="field">
-              <label for="bulkB">Верно (B)</label>
-              <textarea id="bulkB" placeholder="runs&#10;drinks&#10;meow|mew"></textarea>
-            </div>
-            <div class="field">
-              <label for="bulkC">Неверно (C)</label>
-              <textarea id="bulkC" placeholder="run&#10;drink&#10;woof"></textarea>
-            </div>
-          </div>
-          <div class="grid">
-            <div class="field">
-              <label for="bulkTaskType">Тип для вставки</label>
-              <select id="bulkTaskType">
-                <option value="question">Вопрос</option>
-                <option value="math">Математика</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="bulkTaskDifficulty">Сложность для вставки</label>
-              <select id="bulkTaskDifficulty">
-                <option value="easy">Лёгкая</option>
-                <option value="medium" selected>Средняя</option>
-                <option value="hard">Сложная</option>
-              </select>
-            </div>
-          </div>
-          <div class="btn-row">
-            <button id="importBulkBtn" class="primary">Импортировать 3 столбца</button>
-          </div>
-        </section>
-
-        <section class="section">
-          <h3>Добавить одно задание</h3>
-          <div class="grid">
-            <div class="field">
-              <label for="taskType">Тип</label>
-              <select id="taskType">
-                <option value="math">Математика</option>
-                <option value="question">Вопрос</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="taskDifficulty">Сложность</label>
-              <select id="taskDifficulty">
-                <option value="easy">Лёгкая</option>
-                <option value="medium" selected>Средняя</option>
-                <option value="hard">Сложная</option>
-              </select>
-            </div>
-          </div>
-          <div class="field">
-            <label for="taskPrompt">Текст задания</label>
-            <input id="taskPrompt" placeholder="Например: 8 + 5" />
-          </div>
-          <div class="field">
-            <label for="taskAnswer">Правильный ответ</label>
-            <input id="taskAnswer" placeholder="Например: 13" />
-          </div>
-          <div class="field">
-            <label for="taskOptions">Варианты ответа через ;</label>
-            <input id="taskOptions" placeholder="10;13;15;18" />
-          </div>
-          <div class="btn-row">
-            <button id="addTaskBtn" class="primary">Добавить задание</button>
-            <button id="resetTasksBtn" class="secondary">Сбросить к базовым</button>
-          </div>
-        </section>
+        
 
         <section class="section">
           <h3>Уровни (TЗ v1)</h3>
@@ -501,7 +427,7 @@
         <section class="section">
           <h3>Список заданий</h3>
           <div id="taskList" class="task-list"></div>
-          <div class="note">Теперь в редакторе можно отдельно задать: ответы выбором, вводом или смешанно, а также выбрать типы заданий для всей игры.</div>
+          <div class="note">Список заданий пока работает в режиме просмотра базового набора. Массовое и ручное добавление убраны, чтобы сохранить стабильную рабочую версию редактора.</div>
         </section>
       </div>
     </aside>
@@ -582,18 +508,6 @@
       soundCoin: document.getElementById('soundCoin'),
       soundCrash: document.getElementById('soundCrash'),
       soundWin: document.getElementById('soundWin'),
-      bulkA: document.getElementById('bulkA'),
-      bulkB: document.getElementById('bulkB'),
-      bulkC: document.getElementById('bulkC'),
-      bulkTaskType: document.getElementById('bulkTaskType'),
-      bulkTaskDifficulty: document.getElementById('bulkTaskDifficulty'),
-      importBulkBtn: document.getElementById('importBulkBtn'),
-      taskType: document.getElementById('taskType'),
-      taskDifficulty: document.getElementById('taskDifficulty'),
-      taskPrompt: document.getElementById('taskPrompt'),
-      taskAnswer: document.getElementById('taskAnswer'),
-      taskOptions: document.getElementById('taskOptions'),
-      addTaskBtn: document.getElementById('addTaskBtn'),
       resetTasksBtn: document.getElementById('resetTasksBtn'),
       taskList: document.getElementById('taskList'),
       previewFrame: document.getElementById('previewFrame'),
@@ -669,64 +583,7 @@
       });
     }
 
-    function importBulkTasks() {
-      const colA = els.bulkA.value.split(/
-?
-/).map(s => s.trim());
-      const colB = els.bulkB.value.split(/
-?
-/).map(s => s.trim());
-      const colC = els.bulkC.value.split(/
-?
-/).map(s => s.trim());
-      const maxLen = Math.max(colA.length, colB.length, colC.length);
-      const taskType = els.bulkTaskType.value;
-      const difficulty = els.bulkTaskDifficulty.value;
-      let added = 0;
-      for (let i = 0; i < maxLen; i++) {
-        const prompt = colA[i] || '';
-        const correct = colB[i] || '';
-        const wrong = colC[i] || '';
-        if (!prompt || !correct) continue;
-        const task = { prompt, answer: correct.split('|')[0].trim() };
-        const variants = correct.split('|').map(v => v.trim()).filter(Boolean);
-        if (taskType === 'question' || wrong) {
-          const wrongVariants = wrong.split('|').map(v => v.trim()).filter(Boolean);
-          task.options = [...new Set([...variants, ...wrongVariants])];
-          if (!task.options.includes(task.answer)) task.options.unshift(task.answer);
-        }
-        state.tasks[taskType][difficulty].push(task);
-        added++;
-      }
-      renderTaskList();
-      updatePreview();
-      alert(`Импортировано заданий: ${added}`);
-    }
-
-    function addTask() {
-      const taskType = els.taskType.value;
-      const difficulty = els.taskDifficulty.value;
-      const prompt = els.taskPrompt.value.trim();
-      const answer = els.taskAnswer.value.trim();
-      const optionsRaw = els.taskOptions.value.trim();
-
-      if (!prompt || !answer) {
-        alert('Заполните текст задания и правильный ответ.');
-        return;
-      }
-
-      const task = { prompt, answer };
-      if (optionsRaw) {
-        task.options = optionsRaw.split(';').map(v => v.trim()).filter(Boolean);
-      }
-
-      state.tasks[taskType][difficulty].push(task);
-      els.taskPrompt.value = '';
-      els.taskAnswer.value = '';
-      els.taskOptions.value = '';
-      renderTaskList();
-      updatePreview();
-    }
+    
 
     function resetTasks() {
       state.tasks = structuredClone(BASE_TASKS);
@@ -1066,8 +923,6 @@
         control.addEventListener('change', updatePreview);
       });
 
-      els.addTaskBtn.addEventListener('click', addTask);
-      els.importBulkBtn.addEventListener('click', importBulkTasks);
       els.resetTasksBtn.addEventListener('click', resetTasks);
       els.refreshPreviewBtn.addEventListener('click', updatePreview);
       els.downloadHtmlBtn.addEventListener('click', downloadHtml);

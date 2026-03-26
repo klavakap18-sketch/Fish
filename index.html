@@ -13,7 +13,6 @@
       --ui: rgba(8, 24, 42, 0.82);
       --panel: rgba(255,255,255,0.96);
     }
-
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -22,14 +21,7 @@
       color: #fff;
       overflow: hidden;
     }
-
-    #game {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
-
+    #game { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
     .card {
       background: var(--ui);
       border: 1px solid rgba(255,255,255,0.14);
@@ -38,7 +30,6 @@
       backdrop-filter: blur(8px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.16);
     }
-
     #hud {
       position: absolute;
       top: 10px;
@@ -49,158 +40,47 @@
       gap: 10px;
       z-index: 20;
     }
-
-    .label {
-      font-size: 12px;
-      opacity: 0.82;
-      margin-bottom: 4px;
-    }
-
-    .value {
-      font-size: 20px;
-      font-weight: 800;
-    }
-
-    #progressWrap {
-      position: absolute;
-      top: 100px;
-      left: 12px;
-      width: 340px;
-      z-index: 20;
-    }
-
+    .label { font-size: 12px; opacity: 0.82; margin-bottom: 4px; }
+    .value { font-size: 20px; font-weight: 800; }
+    #progressWrap { position: absolute; top: 100px; left: 12px; width: 340px; z-index: 20; }
     #progressBar {
-      height: 16px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.16);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.14);
-      margin-top: 8px;
+      height: 16px; border-radius: 999px; background: rgba(255,255,255,0.16);
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.14); margin-top: 8px;
     }
-
-    #progressFill {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #ffe082, #ffca28);
-      transition: width 0.2s ease;
-    }
-
+    #progressFill { width: 0%; height: 100%; background: linear-gradient(90deg, #ffe082, #ffca28); transition: width 0.2s ease; }
     #message {
-      position: absolute;
-      top: 146px;
-      left: 12px;
-      z-index: 20;
-      font-weight: 800;
-      min-width: 260px;
+      position: absolute; top: 146px; left: 12px; z-index: 20; font-weight: 800; min-width: 260px;
     }
-
     #biteBanner {
-      position: absolute;
-      top: 190px;
-      left: 50%;
-      transform: translateX(-50%) scale(0.92);
-      z-index: 30;
-      padding: 14px 28px;
-      border-radius: 999px;
+      position: absolute; top: 190px; left: 50%; transform: translateX(-50%) scale(0.92);
+      z-index: 30; padding: 14px 28px; border-radius: 999px;
       background: linear-gradient(135deg, rgba(255,213,74,0.98), rgba(255,159,67,0.98));
-      color: #17324c;
-      font-size: 30px;
-      font-weight: 900;
-      letter-spacing: 0.03em;
-      box-shadow: 0 14px 30px rgba(0,0,0,0.22);
-      opacity: 0;
-      pointer-events: none;
+      color: #17324c; font-size: 30px; font-weight: 900; letter-spacing: 0.03em;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.22); opacity: 0; pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
-
     #controlHint {
-      position: absolute;
-      left: 12px;
-      bottom: 14px;
-      max-width: 460px;
-      line-height: 1.35;
-      z-index: 20;
-      display: none;
+      position: absolute; left: 12px; bottom: 14px; max-width: 460px; line-height: 1.35; z-index: 20; display: none;
     }
-
     #helpBtn {
-      position: absolute;
-      left: 12px;
-      bottom: 14px;
-      z-index: 26;
-      width: 54px;
-      height: 54px;
-      border: none;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 30%, #ffffff, #d8ebff 70%);
-      color: #16324d;
-      font-size: 24px;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+      position: absolute; left: 12px; bottom: 14px; z-index: 26; width: 54px; height: 54px;
+      border: none; border-radius: 999px; background: radial-gradient(circle at 30% 30%, #ffffff, #d8ebff 70%);
+      color: #16324d; font-size: 24px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.22);
     }
-
     #rodControls {
-      position: absolute;
-      left: 50%;
-      bottom: 20px;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 26px;
-      z-index: 25;
+      position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; gap: 26px; z-index: 25;
     }
-
     .rodBtn {
-      border: none;
-      border-radius: 999px;
-      width: 170px;
-      height: 86px;
-      font-size: 20px;
-      font-weight: 900;
-      cursor: pointer;
-      color: #0c2740;
-      user-select: none;
-      touch-action: none;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+      border: none; border-radius: 999px; width: 170px; height: 86px; font-size: 20px; font-weight: 900;
+      cursor: pointer; color: #0c2740; user-select: none; touch-action: none; box-shadow: 0 12px 28px rgba(0,0,0,0.25);
     }
-
-    #upBtn {
-      background: radial-gradient(circle at 30% 30%, #d6f5ff, #7dd3fc 70%);
-    }
-
-    #downBtn {
-      background: radial-gradient(circle at 30% 30%, #fff7c7, #ffd54a 70%);
-    }
-
-    #scene {
-      position: absolute;
-      inset: 0;
-    }
-
-    #shore {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 22%;
-      height: 6px;
-      background: rgba(255,255,255,0.22);
-      z-index: 2;
-    }
-
-    #waterEffects {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
-    }
-
+    #upBtn { background: radial-gradient(circle at 30% 30%, #d6f5ff, #7dd3fc 70%); }
+    #downBtn { background: radial-gradient(circle at 30% 30%, #fff7c7, #ffd54a 70%); }
+    #scene { position: absolute; inset: 0; }
+    #shore { position: absolute; left: 0; right: 0; top: 22%; height: 6px; background: rgba(255,255,255,0.22); z-index: 2; }
+    #waterEffects { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
     #surfaceWaves {
-      position: absolute;
-      left: -10%;
-      right: -10%;
-      top: 26%;
-      height: 42px;
+      position: absolute; left: -10%; right: -10%; top: 26%; height: 42px;
       background:
         radial-gradient(circle at 10% 60%, rgba(255,255,255,0.18) 0 24%, transparent 25%),
         radial-gradient(circle at 28% 40%, rgba(255,255,255,0.12) 0 20%, transparent 21%),
@@ -209,312 +89,91 @@
         radial-gradient(circle at 86% 60%, rgba(255,255,255,0.18) 0 24%, transparent 25%);
       animation: wavesDrift 11s linear infinite;
     }
-
     .lightRay {
-      position: absolute;
-      top: 12%;
-      width: 120px;
-      height: 58%;
+      position: absolute; top: 12%; width: 120px; height: 58%;
       background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02));
       clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%);
-      filter: blur(2px);
-      opacity: 0.45;
-      animation: rayPulse 5.5s ease-in-out infinite;
+      filter: blur(2px); opacity: 0.45; animation: rayPulse 5.5s ease-in-out infinite;
     }
-
     .bubble {
-      position: absolute;
-      bottom: 12%;
-      border-radius: 50%;
+      position: absolute; bottom: 12%; border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8), rgba(255,255,255,0.16) 65%, rgba(255,255,255,0.06) 100%);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
-      opacity: 0.75;
-      animation: bubbleRise linear infinite;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); opacity: 0.75; animation: bubbleRise linear infinite;
     }
-
-    #plants {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 12%;
-      height: 22%;
-      z-index: 1;
-      pointer-events: none;
-    }
-
+    #plants { position: absolute; left: 0; right: 0; bottom: 12%; height: 22%; z-index: 1; pointer-events: none; }
     .plant {
-      position: absolute;
-      bottom: 0;
-      width: 18px;
-      border-radius: 18px 18px 0 0;
-      transform-origin: bottom center;
+      position: absolute; bottom: 0; width: 18px; border-radius: 18px 18px 0 0; transform-origin: bottom center;
       background: linear-gradient(180deg, rgba(65,184,131,0.96), rgba(14,103,78,0.98));
-      box-shadow: inset -3px 0 5px rgba(0,0,0,0.14);
-      animation: swayPlant ease-in-out infinite;
+      box-shadow: inset -3px 0 5px rgba(0,0,0,0.14); animation: swayPlant ease-in-out infinite;
     }
-
-    #seabed {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 12%;
-      background: linear-gradient(#c9b17b, var(--sand));
-      z-index: 2;
-    }
-
+    #seabed { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; background: linear-gradient(#c9b17b, var(--sand)); z-index: 2; }
     #rod {
-      position: absolute;
-      left: 19%;
-      top: 5.5%;
-      width: 18px;
-      height: 158px;
-      transform: rotate(28deg);
-      transform-origin: top center;
-      z-index: 6;
-      pointer-events: none;
-      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.18));
+      position: absolute; left: 19%; top: 5.5%; width: 18px; height: 158px; transform: rotate(28deg);
+      transform-origin: top center; z-index: 6; pointer-events: none; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.18));
     }
-
     #rod::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 16px;
+      content: ""; position: absolute; inset: 0; border-radius: 16px;
       background: linear-gradient(180deg, #6a4727 0%, #8a5c34 20%, #c48a52 48%, #7b512d 78%, #5c3b20 100%);
       box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08), inset -3px 0 8px rgba(0,0,0,0.18);
     }
-
     #rod::after {
-      content: "";
-      position: absolute;
-      right: -10px;
-      top: 20px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 3px solid #d6b36a;
-      background: radial-gradient(circle at 35% 35%, #fff2b3, #c9972f 70%);
+      content: ""; position: absolute; right: -10px; top: 20px; width: 20px; height: 20px; border-radius: 50%;
+      border: 3px solid #d6b36a; background: radial-gradient(circle at 35% 35%, #fff2b3, #c9972f 70%);
       box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     }
-
     #line {
-      position: absolute;
-      left: calc(20% + 85px);
-      top: 13%;
-      width: 3px;
-      height: 40px;
+      position: absolute; left: calc(20% + 85px); top: 13%; width: 3px; height: 40px;
       background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(221,235,255,0.78));
-      transform-origin: top center;
-      z-index: 5;
-      border-radius: 999px;
-      box-shadow: 0 0 10px rgba(255,255,255,0.18);
+      transform-origin: top center; z-index: 5; border-radius: 999px; box-shadow: 0 0 10px rgba(255,255,255,0.18);
     }
-
-    #hook {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      z-index: 7;
-      pointer-events: none;
-      filter: drop-shadow(0 3px 3px rgba(0,0,0,0.28));
-    }
-
+    #hook { position: absolute; width: 24px; height: 24px; z-index: 7; pointer-events: none; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.28)); }
     #hook::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border: 4px solid #f4f7fb;
-      border-top-color: transparent;
-      border-left-color: transparent;
-      border-radius: 50%;
-      transform: rotate(10deg);
+      content: ""; position: absolute; inset: 0; border: 4px solid #f4f7fb; border-top-color: transparent; border-left-color: transparent;
+      border-radius: 50%; transform: rotate(10deg);
     }
-
     #hook::after {
-      content: "";
-      position: absolute;
-      right: 1px;
-      bottom: 0;
-      width: 7px;
-      height: 7px;
-      border-radius: 50% 50% 50% 0;
-      background: #f4f7fb;
-      transform: rotate(35deg);
+      content: ""; position: absolute; right: 1px; bottom: 0; width: 7px; height: 7px; border-radius: 50% 50% 50% 0;
+      background: #f4f7fb; transform: rotate(35deg);
     }
-
-    #entities {
-      position: absolute;
-      inset: 0;
-      z-index: 4;
-    }
-
-    .entity {
-      position: absolute;
-      will-change: transform, opacity;
-      user-select: none;
-      font-size: 34px;
-      z-index: 4;
-    }
-
-    .fish {
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.14));
-    }
-
-    .fish.rare {
-      filter: drop-shadow(0 0 10px rgba(255,215,64,0.42));
-    }
-
+    #entities { position: absolute; inset: 0; z-index: 4; }
+    .entity { position: absolute; will-change: transform, opacity; user-select: none; font-size: 34px; z-index: 4; }
+    .fish { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.14)); }
+    .fish.rare { filter: drop-shadow(0 0 10px rgba(255,215,64,0.42)); }
     .fish.caught { animation: pop 0.5s ease; }
     .trash.hit { animation: spinOut 0.6s ease; }
-
     #overlay {
-      position: absolute;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(3,13,24,0.62);
-      z-index: 50;
-      padding: 20px;
+      position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+      background: rgba(3,13,24,0.62); z-index: 50; padding: 20px;
     }
-
     #overlay.show { display: flex; }
-
     .modal {
-      width: min(560px, 96vw);
-      background: var(--panel);
-      color: #10263c;
-      border-radius: 24px;
-      padding: 22px;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.35);
-      position: relative;
-      z-index: 2;
+      width: min(560px, 96vw); background: var(--panel); color: #10263c; border-radius: 24px; padding: 22px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35); position: relative; z-index: 2;
     }
-
-    #taskTimerBar {
-      height: 12px;
-      background: #dfe9f2;
-      border-radius: 999px;
-      overflow: hidden;
-      margin: 12px 0 18px;
-    }
-
-    #taskTimerFill {
-      height: 100%;
-      width: 100%;
-      background: linear-gradient(90deg, #69db7c, #fcc419, #ff6b6b);
-      transition: width 0.1s linear;
-    }
-
-    #taskTitle {
-      font-size: 30px;
-      font-weight: 800;
-      margin: 10px 0 18px;
-    }
-
-    #answerInput {
-      width: 100%;
-      padding: 14px 16px;
-      font-size: 22px;
-      border-radius: 14px;
-      border: 2px solid #d6e1ec;
-      outline: none;
-      margin-bottom: 12px;
-    }
-
-    #options {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(120px, 1fr));
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .optBtn, .primaryBtn, .secondaryBtn {
-      border: none;
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .optBtn, .secondaryBtn {
-      background: #eaf2f8;
-      color: #17324c;
-    }
-
-    .primaryBtn {
-      background: #1677ff;
-      color: white;
-    }
-
-    .row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
+    #taskTimerBar { height: 12px; background: #dfe9f2; border-radius: 999px; overflow: hidden; margin: 12px 0 18px; }
+    #taskTimerFill { height: 100%; width: 100%; background: linear-gradient(90deg, #69db7c, #fcc419, #ff6b6b); transition: width 0.1s linear; }
+    #taskTitle { font-size: 30px; font-weight: 800; margin: 10px 0 18px; }
+    #answerInput { width: 100%; padding: 14px 16px; font-size: 22px; border-radius: 14px; border: 2px solid #d6e1ec; outline: none; margin-bottom: 12px; }
+    #options { display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 10px; margin-bottom: 12px; }
+    .optBtn, .primaryBtn, .secondaryBtn { border: none; border-radius: 14px; padding: 14px 16px; font-size: 18px; font-weight: 700; cursor: pointer; }
+    .optBtn, .secondaryBtn { background: #eaf2f8; color: #17324c; }
+    .primaryBtn { background: #1677ff; color: white; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
     #startScreen {
-      position: absolute;
-      inset: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(rgba(8,24,42,0.35), rgba(8,24,42,0.55));
-      padding: 20px;
-      pointer-events: auto;
+      position: absolute; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(rgba(8,24,42,0.35), rgba(8,24,42,0.55)); padding: 20px;
     }
-
     .flyFish {
-      position: absolute;
-      z-index: 60;
-      pointer-events: none;
-      font-size: 38px;
-      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2));
-      animation: fishToHud 900ms cubic-bezier(.2,.8,.2,1) forwards;
+      position: absolute; z-index: 60; pointer-events: none; font-size: 38px;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2)); animation: fishToHud 900ms cubic-bezier(.2,.8,.2,1) forwards;
     }
-
-    @keyframes pop {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4) translateY(-8px); }
-      100% { transform: scale(0.2); opacity: 0; }
-    }
-
-    @keyframes spinOut {
-      0% { transform: rotate(0deg) scale(1); opacity: 1; }
-      100% { transform: rotate(220deg) scale(0.2); opacity: 0; }
-    }
-
-    @keyframes fishToHud {
-      0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
-      40% { transform: translate(var(--mid-x), var(--mid-y)) scale(1.35) rotate(-12deg); opacity: 1; }
-      100% { transform: translate(var(--end-x), var(--end-y)) scale(0.35) rotate(18deg); opacity: 0; }
-    }
-
-    @keyframes wavesDrift {
-      0% { transform: translateX(0); }
-      50% { transform: translateX(4%); }
-      100% { transform: translateX(0); }
-    }
-
-    @keyframes rayPulse {
-      0%, 100% { opacity: 0.32; transform: translateY(0) scaleX(1); }
-      50% { opacity: 0.58; transform: translateY(8px) scaleX(1.08); }
-    }
-
-    @keyframes bubbleRise {
-      0% { transform: translateY(0) translateX(0) scale(0.9); opacity: 0; }
-      12% { opacity: 0.7; }
-      100% { transform: translateY(-72vh) translateX(22px) scale(1.15); opacity: 0; }
-    }
-
-    @keyframes swayPlant {
-      0%, 100% { transform: rotate(-3deg); }
-      50% { transform: rotate(5deg); }
-    }
-
+    @keyframes pop { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4) translateY(-8px); } 100% { transform: scale(0.2); opacity: 0; } }
+    @keyframes spinOut { 0% { transform: rotate(0deg) scale(1); opacity: 1; } 100% { transform: rotate(220deg) scale(0.2); opacity: 0; } }
+    @keyframes fishToHud { 0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; } 40% { transform: translate(var(--mid-x), var(--mid-y)) scale(1.35) rotate(-12deg); opacity: 1; } 100% { transform: translate(var(--end-x), var(--end-y)) scale(0.35) rotate(18deg); opacity: 0; } }
+    @keyframes wavesDrift { 0% { transform: translateX(0); } 50% { transform: translateX(4%); } 100% { transform: translateX(0); } }
+    @keyframes rayPulse { 0%,100% { opacity: 0.32; transform: translateY(0) scaleX(1); } 50% { opacity: 0.58; transform: translateY(8px) scaleX(1.08); } }
+    @keyframes bubbleRise { 0% { transform: translateY(0) translateX(0) scale(0.9); opacity: 0; } 12% { opacity: 0.7; } 100% { transform: translateY(-72vh) translateX(22px) scale(1.15); opacity: 0; } }
+    @keyframes swayPlant { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(5deg); } }
     @media (max-width: 900px) {
       #hud { grid-template-columns: repeat(3, 1fr); }
       #progressWrap { width: calc(100vw - 24px); top: 176px; }
@@ -536,22 +195,18 @@
       <div class="card"><div class="label">Попытки</div><div class="value" id="attemptsValue">0</div></div>
       <div class="card"><div class="label">Время</div><div class="value" id="timeValue">0</div></div>
     </div>
-
     <div id="progressWrap">
       <div style="font-weight:800; margin-bottom:8px;">Прогресс уровня</div>
       <div id="progressBar"><div id="progressFill"></div></div>
     </div>
-
     <div id="message" class="card">Удерживайте «Вниз», чтобы опустить удочку, и «Вверх», чтобы поднять её.</div>
     <div id="biteBanner">🎣 КЛЮЁТ!</div>
     <button id="helpBtn" type="button" aria-label="Показать управление">❓</button>
     <div id="controlHint" class="card">Управление: удерживайте кнопку «Вниз» или клавишу ↓ / S, чтобы плавно опускать удочку. Удерживайте кнопку «Вверх» или клавишу ↑ / W, чтобы поднимать её обратно. Отпустите — удочка остановится.</div>
-
     <div id="rodControls">
       <button id="upBtn" class="rodBtn" type="button">▲ ВВЕРХ</button>
       <button id="downBtn" class="rodBtn" type="button">▼ ВНИЗ</button>
     </div>
-
     <div id="scene">
       <div id="shore"></div>
       <div id="waterEffects">
@@ -582,11 +237,7 @@
       <div id="hook"></div>
       <div id="entities"></div>
     </div>
-
-    <div id="overlay">
-      <div class="modal" id="modalContent"></div>
-    </div>
-
+    <div id="overlay"><div class="modal" id="modalContent"></div></div>
     <div id="startScreen">
       <div class="modal" style="max-width:720px; text-align:center;">
         <h1 style="margin:0 0 10px; font-size:42px;">🎣 Рыбалка</h1>
@@ -605,40 +256,20 @@
         </div>
         <div id="difficultyHint" style="margin-bottom:16px; font-weight:700; color:#17324c;">Сейчас выбрана сложность: <b>средняя</b>.</div>
         <div class="row" style="justify-content:center;">
-          <button id="startGameBtn" class="primaryBtn" type="button" onclick="window.startGame && window.startGame(event)" style="font-size:22px; padding:16px 28px; cursor:pointer; position:relative; z-index:101;">Начать игру</button>
+          <button id="startGameBtn" class="primaryBtn" type="button" style="font-size:22px; padding:16px 28px;">Начать игру</button>
         </div>
       </div>
     </div>
   </div>
-
   <script>
     const GAME_CONFIG = {
       settings: {
-        difficulty: 'medium',
-        answerMode: 'mixed',
-        taskType: 'mixed',
-        scoreStart: 10,
-        scoreFishCorrect: 5,
-        scoreTrashPenalty: 3,
-        scoreWrongPenalty: 0,
-        maxAttemptsPerLevel: 30,
-        levelTimeLimitSec: 90,
-        timePerTaskSec: 10,
-        rod: {
-          lowerSpeedPxPerSec: 260,
-          raiseSpeedPxPerSec: 300,
-          startLengthPx: 42,
-          minLengthPx: 42,
-          upperY: window.innerHeight * 0.13,
-          minXRatio: 0.2,
-          maxDepthRatio: 0.76,
-          swayAmplitude: 6,
-          swaySpeed: 0.006
-        },
+        difficulty: 'medium', answerMode: 'mixed', taskType: 'mixed', scoreStart: 10,
+        scoreFishCorrect: 5, scoreTrashPenalty: 3, scoreWrongPenalty: 0, maxAttemptsPerLevel: 30,
+        levelTimeLimitSec: 90, timePerTaskSec: 10,
+        rod: { lowerSpeedPxPerSec: 260, raiseSpeedPxPerSec: 300, startLengthPx: 42, minLengthPx: 42, upperY: window.innerHeight * 0.13, minXRatio: 0.2, maxDepthRatio: 0.76, swayAmplitude: 6, swaySpeed: 0.006 },
         fish: {
-          spawnCount: 6,
-          minSpeed: 55,
-          maxSpeed: 105,
+          spawnCount: 6, minSpeed: 55, maxSpeed: 105,
           types: [
             { id: 'blue', emoji: '🐟', label: 'Синяя рыба', speedMultiplier: 1, nearHookBoost: 1.2, points: 5, rarity: 'common' },
             { id: 'gold', emoji: '🐠', label: 'Золотая рыба', speedMultiplier: 1.18, nearHookBoost: 1.4, points: 7, rarity: 'rare' },
@@ -646,10 +277,7 @@
           ]
         },
         trash: {
-          enabled: true,
-          spawnCount: 4,
-          minSpeed: 35,
-          maxSpeed: 70,
+          enabled: true, spawnCount: 4, minSpeed: 35, maxSpeed: 70,
           types: [
             { id: 'bottle', emoji: '🧴', label: 'Бутылка' },
             { id: 'can', emoji: '🥫', label: 'Банка' },
@@ -664,67 +292,31 @@
       ],
       taskPools: {
         math: {
-          easy: [
-            { prompt: '3 + 4', answer: '7' },
-            { prompt: '10 - 6', answer: '4' }
-          ],
-          medium: [
-            { prompt: '8 + 7', answer: '15' },
-            { prompt: '14 - 5', answer: '9' },
-            { prompt: '6 × 3', answer: '18' },
-            { prompt: '20 ÷ 4', answer: '5' }
-          ],
-          hard: [
-            { prompt: '12 × 4', answer: '48' },
-            { prompt: '36 ÷ 6 + 7', answer: '13' }
-          ]
+          easy: [{ prompt: '3 + 4', answer: '7' }, { prompt: '10 - 6', answer: '4' }],
+          medium: [{ prompt: '8 + 7', answer: '15' }, { prompt: '14 - 5', answer: '9' }, { prompt: '6 × 3', answer: '18' }, { prompt: '20 ÷ 4', answer: '5' }],
+          hard: [{ prompt: '12 × 4', answer: '48' }, { prompt: '36 ÷ 6 + 7', answer: '13' }]
         },
         question: {
-          easy: [
-            { prompt: 'Какое время года идёт после весны?', answer: 'лето', options: ['зима', 'лето', 'осень'] },
-            { prompt: 'Сколько дней в неделе?', answer: '7', options: ['5', '6', '7'] }
-          ],
-          medium: [
-            { prompt: 'Столица Франции?', answer: 'Париж', options: ['Рим', 'Париж', 'Берлин'] },
-            { prompt: 'Сколько будет 2 дюжины?', answer: '24', options: ['12', '24', '20'] }
-          ],
-          hard: [
-            { prompt: 'Как называется самая большая планета Солнечной системы?', answer: 'Юпитер', options: ['Марс', 'Юпитер', 'Венера'] },
-            { prompt: 'Сколько градусов в прямом угле?', answer: '90', options: ['45', '90', '120'] }
-          ]
+          easy: [{ prompt: 'Какое время года идёт после весны?', answer: 'лето', options: ['зима', 'лето', 'осень'] }, { prompt: 'Сколько дней в неделе?', answer: '7', options: ['5', '6', '7'] }],
+          medium: [{ prompt: 'Столица Франции?', answer: 'Париж', options: ['Рим', 'Париж', 'Берлин'] }, { prompt: 'Сколько будет 2 дюжины?', answer: '24', options: ['12', '24', '20'] }],
+          hard: [{ prompt: 'Как называется самая большая планета Солнечной системы?', answer: 'Юпитер', options: ['Марс', 'Юпитер', 'Венера'] }, { prompt: 'Сколько градусов в прямом угле?', answer: '90', options: ['45', '90', '120'] }]
         }
       }
     };
 
-    const el = {$1progressFill: document.getElementById('progressFill'),
-      helpBtn: document.getElementById('helpBtn'),
-      controlHint: document.getElementById('controlHint'),
-      difficultyHint: document.getElementById('difficultyHint'),
-      difficultyButtons: Array.from(document.querySelectorAll('.difficultyBtn'))
+    const el = {
+      entities: document.getElementById('entities'), line: document.getElementById('line'), hook: document.getElementById('hook'), rod: document.getElementById('rod'),
+      overlay: document.getElementById('overlay'), modal: document.getElementById('modalContent'), upBtn: document.getElementById('upBtn'), downBtn: document.getElementById('downBtn'),
+      startScreen: document.getElementById('startScreen'), startGameBtn: document.getElementById('startGameBtn'), message: document.getElementById('message'), biteBanner: document.getElementById('biteBanner'),
+      scoreValue: document.getElementById('scoreValue'), levelValue: document.getElementById('levelValue'), caughtValue: document.getElementById('caughtValue'), trashValue: document.getElementById('trashValue'), attemptsValue: document.getElementById('attemptsValue'), timeValue: document.getElementById('timeValue'), progressFill: document.getElementById('progressFill'),
+      helpBtn: document.getElementById('helpBtn'), controlHint: document.getElementById('controlHint'), difficultyHint: document.getElementById('difficultyHint'), difficultyButtons: Array.from(document.querySelectorAll('.difficultyBtn'))
     };
 
     const state = {
-      running: false,
-      lowering: false,
-      raising: false,
-      inTask: false,
-      gameOver: false,
-      levelIndex: 0,
-      score: GAME_CONFIG.settings.scoreStart,
-      totalCaught: 0,
-      totalTrash: 0,
-      attempts: 0,
-      levelCaught: 0,
-      levelRemainingTime: GAME_CONFIG.settings.levelTimeLimitSec,
-      lineBaseY: GAME_CONFIG.settings.rod.upperY,
-      lineLength: GAME_CONFIG.settings.rod.startLengthPx,
-      hookX: 0,
-      hookY: 0,
-      entities: [],
-      activeTask: null,
-      activeEntityId: null,
-      startedAt: performance.now(),
-      lastTaskStartedAt: 0
+      running: false, lowering: false, raising: false, inTask: false, gameOver: false, levelIndex: 0, score: GAME_CONFIG.settings.scoreStart,
+      totalCaught: 0, totalTrash: 0, attempts: 0, levelCaught: 0, levelRemainingTime: GAME_CONFIG.settings.levelTimeLimitSec,
+      lineBaseY: GAME_CONFIG.settings.rod.upperY, lineLength: GAME_CONFIG.settings.rod.startLengthPx, hookX: 0, hookY: 0,
+      entities: [], activeTask: null, activeEntityId: null, startedAt: performance.now(), lastTaskStartedAt: 0
     };
 
     function difficultyScale() {
@@ -733,40 +325,22 @@
       if (d === 'hard') return { speed: 1.35, taskTime: 0.75, trash: 1.2 };
       return { speed: 1, taskTime: 1, trash: 1 };
     }
-
-    function difficultyLabel(value) {
-      if (value === 'easy') return 'лёгкая';
-      if (value === 'hard') return 'сложная';
-      return 'средняя';
-    }
-
+    function difficultyLabel(value) { return value === 'easy' ? 'лёгкая' : value === 'hard' ? 'сложная' : 'средняя'; }
     function applyDifficultyUI() {
       el.difficultyButtons.forEach(btn => {
         const active = btn.dataset.difficulty === GAME_CONFIG.settings.difficulty;
         btn.className = `${active ? 'primaryBtn' : 'secondaryBtn'} difficultyBtn`;
       });
-      if (el.difficultyHint) {
-        el.difficultyHint.innerHTML = `Сейчас выбрана сложность: <b>${difficultyLabel(GAME_CONFIG.settings.difficulty)}</b>.`;
-      }
+      el.difficultyHint.innerHTML = `Сейчас выбрана сложность: <b>${difficultyLabel(GAME_CONFIG.settings.difficulty)}</b>.`;
     }
-
-    function currentLevel() {
-      return GAME_CONFIG.levels[Math.min(state.levelIndex, GAME_CONFIG.levels.length - 1)];
-    }
-
+    function currentLevel() { return GAME_CONFIG.levels[Math.min(state.levelIndex, GAME_CONFIG.levels.length - 1)]; }
     function rand(min, max) { return Math.random() * (max - min) + min; }
     function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-
     function setMessage(text, kind = 'default') {
       el.message.textContent = text;
-      el.message.style.background = kind === 'ok'
-        ? 'rgba(46, 204, 113, 0.9)'
-        : kind === 'bad'
-        ? 'rgba(255, 107, 107, 0.9)'
-        : 'rgba(8,24,42,0.82)';
+      el.message.style.background = kind === 'ok' ? 'rgba(46,204,113,0.9)' : kind === 'bad' ? 'rgba(255,107,107,0.9)' : 'rgba(8,24,42,0.82)';
     }
-
     function updateHUD() {
       el.scoreValue.textContent = state.score;
       el.levelValue.textContent = String(currentLevel().id);
@@ -774,15 +348,9 @@
       el.trashValue.textContent = state.totalTrash;
       el.attemptsValue.textContent = state.attempts;
       el.timeValue.textContent = Math.max(0, Math.ceil(state.levelRemainingTime));
-      const need = currentLevel().fishRequired;
-      el.progressFill.style.width = `${Math.min(100, (state.levelCaught / need) * 100)}%`;
+      el.progressFill.style.width = `${Math.min(100, (state.levelCaught / currentLevel().fishRequired) * 100)}%`;
     }
-
-    function getFishTypesForLevel() {
-      const lvl = currentLevel();
-      return GAME_CONFIG.settings.fish.types.filter(t => lvl.fishTypes.includes(t.id));
-    }
-
+    function getFishTypesForLevel() { return GAME_CONFIG.settings.fish.types.filter(t => currentLevel().fishTypes.includes(t.id)); }
     function createEntityDom(entity) {
       const node = document.createElement('div');
       node.className = `entity ${entity.kind}${entity.rarity === 'rare' ? ' rare' : ''}`;
@@ -791,7 +359,6 @@
       entity.node = node;
       renderEntity(entity);
     }
-
     function renderEntity(entity) {
       if (!entity.node) return;
       const t = performance.now();
@@ -801,59 +368,30 @@
       entity.node.style.transform = `translate(${entity.x + bobX}px, ${entity.y + bobY}px) rotate(${rot}deg)`;
       entity.node.style.opacity = entity.active ? '1' : '0';
     }
-
     function resetEntities() {
       state.entities = [];
       el.entities.innerHTML = '';
       const w = window.innerWidth;
       const h = window.innerHeight;
       const diff = difficultyScale();
-      const fishTypes = getFishTypesForLevel();
-
       for (let i = 0; i < GAME_CONFIG.settings.fish.spawnCount; i++) {
-        const type = pick(fishTypes);
+        const type = pick(getFishTypesForLevel());
         const entity = {
-          id: `fish-${Date.now()}-${i}`,
-          kind: 'fish',
-          label: type.label,
-          emoji: type.emoji,
-          rarity: type.rarity,
-          pointValue: type.points,
-          nearHookBoost: type.nearHookBoost,
-          x: rand(0, w + 200),
-          y: rand(h * 0.35, h * 0.78),
-          speed: rand(GAME_CONFIG.settings.fish.minSpeed, GAME_CONFIG.settings.fish.maxSpeed) * diff.speed * type.speedMultiplier,
-          baseSpeed: 0,
-          phase: rand(0, Math.PI * 2),
-          verticalDrift: rand(-16, 16),
-          width: 36,
-          height: 36,
-          active: true,
-          respawning: false
+          id: `fish-${Date.now()}-${i}`, kind: 'fish', label: type.label, emoji: type.emoji, rarity: type.rarity, pointValue: type.points, nearHookBoost: type.nearHookBoost,
+          x: rand(0, w + 200), y: rand(h * 0.35, h * 0.78), speed: rand(GAME_CONFIG.settings.fish.minSpeed, GAME_CONFIG.settings.fish.maxSpeed) * diff.speed * type.speedMultiplier,
+          baseSpeed: 0, phase: rand(0, Math.PI * 2), verticalDrift: rand(-16, 16), width: 36, height: 36, active: true, respawning: false
         };
         entity.baseSpeed = entity.speed;
         createEntityDom(entity);
         state.entities.push(entity);
       }
-
       if (GAME_CONFIG.settings.trash.enabled) {
         for (let i = 0; i < GAME_CONFIG.settings.trash.spawnCount; i++) {
-          if (Math.random() > currentLevel().trashProbability * difficultyScale().trash) continue;
+          if (Math.random() > currentLevel().trashProbability * diff.trash) continue;
           const type = pick(GAME_CONFIG.settings.trash.types);
           const entity = {
-            id: `trash-${Date.now()}-${i}`,
-            kind: 'trash',
-            label: type.label,
-            emoji: type.emoji,
-            x: rand(0, w + 220),
-            y: rand(h * 0.4, h * 0.82),
-            speed: rand(GAME_CONFIG.settings.trash.minSpeed, GAME_CONFIG.settings.trash.maxSpeed) * diff.speed,
-            baseSpeed: 0,
-            phase: rand(0, Math.PI * 2),
-            width: 34,
-            height: 34,
-            active: true,
-            respawning: false
+            id: `trash-${Date.now()}-${i}`, kind: 'trash', label: type.label, emoji: type.emoji, x: rand(0, w + 220), y: rand(h * 0.4, h * 0.82),
+            speed: rand(GAME_CONFIG.settings.trash.minSpeed, GAME_CONFIG.settings.trash.maxSpeed) * diff.speed, baseSpeed: 0, phase: rand(0, Math.PI * 2), width: 34, height: 34, active: true, respawning: false
           };
           entity.baseSpeed = entity.speed;
           createEntityDom(entity);
@@ -861,7 +399,6 @@
         }
       }
     }
-
     function renderRod(time) {
       const maxDepth = window.innerHeight * GAME_CONFIG.settings.rod.maxDepthRatio;
       const sway = Math.sin(time * GAME_CONFIG.settings.rod.swaySpeed) * GAME_CONFIG.settings.rod.swayAmplitude;
@@ -879,7 +416,6 @@
       el.hook.style.top = `${state.hookY - 8}px`;
       el.hook.style.transform = `rotate(${12 + Math.sin(time * 0.004) * 8}deg)`;
     }
-
     function scheduleRespawn(entity) {
       if (entity.respawning || !entity.node) return;
       entity.respawning = true;
@@ -898,7 +434,6 @@
         renderEntity(entity);
       }, delay);
     }
-
     function moveEntities(dt) {
       const h = window.innerHeight;
       const hookInfluenceRadius = 150;
@@ -916,20 +451,15 @@
           if (entity.y < h * 0.34 || entity.y > h * 0.79) entity.verticalDrift *= -1;
         }
         entity.x -= entity.speed * dt;
-        if (entity.x < -120) {
-          scheduleRespawn(entity);
-          continue;
-        }
+        if (entity.x < -120) { scheduleRespawn(entity); continue; }
         renderEntity(entity);
       }
     }
-
     function intersects(entity) {
       const hookRect = { x: state.hookX - 10, y: state.hookY - 10, w: 20, h: 20 };
       const entityRect = { x: entity.x, y: entity.y, w: entity.width, h: entity.height };
       return !(hookRect.x + hookRect.w < entityRect.x || hookRect.x > entityRect.x + entityRect.w || hookRect.y + hookRect.h < entityRect.y || hookRect.y > entityRect.y + entityRect.h);
     }
-
     function showBiteBanner() {
       el.biteBanner.style.opacity = '1';
       el.biteBanner.style.transform = 'translateX(-50%) scale(1)';
@@ -938,20 +468,15 @@
         el.biteBanner.style.transform = 'translateX(-50%) scale(0.92)';
       }, 900);
     }
-
     function handleTrashHit(entity) {
       state.totalTrash += 1;
       state.score -= GAME_CONFIG.settings.scoreTrashPenalty;
       entity.node.classList.add('hit');
       setMessage(`Ой! Попался мусор: ${entity.label}. -${GAME_CONFIG.settings.scoreTrashPenalty} очка`, 'bad');
-      setTimeout(() => {
-        entity.node.className = 'entity trash';
-        scheduleRespawn(entity);
-      }, 500);
+      setTimeout(() => { entity.node.className = 'entity trash'; scheduleRespawn(entity); }, 500);
       updateHUD();
       if (state.score <= 0) finishGame(false, 'Очки упали до нуля.');
     }
-
     function handleFishCatch(entity) {
       entity.active = false;
       entity.node.classList.add('caught');
@@ -959,7 +484,6 @@
       showBiteBanner();
       openTask(entity);
     }
-
     function buildTask() {
       const difficulty = GAME_CONFIG.settings.difficulty;
       const mode = GAME_CONFIG.settings.taskType;
@@ -978,19 +502,16 @@
       task.answerMode = task.options ? 'choice' : 'input';
       return task;
     }
-
     function openTask(entity) {
       state.inTask = true;
       const task = buildTask();
-      const diff = difficultyScale();
-      task.timeLimit = Math.max(4, currentLevel().taskTimeSec * diff.taskTime);
+      task.timeLimit = Math.max(4, currentLevel().taskTimeSec * difficultyScale().taskTime);
       state.activeTask = task;
       state.lastTaskStartedAt = performance.now();
       el.overlay.classList.add('show');
       renderTaskModal(task, entity);
       runTaskTimer();
     }
-
     function renderTaskModal(task, entity) {
       const optionsHtml = task.answerMode === 'choice'
         ? `<div id="options">${task.options.map(opt => `<button class="optBtn" data-answer="${String(opt).replace(/"/g, '&quot;')}">${opt}</button>`).join('')}</div>`
@@ -1014,35 +535,24 @@
       }
       document.getElementById('skipTask').addEventListener('click', () => failTask('Рыба уплыла.'));
     }
-
     function runTaskTimer() {
       const fill = () => {
         if (!state.inTask || !state.activeTask) return;
         const passed = (performance.now() - state.lastTaskStartedAt) / 1000;
         const left = Math.max(0, state.activeTask.timeLimit - passed);
-        const percent = (left / state.activeTask.timeLimit) * 100;
         const bar = document.getElementById('taskTimerFill');
-        if (bar) bar.style.width = `${percent}%`;
-        if (left <= 0) {
-          failTask('Время вышло. Рыба уплыла.');
-          return;
-        }
+        if (bar) bar.style.width = `${(left / state.activeTask.timeLimit) * 100}%`;
+        if (left <= 0) { failTask('Время вышло. Рыба уплыла.'); return; }
         requestAnimationFrame(fill);
       };
       requestAnimationFrame(fill);
     }
-
-    function normalizeAnswer(value) {
-      return String(value).trim().toLowerCase().replace(/ё/g, 'е');
-    }
-
+    function normalizeAnswer(value) { return String(value).trim().toLowerCase().replace(/ё/g, 'е'); }
     function submitTaskAnswer(raw) {
       if (!state.inTask || !state.activeTask) return;
       const ok = normalizeAnswer(raw) === normalizeAnswer(state.activeTask.answer);
-      if (ok) completeTask();
-      else failTask('Неверный ответ. Рыба уплыла.');
+      if (ok) completeTask(); else failTask('Неверный ответ. Рыба уплыла.');
     }
-
     function animateFishToHud(fish) {
       if (!fish || !fish.node) return;
       const fishRect = fish.node.getBoundingClientRect();
@@ -1059,24 +569,19 @@
       document.body.appendChild(flyer);
       flyer.addEventListener('animationend', () => flyer.remove());
     }
-
     function completeTask() {
       const fish = state.entities.find(x => x.id === state.activeEntityId);
       state.score += (fish?.pointValue || GAME_CONFIG.settings.scoreFishCorrect);
       state.totalCaught += 1;
       state.levelCaught += 1;
       setMessage(`Отлично! ${fish?.label || 'Рыба'} поймана. +${fish?.pointValue || GAME_CONFIG.settings.scoreFishCorrect} очков`, 'ok');
-      if (fish && fish.node) {
-        animateFishToHud(fish);
-        fish.node.remove();
-      }
+      if (fish && fish.node) { animateFishToHud(fish); fish.node.remove(); }
       state.entities = state.entities.filter(x => x.id !== state.activeEntityId);
       closeTask();
       refillFishIfNeeded();
       updateHUD();
       if (state.levelCaught >= currentLevel().fishRequired) nextLevelOrFinish();
     }
-
     function failTask(msg) {
       const fish = state.entities.find(x => x.id === state.activeEntityId);
       if (fish) {
@@ -1089,47 +594,27 @@
       updateHUD();
       if (state.score <= 0) finishGame(false, 'Очки упали до нуля.');
     }
-
     function closeTask() {
       state.inTask = false;
       state.activeTask = null;
       state.activeEntityId = null;
       el.overlay.classList.remove('show');
     }
-
     function refillFishIfNeeded() {
       const fishCount = state.entities.filter(e => e.kind === 'fish').length;
       if (fishCount >= GAME_CONFIG.settings.fish.spawnCount) return;
       const type = pick(getFishTypesForLevel());
       const entity = {
-        id: `fish-${Date.now()}-${Math.random()}`,
-        kind: 'fish',
-        label: type.label,
-        emoji: type.emoji,
-        rarity: type.rarity,
-        pointValue: type.points,
-        nearHookBoost: type.nearHookBoost,
-        x: window.innerWidth + rand(80, 260),
-        y: rand(window.innerHeight * 0.35, window.innerHeight * 0.78),
-        speed: rand(GAME_CONFIG.settings.fish.minSpeed, GAME_CONFIG.settings.fish.maxSpeed) * difficultyScale().speed * type.speedMultiplier,
-        baseSpeed: 0,
-        phase: rand(0, Math.PI * 2),
-        verticalDrift: rand(-16, 16),
-        width: 36,
-        height: 36,
-        active: true,
-        respawning: false
+        id: `fish-${Date.now()}-${Math.random()}`, kind: 'fish', label: type.label, emoji: type.emoji, rarity: type.rarity, pointValue: type.points, nearHookBoost: type.nearHookBoost,
+        x: window.innerWidth + rand(80, 260), y: rand(window.innerHeight * 0.35, window.innerHeight * 0.78), speed: rand(GAME_CONFIG.settings.fish.minSpeed, GAME_CONFIG.settings.fish.maxSpeed) * difficultyScale().speed * type.speedMultiplier,
+        baseSpeed: 0, phase: rand(0, Math.PI * 2), verticalDrift: rand(-16, 16), width: 36, height: 36, active: true, respawning: false
       };
       entity.baseSpeed = entity.speed;
       createEntityDom(entity);
       state.entities.push(entity);
     }
-
     function nextLevelOrFinish() {
-      if (state.levelIndex >= GAME_CONFIG.levels.length - 1) {
-        finishGame(true, 'Все уровни пройдены!');
-        return;
-      }
+      if (state.levelIndex >= GAME_CONFIG.levels.length - 1) { finishGame(true, 'Все уровни пройдены!'); return; }
       state.levelIndex += 1;
       state.levelCaught = 0;
       state.levelRemainingTime = GAME_CONFIG.settings.levelTimeLimitSec;
@@ -1138,7 +623,6 @@
       updateHUD();
       setMessage(`Уровень ${currentLevel().id}. Новые рыбы и больше мусора!`, 'ok');
     }
-
     function finishGame(win, reason) {
       state.gameOver = true;
       state.running = false;
@@ -1155,12 +639,11 @@
           <div><b>Время игры:</b> ${spent} сек.</div>
           <div><b>Достигнутый уровень:</b> ${currentLevel().id}</div>
         </div>
-        <div class="row" style="margin-top:18px; justify-content:center;"><button id="restartBtn" class="primaryBtn">Играть снова</button></div>
+        <div class="row" style="margin-top:18px; justify-content:center;"><button id="restartBtn" class="primaryBtn" type="button">Играть снова</button></div>
       `;
       document.getElementById('restartBtn').addEventListener('click', restartGame);
     }
-
-    function restartGame() {
+    function startGame() {
       state.running = true;
       state.lowering = false;
       state.raising = false;
@@ -1185,28 +668,12 @@
       lastTs = performance.now();
       requestAnimationFrame(loop);
     }
-
+    function restartGame() { startGame(); }
     function attachControls() {
-      const startLower = (e) => {
-        e.preventDefault?.();
-        if (state.gameOver || state.inTask || !state.running) return;
-        state.lowering = true;
-        state.raising = false;
-      };
-      const stopLower = (e) => {
-        e.preventDefault?.();
-        state.lowering = false;
-      };
-      const startRaise = (e) => {
-        e.preventDefault?.();
-        if (state.gameOver || state.inTask || !state.running) return;
-        state.raising = true;
-        state.lowering = false;
-      };
-      const stopRaise = (e) => {
-        e.preventDefault?.();
-        state.raising = false;
-      };
+      const startLower = (e) => { e.preventDefault?.(); if (state.gameOver || state.inTask || !state.running) return; state.lowering = true; state.raising = false; };
+      const stopLower = (e) => { e.preventDefault?.(); state.lowering = false; };
+      const startRaise = (e) => { e.preventDefault?.(); if (state.gameOver || state.inTask || !state.running) return; state.raising = true; state.lowering = false; };
+      const stopRaise = (e) => { e.preventDefault?.(); state.raising = false; };
       ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => el.downBtn.addEventListener(evt, startLower));
       ['pointerup', 'pointerleave', 'mouseup', 'touchend', 'touchcancel'].forEach(evt => el.downBtn.addEventListener(evt, stopLower));
       ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => el.upBtn.addEventListener(evt, startRaise));
@@ -1223,8 +690,18 @@
         if (e.key === 'ArrowUp' || key === 'w') state.raising = false;
       });
       window.addEventListener('resize', () => renderRod(performance.now()));
+      el.helpBtn.addEventListener('click', () => {
+        const visible = el.controlHint.style.display === 'block';
+        el.controlHint.style.display = visible ? 'none' : 'block';
+      });
+      el.difficultyButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          GAME_CONFIG.settings.difficulty = btn.dataset.difficulty;
+          applyDifficultyUI();
+        });
+      });
+      el.startGameBtn.addEventListener('click', startGame);
     }
-
     function checkCollisions() {
       if (state.inTask || state.gameOver) return;
       for (const entity of state.entities) {
@@ -1232,17 +709,10 @@
         if (!intersects(entity)) continue;
         state.attempts += 1;
         updateHUD();
-        if (entity.kind === 'trash') {
-          handleTrashHit(entity);
-          break;
-        }
-        if (entity.kind === 'fish') {
-          handleFishCatch(entity);
-          break;
-        }
+        if (entity.kind === 'trash') { handleTrashHit(entity); break; }
+        if (entity.kind === 'fish') { handleFishCatch(entity); break; }
       }
     }
-
     let lastTs = performance.now();
     function loop(ts) {
       if (!state.running) return;
@@ -1254,14 +724,8 @@
         if (state.raising) state.lineLength -= GAME_CONFIG.settings.rod.raiseSpeedPxPerSec * dt;
         state.lineLength = clamp(state.lineLength, GAME_CONFIG.settings.rod.minLengthPx, maxDepth);
         state.levelRemainingTime -= dt;
-        if (state.levelRemainingTime <= 0) {
-          finishGame(false, 'Закончилось время уровня.');
-          return;
-        }
-        if (state.attempts >= GAME_CONFIG.settings.maxAttemptsPerLevel) {
-          finishGame(false, 'Закончились попытки на уровне.');
-          return;
-        }
+        if (state.levelRemainingTime <= 0) { finishGame(false, 'Закончилось время уровня.'); return; }
+        if (state.attempts >= GAME_CONFIG.settings.maxAttemptsPerLevel) { finishGame(false, 'Закончились попытки на уровне.'); return; }
         moveEntities(dt);
         checkCollisions();
         updateHUD();
@@ -1269,37 +733,15 @@
       renderRod(ts);
       requestAnimationFrame(loop);
     }
-
     function init() {
-      window.startGame = function(event) {
-        event?.preventDefault?.();
-        event?.stopPropagation?.();
-        restartGame();
-      };
+      if (!el.startGameBtn) return console.error('Кнопка старта не найдена');
       attachControls();
       resetEntities();
       updateHUD();
       renderRod(performance.now());
       applyDifficultyUI();
-      el.startGameBtn.addEventListener('click', window.startGame);
-      el.startScreen.addEventListener('click', (e) => {
-        if (e.target === el.startScreen) restartGame();
-      });
-      el.helpBtn.addEventListener('click', () => {
-        const visible = el.controlHint.style.display === 'block';
-        el.controlHint.style.display = visible ? 'none' : 'block';
-      });
-      el.difficultyButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          GAME_CONFIG.settings.difficulty = btn.dataset.difficulty;
-          applyDifficultyUI();
-          resetEntities();
-          updateHUD();
-        });
-      });
     }
-
-    init();
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>

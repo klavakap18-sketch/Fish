@@ -386,9 +386,9 @@
         
 
         <section class="section">
-          <h3>Уровни (TЗ v1)</h3>
+          <h3>Уровни (ТЗ v1)</h3>
           <div class="note" style="margin-bottom:10px;">
-            Каждый уровень теперь имеет: <b>title</b>, <b>таймер</b>, <b>правильные</b> и <b>неправильные объекты</b>.
+            Каждый уровень теперь имеет: <b>title</b>, <b>таймер</b>, <b>правильные</b> и <b>неправильные объекты</b>, а также свой <b>формат ответа</b> и набор заданий.
           </div>
 
           <div class="field">
@@ -407,6 +407,23 @@
             </div>
           </div>
 
+          <div class="grid">
+            <div class="field">
+              <label>Формат ответа</label>
+              <select id="levelAnswerMode">
+                <option value="choice">Выбрать</option>
+                <option value="input">Вписать</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Тип заданий уровня</label>
+              <select id="levelTaskType">
+                <option value="question">Вопрос</option>
+                <option value="math">Математика</option>
+              </select>
+            </div>
+          </div>
+
           <div class="field">
             <label>Правильные объекты (через ,)</label>
             <textarea id="levelCorrect"></textarea>
@@ -415,6 +432,22 @@
           <div class="field">
             <label>Неправильные объекты (через ,)</label>
             <textarea id="levelWrong"></textarea>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label>Текст задания (по одному на строке)</label>
+              <textarea id="levelTaskText" placeholder="Dog ___ fast.&#10;Cat ___ milk."></textarea>
+            </div>
+            <div class="field">
+              <label>Правильный ответ (по одному на строке)</label>
+              <textarea id="levelTaskCorrect" placeholder="runs&#10;drinks"></textarea>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Неправильный ответ (по одному на строке)</label>
+            <textarea id="levelTaskWrong" placeholder="run&#10;drink"></textarea>
           </div>
 
           <div class="btn-row">
@@ -485,7 +518,8 @@
     };
 
     const state = {
-      tasks: structuredClone(BASE_TASKS)
+      tasks: structuredClone(BASE_TASKS),
+      levels: []
     };
 
     const els = {
@@ -509,6 +543,18 @@
       soundCrash: document.getElementById('soundCrash'),
       soundWin: document.getElementById('soundWin'),
       resetTasksBtn: document.getElementById('resetTasksBtn'),
+      levelTitle: document.getElementById('levelTitle'),
+      levelTimer: document.getElementById('levelTimer'),
+      levelFishRequired: document.getElementById('levelFishRequired'),
+      levelAnswerMode: document.getElementById('levelAnswerMode'),
+      levelTaskType: document.getElementById('levelTaskType'),
+      levelCorrect: document.getElementById('levelCorrect'),
+      levelWrong: document.getElementById('levelWrong'),
+      levelTaskText: document.getElementById('levelTaskText'),
+      levelTaskCorrect: document.getElementById('levelTaskCorrect'),
+      levelTaskWrong: document.getElementById('levelTaskWrong'),
+      addLevelBtn: document.getElementById('addLevelBtn'),
+      levelsList: document.getElementById('levelsList'),
       taskList: document.getElementById('taskList'),
       previewFrame: document.getElementById('previewFrame'),
       previewStatus: document.getElementById('previewStatus'),
@@ -540,7 +586,8 @@
           crash: els.soundCrash.value.trim(),
           win: els.soundWin.value.trim()
         },
-        tasks: structuredClone(state.tasks)
+        tasks: structuredClone(state.tasks),
+        levels: structuredClone(state.levels)
       };
     }
 
@@ -581,6 +628,111 @@
           updatePreview();
         });
       });
+    }
+
+    function parseLines(text) {
+      return text
+        .split(/
+?
+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+    function renderLevelsList() {
+      els.levelsList.innerHTML = '';
+      if (!state.levels.length) {
+        const empty = document.createElement('div');
+        empty.className = 'note';
+        empty.textContent = 'Уровни пока не добавлены.';
+        els.levelsList.appendChild(empty);
+        return;
+      }
+
+      state.levels.forEach((level, index) => {
+        const card = document.createElement('div');
+        card.className = 'task-card';
+        const taskCount = level.tasks.length;
+        card.innerHTML = `
+          <div class="task-top">
+            <div>
+              <div class="task-type">Уровень ${index + 1} · ${level.taskType} · ${level.answerMode === 'choice' ? 'выбор' : 'ввод'}</div>
+              <div class="task-prompt">${level.title || 'Без названия'}</div>
+              <div class="task-meta"><b>Таймер:</b> ${level.timerSec} сек. · <b>Поймать:</b> ${level.fishRequired}</div>
+              <div class="task-meta"><b>Правильные объекты:</b> ${level.correctItems.join(', ') || '—'}</div>
+              <div class="task-meta"><b>Отвлекающие объекты:</b> ${level.wrongItems.join(', ') || '—'}</div>
+              <div class="task-meta"><b>Заданий:</b> ${taskCount}</div>
+            </div>
+            <button class="danger" data-remove-level="${index}">Удалить</button>
+          </div>
+        `;
+        els.levelsList.appendChild(card);
+      });
+
+      els.levelsList.querySelectorAll('[data-remove-level]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.levels.splice(Number(btn.dataset.removeLevel), 1);
+          renderLevelsList();
+          updatePreview();
+        });
+      });
+    }
+
+    function addLevel() {
+      const title = els.levelTitle.value.trim();
+      const timerSec = Math.max(1, Number(els.levelTimer.value) || 90);
+      const fishRequired = Math.max(1, Number(els.levelFishRequired.value) || 4);
+      const answerMode = els.levelAnswerMode.value;
+      const taskType = els.levelTaskType.value;
+      const correctItems = els.levelCorrect.value.split(',').map(s => s.trim()).filter(Boolean);
+      const wrongItems = els.levelWrong.value.split(',').map(s => s.trim()).filter(Boolean);
+      const taskTexts = parseLines(els.levelTaskText.value);
+      const taskCorrect = parseLines(els.levelTaskCorrect.value);
+      const taskWrong = parseLines(els.levelTaskWrong.value);
+
+      if (!title) {
+        alert('Введите название уровня.');
+        return;
+      }
+
+      const maxLen = Math.max(taskTexts.length, taskCorrect.length, taskWrong.length);
+      const tasks = [];
+      for (let i = 0; i < maxLen; i++) {
+        const prompt = taskTexts[i] || '';
+        const answer = taskCorrect[i] || '';
+        const wrong = taskWrong[i] || '';
+        if (!prompt || !answer) continue;
+        const task = { prompt, answer };
+        if (answerMode === 'choice') {
+          const wrongOptions = wrong.split('|').map(s => s.trim()).filter(Boolean);
+          task.options = [...new Set([answer, ...wrongOptions])];
+        }
+        tasks.push(task);
+      }
+
+      state.levels.push({
+        id: state.levels.length + 1,
+        title,
+        timerSec,
+        fishRequired,
+        answerMode,
+        taskType,
+        correctItems,
+        wrongItems,
+        tasks
+      });
+
+      els.levelTitle.value = '';
+      els.levelTimer.value = '90';
+      els.levelFishRequired.value = '4';
+      els.levelCorrect.value = '';
+      els.levelWrong.value = '';
+      els.levelTaskText.value = '';
+      els.levelTaskCorrect.value = '';
+      els.levelTaskWrong.value = '';
+
+      renderLevelsList();
+      updatePreview();
     }
 
     
@@ -814,11 +966,24 @@
           ]
         }
       },
-      levels: [
-        { id: 1, fishRequired: CONFIG.fishRequired, fishTypes: ['blue', 'gold'], trashProbability: CONFIG.trashProbability, taskTimeSec: CONFIG.taskTimeSec },
-        { id: 2, fishRequired: CONFIG.fishRequired + 1, fishTypes: ['blue', 'gold', 'tropical'], trashProbability: Math.min(1, CONFIG.trashProbability + 0.15), taskTimeSec: Math.max(4, CONFIG.taskTimeSec - 2) },
-        { id: 3, fishRequired: CONFIG.fishRequired + 2, fishTypes: ['gold', 'tropical'], trashProbability: Math.min(1, CONFIG.trashProbability + 0.3), taskTimeSec: Math.max(4, CONFIG.taskTimeSec - 4) }
-      ],
+      levels: (CONFIG.levels && CONFIG.levels.length ? CONFIG.levels.map((level, index) => ({
+        id: index + 1,
+        title: level.title || `Уровень ${index + 1}`,
+        fishRequired: level.fishRequired || CONFIG.fishRequired,
+        fishTypes: ['blue', 'gold', 'tropical'],
+        trashProbability: Math.min(1, Math.max(0, CONFIG.trashProbability)),
+        taskTimeSec: CONFIG.taskTimeSec,
+        levelTimerSec: level.timerSec || CONFIG.levelTimeLimitSec,
+        correctItems: level.correctItems || [],
+        wrongItems: level.wrongItems || [],
+        levelTasks: level.tasks || [],
+        answerMode: level.answerMode || CONFIG.answerMode || 'mixed',
+        taskType: level.taskType || CONFIG.taskTypeMode || 'mixed'
+      })) : [
+        { id: 1, title: 'Уровень 1', fishRequired: CONFIG.fishRequired, fishTypes: ['blue', 'gold'], trashProbability: CONFIG.trashProbability, taskTimeSec: CONFIG.taskTimeSec, levelTimerSec: CONFIG.levelTimeLimitSec, correctItems: [], wrongItems: [], levelTasks: [], answerMode: CONFIG.answerMode || 'mixed', taskType: CONFIG.taskTypeMode || 'mixed' },
+        { id: 2, title: 'Уровень 2', fishRequired: CONFIG.fishRequired + 1, fishTypes: ['blue', 'gold', 'tropical'], trashProbability: Math.min(1, CONFIG.trashProbability + 0.15), taskTimeSec: Math.max(4, CONFIG.taskTimeSec - 2), levelTimerSec: CONFIG.levelTimeLimitSec, correctItems: [], wrongItems: [], levelTasks: [], answerMode: CONFIG.answerMode || 'mixed', taskType: CONFIG.taskTypeMode || 'mixed' },
+        { id: 3, title: 'Уровень 3', fishRequired: CONFIG.fishRequired + 2, fishTypes: ['gold', 'tropical'], trashProbability: Math.min(1, CONFIG.trashProbability + 0.3), taskTimeSec: Math.max(4, CONFIG.taskTimeSec - 4), levelTimerSec: CONFIG.levelTimeLimitSec, correctItems: [], wrongItems: [], levelTasks: [], answerMode: CONFIG.answerMode || 'mixed', taskType: CONFIG.taskTypeMode || 'mixed' }
+      ]),
       taskPools: CONFIG.tasks
     };
 
@@ -856,7 +1021,7 @@
       playSound(AUDIO.crash); state.totalTrash += 1; state.score -= GAME_CONFIG.settings.scoreTrashPenalty; entity.node.classList.add('hit'); setMessage('Ой! Попался мусор: ' + entity.label + '. -' + GAME_CONFIG.settings.scoreTrashPenalty + ' очка', 'bad'); setTimeout(() => { entity.node.className = 'entity trash'; scheduleRespawn(entity); }, 500); updateHUD(); if (state.score <= 0) finishGame(false, 'Очки упали до нуля.'); }
     function handleFishCatch(entity) {
       playSound(AUDIO.ding); entity.active = false; entity.node.classList.add('caught'); state.activeEntityId = entity.id; showBiteBanner(); openTask(entity); }
-    function buildTask() { const difficulty = GAME_CONFIG.settings.difficulty; const mode = GAME_CONFIG.settings.taskType; const answerMode = GAME_CONFIG.settings.answerMode; const poolKey = mode === 'mixed' ? (Math.random() > 0.5 ? 'math' : 'question') : mode; const pool = GAME_CONFIG.taskPools[poolKey][difficulty]; const task = structuredClone(pick(pool)); if (!task.options && (answerMode === 'choice' || (answerMode === 'mixed' && Math.random() > 0.5))) { const correct = task.answer; const distractors = new Set([correct]); while (distractors.size < 4) { const n = String(Number(correct) + Math.floor(rand(-5, 6))); distractors.add(Number.isNaN(Number(correct)) ? correct + Math.floor(rand(1, 4)) : n); } task.options = Array.from(distractors).sort(() => Math.random() - 0.5); } task.answerMode = task.options ? 'choice' : 'input'; return task; }
+    function buildTask() { const level = currentLevel(); if (level.levelTasks && level.levelTasks.length) { const task = structuredClone(pick(level.levelTasks)); task.answerMode = level.answerMode === 'input' ? 'input' : (level.answerMode === 'choice' ? 'choice' : (task.options ? 'choice' : 'input')); if (task.answerMode === 'choice' && !task.options) { const correct = task.answer; const distractors = new Set([correct]); while (distractors.size < 4) { const n = String(Number(correct) + Math.floor(rand(-5, 6))); distractors.add(Number.isNaN(Number(correct)) ? correct + Math.floor(rand(1, 4)) : n); } task.options = Array.from(distractors).sort(() => Math.random() - 0.5); } return task; } const difficulty = GAME_CONFIG.settings.difficulty; const mode = level.taskType && level.taskType !== 'mixed' ? level.taskType : GAME_CONFIG.settings.taskType; const answerMode = level.answerMode && level.answerMode !== 'mixed' ? level.answerMode : GAME_CONFIG.settings.answerMode; const poolKey = mode === 'mixed' ? (Math.random() > 0.5 ? 'math' : 'question') : mode; const pool = GAME_CONFIG.taskPools[poolKey][difficulty]; const task = structuredClone(pick(pool)); if (!task.options && (answerMode === 'choice' || (answerMode === 'mixed' && Math.random() > 0.5))) { const correct = task.answer; const distractors = new Set([correct]); while (distractors.size < 4) { const n = String(Number(correct) + Math.floor(rand(-5, 6))); distractors.add(Number.isNaN(Number(correct)) ? correct + Math.floor(rand(1, 4)) : n); } task.options = Array.from(distractors).sort(() => Math.random() - 0.5); } task.answerMode = task.options ? 'choice' : 'input'; return task; }
     function openTask(entity) { state.inTask = true; const task = buildTask(); task.timeLimit = Math.max(4, currentLevel().taskTimeSec * difficultyScale().taskTime); state.activeTask = task; state.lastTaskStartedAt = performance.now(); el.overlay.classList.add('show'); renderTaskModal(task, entity); runTaskTimer(); }
     function renderTaskModal(task, entity) { const optionsHtml = task.answerMode === 'choice' ? '<div id="options">' + task.options.map(opt => '<button class="optBtn" data-answer="' + String(opt).replace(/"/g, '&quot;') + '">' + opt + '</button>').join('') + '</div>' : '<input id="answerInput" placeholder="Введите ответ" autocomplete="off" /><div class="row"><button id="submitAnswer" class="primaryBtn">Ответить</button></div>'; el.modal.innerHTML = '<h2 style="margin:0 0 8px;">Клюёт! ' + entity.emoji + '</h2><p style="margin:0 0 12px;">Решите задание, чтобы добавить рыбу в улов.</p><div id="taskTimerBar"><div id="taskTimerFill"></div></div><div id="taskTitle">' + task.prompt + '</div>' + optionsHtml + '<div class="row"><button id="skipTask" class="secondaryBtn">Не успеваю</button></div>'; if (task.answerMode === 'choice') { el.modal.querySelectorAll('.optBtn').forEach(btn => btn.addEventListener('click', () => submitTaskAnswer(btn.dataset.answer))); } else { const input = document.getElementById('answerInput'); const submit = document.getElementById('submitAnswer'); input.focus(); input.addEventListener('keydown', e => { if (e.key === 'Enter') submitTaskAnswer(input.value); }); submit.addEventListener('click', () => submitTaskAnswer(input.value)); } document.getElementById('skipTask').addEventListener('click', () => failTask('Рыба уплыла.')); }
     function runTaskTimer() { const fill = () => { if (!state.inTask || !state.activeTask) return; const passed = (performance.now() - state.lastTaskStartedAt) / 1000; const left = Math.max(0, state.activeTask.timeLimit - passed); const bar = document.getElementById('taskTimerFill'); if (bar) bar.style.width = (left / state.activeTask.timeLimit) * 100 + '%'; if (left <= 0) { failTask('Время вышло. Рыба уплыла.'); return; } requestAnimationFrame(fill); }; requestAnimationFrame(fill); }
@@ -869,11 +1034,10 @@
       playSound(AUDIO.buzz); const fish = state.entities.find(x => x.id === state.activeEntityId); if (fish) { fish.node.className = 'entity fish' + (fish.rarity === 'rare' ? ' rare' : ''); scheduleRespawn(fish); } if (GAME_CONFIG.settings.scoreWrongPenalty > 0) state.score -= GAME_CONFIG.settings.scoreWrongPenalty; setMessage(msg, 'bad'); closeTask(); updateHUD(); if (state.score <= 0) finishGame(false, 'Очки упали до нуля.'); }
     function closeTask() { state.inTask = false; state.activeTask = null; state.activeEntityId = null; el.overlay.classList.remove('show'); }
     function refillFishIfNeeded() { const fishCount = state.entities.filter(e => e.kind === 'fish').length; if (fishCount >= GAME_CONFIG.settings.fish.spawnCount) return; const type = pick(getFishTypesForLevel()); const entity = { id: 'fish-' + Date.now() + '-' + Math.random(), kind: 'fish', label: type.label, emoji: type.emoji, rarity: type.rarity, pointValue: type.points, nearHookBoost: type.nearHookBoost, x: window.innerWidth + rand(80, 260), y: rand(window.innerHeight * 0.35, window.innerHeight * 0.78), speed: rand(GAME_CONFIG.settings.fish.minSpeed, GAME_CONFIG.settings.fish.maxSpeed) * difficultyScale().speed * type.speedMultiplier, baseSpeed: 0, phase: rand(0, Math.PI * 2), verticalDrift: rand(-16, 16), width: 36, height: 36, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); }
-    function nextLevelOrFinish() { if (state.levelIndex >= GAME_CONFIG.levels.length - 1) { finishGame(true, 'Все уровни пройдены!'); return; } state.levelIndex += 1; state.levelCaught = 0; state.levelRemainingTime = GAME_CONFIG.settings.levelTimeLimitSec; state.lineLength = GAME_CONFIG.settings.rod.startLengthPx; resetEntities(); updateHUD(); setMessage('Уровень ' + currentLevel().id + '. Новые рыбы и больше мусора!', 'ok'); }
+    function nextLevelOrFinish() { if (state.levelIndex >= GAME_CONFIG.levels.length - 1) { finishGame(true, 'Все уровни пройдены!'); return; } state.levelIndex += 1; state.levelCaught = 0; state.levelRemainingTime = currentLevel().levelTimerSec || GAME_CONFIG.settings.levelTimeLimitSec; state.lineLength = GAME_CONFIG.settings.rod.startLengthPx; resetEntities(); updateHUD(); setMessage('Уровень ' + currentLevel().id + ': ' + (currentLevel().title || ('Уровень ' + currentLevel().id)) + '.', 'ok'); }
     function finishGame(win, reason) {
       if (win) playSound(AUDIO.win); state.gameOver = true; state.running = false; closeTask(); const spent = Math.round((performance.now() - state.startedAt) / 1000); el.overlay.classList.add('show'); el.modal.innerHTML = '<h2 style="font-size:34px; margin:0 0 8px;">' + (win ? 'Победа!' : 'Игра окончена') + '</h2><p style="font-size:19px; margin-bottom:14px;">' + reason + '</p><div style="background:#eef5fb; border-radius:18px; padding:16px 18px; margin-top:10px; line-height:1.7;"><div><b>Поймано рыб:</b> ' + state.totalCaught + '</div><div><b>Собрано мусора:</b> ' + state.totalTrash + '</div><div><b>Общие очки:</b> ' + state.score + '</div><div><b>Время игры:</b> ' + spent + ' сек.</div><div><b>Достигнутый уровень:</b> ' + currentLevel().id + '</div></div><div class="row" style="margin-top:18px; justify-content:center;"><button id="restartBtn" class="primaryBtn" type="button">Играть снова</button></div>'; document.getElementById('restartBtn').addEventListener('click', startGame); }
-    function startGame() {
-      playSound(AUDIO.music, false); state.running = true; state.lowering = false; state.raising = false; state.inTask = false; state.gameOver = false; state.levelIndex = 0; state.score = GAME_CONFIG.settings.scoreStart; state.totalCaught = 0; state.totalTrash = 0; state.attempts = 0; state.levelCaught = 0; state.levelRemainingTime = GAME_CONFIG.settings.levelTimeLimitSec; state.lineLength = GAME_CONFIG.settings.rod.startLengthPx; state.startedAt = performance.now(); el.overlay.classList.remove('show'); el.startScreen.style.display = 'none'; el.controlHint.style.display = 'none'; resetEntities(); updateHUD(); renderRod(performance.now()); setMessage('Игра началась. Сложность: ' + difficultyLabel(GAME_CONFIG.settings.difficulty) + '.'); lastTs = performance.now(); requestAnimationFrame(loop); }
+    function startGame() { playSound(AUDIO.music, false); state.running = true; state.lowering = false; state.raising = false; state.inTask = false; state.gameOver = false; state.levelIndex = 0; state.score = GAME_CONFIG.settings.scoreStart; state.totalCaught = 0; state.totalTrash = 0; state.attempts = 0; state.levelCaught = 0; state.levelRemainingTime = currentLevel().levelTimerSec || GAME_CONFIG.settings.levelTimeLimitSec; state.lineLength = GAME_CONFIG.settings.rod.startLengthPx; state.startedAt = performance.now(); el.overlay.classList.remove('show'); el.startScreen.style.display = 'none'; el.controlHint.style.display = 'none'; resetEntities(); updateHUD(); renderRod(performance.now()); setMessage('Игра началась. Уровень 1: ' + (currentLevel().title || 'Уровень 1') + '.'); lastTs = performance.now(); requestAnimationFrame(loop); }
     function attachControls() { const startLower = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.lowering = true; state.raising = false; }; const stopLower = e => { e.preventDefault && e.preventDefault(); state.lowering = false; }; const startRaise = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.raising = true; state.lowering = false; }; const stopRaise = e => { e.preventDefault && e.preventDefault(); state.raising = false; }; ['pointerdown','mousedown','touchstart'].forEach(evt => el.downBtn.addEventListener(evt, startLower)); ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.downBtn.addEventListener(evt, stopLower)); ['pointerdown','mousedown','touchstart'].forEach(evt => el.upBtn.addEventListener(evt, startRaise)); ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.upBtn.addEventListener(evt, stopRaise)); window.addEventListener('keydown', e => { if (!state.running || state.inTask) return; const key = e.key.toLowerCase(); if (e.key === 'ArrowDown' || key === 's') { state.lowering = true; state.raising = false; } if (e.key === 'ArrowUp' || key === 'w') { state.raising = true; state.lowering = false; } }); window.addEventListener('keyup', e => { const key = e.key.toLowerCase(); if (e.key === 'ArrowDown' || key === 's') state.lowering = false; if (e.key === 'ArrowUp' || key === 'w') state.raising = false; }); window.addEventListener('resize', () => renderRod(performance.now())); el.helpBtn.addEventListener('click', () => { const visible = el.controlHint.style.display === 'block'; el.controlHint.style.display = visible ? 'none' : 'block'; }); el.difficultyButtons.forEach(btn => btn.addEventListener('click', () => { GAME_CONFIG.settings.difficulty = btn.dataset.difficulty; applyDifficultyUI(); })); el.startGameBtn.addEventListener('click', startGame); }
     function checkCollisions() { if (state.inTask || state.gameOver) return; for (const entity of state.entities) { if (!entity.active) continue; if (!intersects(entity)) continue; state.attempts += 1; updateHUD(); if (entity.kind === 'trash') { handleTrashHit(entity); break; } if (entity.kind === 'fish') { handleFishCatch(entity); break; } } }
     let lastTs = performance.now();
@@ -896,6 +1060,7 @@
 
     function init() {
       renderTaskList();
+      renderLevelsList();
       updatePreview();
 
       [
@@ -924,6 +1089,7 @@
       });
 
       els.resetTasksBtn.addEventListener('click', resetTasks);
+      els.addLevelBtn.addEventListener('click', addLevel);
       els.refreshPreviewBtn.addEventListener('click', updatePreview);
       els.downloadHtmlBtn.addEventListener('click', downloadHtml);
       els.exportJsonBtn.addEventListener('click', exportJson);

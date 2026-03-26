@@ -460,6 +460,45 @@
         </section>
 
         <section class="section">
+          <h3>Уровни (TЗ v1)</h3>
+          <div class="note" style="margin-bottom:10px;">
+            Каждый уровень теперь имеет: <b>title</b>, <b>таймер</b>, <b>правильные</b> и <b>неправильные объекты</b>.
+          </div>
+
+          <div class="field">
+            <label>Название уровня</label>
+            <input id="levelTitle" placeholder="Например: Animals / буква S" />
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label>Таймер уровня (сек)</label>
+              <input id="levelTimer" type="number" value="90" />
+            </div>
+            <div class="field">
+              <label>Рыб нужно поймать</label>
+              <input id="levelFishRequired" type="number" value="4" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Правильные объекты (через ,)</label>
+            <textarea id="levelCorrect"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Неправильные объекты (через ,)</label>
+            <textarea id="levelWrong"></textarea>
+          </div>
+
+          <div class="btn-row">
+            <button id="addLevelBtn" class="primary">Добавить уровень</button>
+          </div>
+
+          <div id="levelsList" class="task-list"></div>
+        </section>
+
+        <section class="section">
           <h3>Список заданий</h3>
           <div id="taskList" class="task-list"></div>
           <div class="note">Теперь в редакторе можно отдельно задать: ответы выбором, вводом или смешанно, а также выбрать типы заданий для всей игры.</div>

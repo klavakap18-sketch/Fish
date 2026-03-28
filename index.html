@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Редактор игры «Рыбалка» — уровни и задания</title>
+  <title>Редактор игры «Рыбалка» — рабочая версия</title>
   <style>
     :root {
       --bg: #f3f7fb;
@@ -12,9 +12,6 @@
       --muted: #64748b;
       --line: #d9e5f0;
       --accent: #1677ff;
-      --accent-2: #0ea5e9;
-      --danger: #ef4444;
-      --success: #16a34a;
       --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
       --radius: 18px;
     }
@@ -29,7 +26,7 @@
 
     .app {
       display: grid;
-      grid-template-columns: 480px 1fr;
+      grid-template-columns: 460px 1fr;
       min-height: 100vh;
       gap: 18px;
       padding: 18px;
@@ -44,7 +41,7 @@
       min-height: 0;
     }
 
-    .sidebar {
+    .sidebar, .preview {
       display: flex;
       flex-direction: column;
       min-height: 0;
@@ -129,15 +126,8 @@
     }
 
     textarea {
-      min-height: 90px;
+      min-height: 120px;
       resize: vertical;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
     }
 
     button {
@@ -148,10 +138,16 @@
       font-weight: 800;
     }
 
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
     .primary { background: var(--accent); color: white; }
     .secondary { background: #eaf2fb; color: var(--text); }
     .danger { background: #fee2e2; color: #991b1b; }
-    .success { background: #dcfce7; color: #166534; }
 
     .levels-list, .task-list {
       display: flex;
@@ -191,7 +187,7 @@
       line-height: 1.45;
     }
 
-    .chips {
+    .chip-row {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
@@ -236,12 +232,6 @@
       transform: scale(1.15);
     }
 
-    .preview {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
     .preview-body {
       padding: 14px;
       display: flex;
@@ -259,7 +249,7 @@
       align-items: center;
     }
 
-    .preview-toolbar .status {
+    .status {
       color: var(--muted);
       font-size: 13px;
       font-weight: 700;
@@ -301,7 +291,7 @@
     <aside class="panel sidebar">
       <div class="sidebar-header">
         <h1>Редактор «Рыбалка»</h1>
-        <p>Версия с уровнями: можно добавлять уровни, включать типы заданий по галочкам и сразу смотреть превью игры справа.</p>
+        <p>Рабочая версия: редактор и игра в одном HTML, превью собирается через <code>iframe.srcdoc</code>.</p>
       </div>
 
       <div class="sidebar-body">
@@ -322,7 +312,7 @@
             </div>
             <div class="field">
               <label for="scoreStart">Стартовые очки</label>
-              <input id="scoreStart" type="number" min="0" max="100" value="10" />
+              <input id="scoreStart" type="number" min="0" value="10" />
             </div>
           </div>
         </section>
@@ -347,37 +337,37 @@
             </div>
             <div class="field">
               <label for="fishRequired">Рыб для прохождения</label>
-              <input id="fishRequired" type="number" min="1" max="20" value="4" />
+              <input id="fishRequired" type="number" min="1" value="4" />
             </div>
           </div>
           <div class="grid">
             <div class="field">
               <label for="levelTimeLimitSec">Время уровня, сек</label>
-              <input id="levelTimeLimitSec" type="number" min="20" max="300" value="90" />
+              <input id="levelTimeLimitSec" type="number" min="20" value="90" />
             </div>
             <div class="field">
               <label for="taskTimeSec">Время на задание, сек</label>
-              <input id="taskTimeSec" type="number" min="3" max="60" value="12" />
+              <input id="taskTimeSec" type="number" min="3" value="12" />
             </div>
           </div>
           <div class="grid">
             <div class="field">
               <label for="fishSpawnCount">Рыб на сцене</label>
-              <input id="fishSpawnCount" type="number" min="1" max="20" value="6" />
+              <input id="fishSpawnCount" type="number" min="1" value="6" />
             </div>
             <div class="field">
               <label for="trashSpawnCount">Мусора на сцене</label>
-              <input id="trashSpawnCount" type="number" min="0" max="20" value="4" />
+              <input id="trashSpawnCount" type="number" min="0" value="4" />
             </div>
           </div>
           <div class="grid">
             <div class="field">
               <label for="fishSpeedMin">Скорость рыб: min</label>
-              <input id="fishSpeedMin" type="number" min="10" max="300" value="55" />
+              <input id="fishSpeedMin" type="number" min="10" value="55" />
             </div>
             <div class="field">
               <label for="fishSpeedMax">Скорость рыб: max</label>
-              <input id="fishSpeedMax" type="number" min="10" max="300" value="105" />
+              <input id="fishSpeedMax" type="number" min="10" value="105" />
             </div>
           </div>
           <div class="field">
@@ -389,15 +379,15 @@
             <h4>Типы заданий уровня</h4>
             <div class="inline-checks">
               <label class="check"><input id="enableChoice" type="checkbox" checked /> Тип 1: выбор ответа</label>
-              <label class="check"><input id="enableInput" type="checkbox" checked /> Тип 2: ввод верного ответа</label>
+              <label class="check"><input id="enableInput" type="checkbox" checked /> Тип 2: ввод ответа</label>
             </div>
-            <div class="note">Нужно оставить включённым хотя бы один тип.</div>
+            <div class="note">Хотя бы один тип должен быть включён.</div>
           </div>
         </section>
 
         <section class="section">
-          <h3>Массовый ввод заданий — тип 1</h3>
-          <div class="note">Как на таблице: одна строка вопроса соответствует одной строке правильного ответа и строкам с неправильными ответами.</div>
+          <h3>Массовый ввод — тип 1</h3>
+          <div class="note">Одна строка в каждом поле = одно задание. Для неправильных ответов используются три отдельные колонки.</div>
           <div class="grid">
             <div class="field">
               <label for="choiceQuestionsBulk">Вопросы</label>
@@ -405,7 +395,7 @@
             </div>
             <div class="field">
               <label for="choiceCorrectBulk">Правильные ответы</label>
-              <textarea id="choiceCorrectBulk" placeholder="Каждая строка — правильный ответ для строки вопроса"></textarea>
+              <textarea id="choiceCorrectBulk" placeholder="Каждая строка — правильный ответ"></textarea>
             </div>
           </div>
           <div class="grid">
@@ -425,12 +415,10 @@
           <div class="btn-row">
             <button id="addChoiceTaskBtn" class="primary">Добавить задания типа 1</button>
           </div>
-          <div class="note">Каждая строка собирается в одно задание. Для типа 1 нужен вопрос, правильный ответ и минимум один неправильный ответ.</div>
         </section>
 
         <section class="section">
-          <h3>Массовый ввод заданий — тип 2</h3>
-          <div class="note">Каждая строка вопроса должна соответствовать строке с верным ответом.</div>
+          <h3>Массовый ввод — тип 2</h3>
           <div class="grid">
             <div class="field">
               <label for="inputQuestionsBulk">Вопросы</label>
@@ -438,7 +426,7 @@
             </div>
             <div class="field">
               <label for="inputCorrectBulk">Верные ответы</label>
-              <textarea id="inputCorrectBulk" placeholder="Каждая строка — верный ответ для строки вопроса"></textarea>
+              <textarea id="inputCorrectBulk" placeholder="Каждая строка — верный ответ"></textarea>
             </div>
           </div>
           <div class="btn-row">
@@ -493,7 +481,7 @@
       tasks: {
         choice: [
           { type: 'choice', question: 'Сколько будет 2 + 3?', correctAnswer: '5', wrongAnswers: ['4', '6', '7'] },
-          { type: 'choice', question: 'Какое время года идёт после весны?', correctAnswer: 'лето', wrongAnswers: ['зима', 'осень'] }
+          { type: 'choice', question: 'Какое время года идёт после весны?', correctAnswer: 'лето', wrongAnswers: ['зима', 'осень', 'весна'] }
         ],
         input: [
           { type: 'input', question: 'Столица Франции', correctAnswer: 'Париж' },
@@ -545,58 +533,38 @@
       exportJsonBtn: document.getElementById('exportJsonBtn')
     };
 
-    function clone(obj) {
-      return JSON.parse(JSON.stringify(obj));
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function getSelectedLevel() {
       return state.levels.find(level => level.id === state.selectedLevelId) || state.levels[0];
     }
 
-    function selectLevel(id) {
-      state.selectedLevelId = id;
-      renderLevelsList();
-      renderLevelEditor();
-      renderTaskList();
-      updatePreview();
-    }
-
-    function addLevel() {
-      const nextId = Math.max(0, ...state.levels.map(l => l.id)) + 1;
-      state.levels.push(DEFAULT_LEVEL(nextId));
-      selectLevel(nextId);
-    }
-
-    function duplicateLevel() {
-      const level = getSelectedLevel();
-      if (!level) return;
-      const nextId = Math.max(0, ...state.levels.map(l => l.id)) + 1;
-      const copy = clone(level);
-      copy.id = nextId;
-      copy.name = level.name + ' (копия)';
-      state.levels.push(copy);
-      selectLevel(nextId);
-    }
-
-    function deleteLevel() {
-      if (state.levels.length === 1) {
-        alert('Нельзя удалить единственный уровень.');
-        return;
-      }
-      state.levels = state.levels.filter(level => level.id !== state.selectedLevelId);
-      state.selectedLevelId = state.levels[0].id;
-      renderLevelsList();
-      renderLevelEditor();
-      renderTaskList();
-      updatePreview();
+    function splitLines(value) {
+      return String(value || '')
+        .replace(/
+/g, '')
+        .split('
+')
+        .map(line => line.trim());
     }
 
     function renderLevelsList() {
       els.levelsList.innerHTML = '';
       state.levels.forEach(level => {
-        const activeTypes = [];
-        if (level.enabledTaskTypes.choice) activeTypes.push('тип 1');
-        if (level.enabledTaskTypes.input) activeTypes.push('тип 2');
+        const types = [];
+        if (level.enabledTaskTypes.choice) types.push('тип 1');
+        if (level.enabledTaskTypes.input) types.push('тип 2');
         const card = document.createElement('div');
         card.className = 'level-card' + (level.id === state.selectedLevelId ? ' active' : '');
         card.innerHTML = `
@@ -604,8 +572,8 @@
             <div>
               <div class="card-title">${escapeHtml(level.name)}</div>
               <div class="meta">ID: ${level.id} · Рыб: ${level.fishRequired} · Время: ${level.levelTimeLimitSec} сек</div>
-              <div class="chips">
-                <span class="chip">${activeTypes.join(' + ') || 'нет типов'}</span>
+              <div class="chip-row">
+                <span class="chip">${types.join(' + ') || 'нет типов'}</span>
                 <span class="chip">заданий: ${level.tasks.choice.length + level.tasks.input.length}</span>
               </div>
             </div>
@@ -616,7 +584,13 @@
       });
 
       els.levelsList.querySelectorAll('[data-open-level]').forEach(btn => {
-        btn.addEventListener('click', () => selectLevel(Number(btn.dataset.openLevel)));
+        btn.addEventListener('click', () => {
+          state.selectedLevelId = Number(btn.dataset.openLevel);
+          renderLevelEditor();
+          renderLevelsList();
+          renderTaskList();
+          updatePreview();
+        });
       });
     }
 
@@ -640,12 +614,11 @@
     function syncLevelFromInputs() {
       const level = getSelectedLevel();
       if (!level) return;
-      const choiceEnabled = els.enableChoice.checked;
-      const inputEnabled = els.enableInput.checked;
-      if (!choiceEnabled && !inputEnabled) {
-        alert('Нужно оставить хотя бы один тип заданий включённым.');
+
+      if (!els.enableChoice.checked && !els.enableInput.checked) {
         els.enableChoice.checked = true;
       }
+
       level.name = els.levelName.value.trim() || `Уровень ${level.id}`;
       level.fishRequired = Math.max(1, Number(els.fishRequired.value) || 4);
       level.levelTimeLimitSec = Math.max(20, Number(els.levelTimeLimitSec.value) || 90);
@@ -657,43 +630,69 @@
       level.trashProbability = Math.min(1, Math.max(0, Number(els.trashProbability.value) || 0.35));
       level.enabledTaskTypes.choice = els.enableChoice.checked;
       level.enabledTaskTypes.input = els.enableInput.checked;
+
       renderLevelsList();
+      renderTaskList();
+    }
+
+    function addLevel() {
+      const nextId = Math.max(0, ...state.levels.map(l => l.id)) + 1;
+      state.levels.push(DEFAULT_LEVEL(nextId));
+      state.selectedLevelId = nextId;
+      renderLevelsList();
+      renderLevelEditor();
       renderTaskList();
       updatePreview();
     }
 
-    function splitLines(value) {
-      return String(value || '')
-        .replace(/
-/g, '')
-        .split('
-')
-        .map(line => line.trim());
+    function duplicateLevel() {
+      const level = getSelectedLevel();
+      const nextId = Math.max(0, ...state.levels.map(l => l.id)) + 1;
+      const copy = clone(level);
+      copy.id = nextId;
+      copy.name = `${level.name} (копия)`;
+      state.levels.push(copy);
+      state.selectedLevelId = nextId;
+      renderLevelsList();
+      renderLevelEditor();
+      renderTaskList();
+      updatePreview();
+    }
+
+    function deleteLevel() {
+      if (state.levels.length === 1) {
+        alert('Нельзя удалить единственный уровень.');
+        return;
+      }
+      state.levels = state.levels.filter(level => level.id !== state.selectedLevelId);
+      state.selectedLevelId = state.levels[0].id;
+      renderLevelsList();
+      renderLevelEditor();
+      renderTaskList();
+      updatePreview();
     }
 
     function addChoiceTask() {
       const level = getSelectedLevel();
       const questions = splitLines(els.choiceQuestionsBulk.value);
-      const correctAnswers = splitLines(els.choiceCorrectBulk.value);
+      const correct = splitLines(els.choiceCorrectBulk.value);
       const wrong1 = splitLines(els.choiceWrong1Bulk.value);
       const wrong2 = splitLines(els.choiceWrong2Bulk.value);
       const wrong3 = splitLines(els.choiceWrong3Bulk.value);
-      const maxLen = Math.max(questions.length, correctAnswers.length, wrong1.length, wrong2.length, wrong3.length);
+      const maxLen = Math.max(questions.length, correct.length, wrong1.length, wrong2.length, wrong3.length);
       let added = 0;
 
       for (let i = 0; i < maxLen; i += 1) {
         const question = questions[i] || '';
-        const correctAnswer = correctAnswers[i] || '';
-        const wrongAnswers = [wrong1[i] || '', wrong2[i] || '', wrong3[i] || '']
-          .map(v => v.trim())
-          .filter(Boolean);
+        const correctAnswer = correct[i] || '';
+        const wrongAnswers = [wrong1[i] || '', wrong2[i] || '', wrong3[i] || ''].filter(Boolean);
         if (!question || !correctAnswer || wrongAnswers.length === 0) continue;
         level.tasks.choice.push({ type: 'choice', question, correctAnswer, wrongAnswers });
         added += 1;
       }
 
       if (!added) {
-        alert('Не найдено полностью заполненных строк для типа 1. Нужны вопрос, правильный ответ и хотя бы один неправильный ответ в одной строке.');
+        alert('Для типа 1 нужны вопрос, правильный ответ и хотя бы один неправильный ответ в одной строке.');
         return;
       }
 
@@ -702,83 +701,90 @@
       els.choiceWrong1Bulk.value = '';
       els.choiceWrong2Bulk.value = '';
       els.choiceWrong3Bulk.value = '';
-      renderTaskList();
       renderLevelsList();
+      renderTaskList();
       updatePreview();
     }
 
     function addInputTask() {
       const level = getSelectedLevel();
       const questions = splitLines(els.inputQuestionsBulk.value);
-      const correctAnswers = splitLines(els.inputCorrectBulk.value);
-      const maxLen = Math.max(questions.length, correctAnswers.length);
+      const correct = splitLines(els.inputCorrectBulk.value);
+      const maxLen = Math.max(questions.length, correct.length);
       let added = 0;
 
       for (let i = 0; i < maxLen; i += 1) {
         const question = questions[i] || '';
-        const correctAnswer = correctAnswers[i] || '';
+        const correctAnswer = correct[i] || '';
         if (!question || !correctAnswer) continue;
         level.tasks.input.push({ type: 'input', question, correctAnswer });
         added += 1;
       }
 
       if (!added) {
-        alert('Не найдено полностью заполненных строк для типа 2. Нужны вопрос и верный ответ в одной строке.');
+        alert('Для типа 2 нужны вопрос и верный ответ в одной строке.');
         return;
       }
 
       els.inputQuestionsBulk.value = '';
       els.inputCorrectBulk.value = '';
-      renderTaskList();
       renderLevelsList();
+      renderTaskList();
       updatePreview();
+    }
+
+    function renderLevelWarnings(level) {
+      const warnings = [];
+      if (level.enabledTaskTypes.choice && level.tasks.choice.length === 0) warnings.push('У типа 1 включена галочка, но нет ни одного задания.');
+      if (level.enabledTaskTypes.input && level.tasks.input.length === 0) warnings.push('У типа 2 включена галочка, но нет ни одного задания.');
+      els.levelWarnings.innerHTML = warnings.map(text => `<div class="warning">${escapeHtml(text)}</div>`).join('');
     }
 
     function renderTaskList() {
       const level = getSelectedLevel();
       els.taskList.innerHTML = '';
       const items = [];
-      level.tasks.choice.forEach((task, index) => items.push({ task, index, group: 'choice' }));
-      level.tasks.input.forEach((task, index) => items.push({ task, index, group: 'input' }));
+      level.tasks.choice.forEach((task, index) => items.push({ group: 'choice', index, task }));
+      level.tasks.input.forEach((task, index) => items.push({ group: 'input', index, task }));
 
       if (!items.length) {
         els.taskList.innerHTML = '<div class="task-card"><div class="meta">Пока нет заданий. Добавьте задания выше.</div></div>';
       }
 
       items.forEach(item => {
+        const wrongText = item.group === 'choice' ? item.task.wrongAnswers.join(', ') : '—';
         const card = document.createElement('div');
         card.className = 'task-card';
-        const wrong = item.group === 'choice' ? item.task.wrongAnswers.join(', ') : '—';
         card.innerHTML = `
           <div class="card-top">
             <div>
               <div class="task-type">${item.group === 'choice' ? 'Тип 1 · выбор ответа' : 'Тип 2 · ввод ответа'}</div>
               <div class="card-title">${escapeHtml(item.task.question)}</div>
               <div class="meta"><b>Верный ответ:</b> ${escapeHtml(item.task.correctAnswer)}</div>
-              <div class="meta"><b>Неправильные ответы:</b> ${escapeHtml(wrong)}</div>
+              <div class="meta"><b>Неправильные ответы:</b> ${escapeHtml(wrongText)}</div>
             </div>
             <div class="btn-row" style="margin-top:0; justify-content:flex-end;">
-              <button class="secondary" data-edit-task="${item.group}|${item.index}">Редактировать</button>
-              <button class="danger" data-remove-task="${item.group}|${item.index}">Удалить</button>
+              <button class="secondary" data-edit="${item.group}|${item.index}">Редактировать</button>
+              <button class="danger" data-remove="${item.group}|${item.index}">Удалить</button>
             </div>
           </div>
         `;
         els.taskList.appendChild(card);
       });
 
-      els.taskList.querySelectorAll('[data-remove-task]').forEach(btn => {
+      els.taskList.querySelectorAll('[data-remove]').forEach(btn => {
         btn.addEventListener('click', () => {
-          const [group, index] = btn.dataset.removeTask.split('|');
+          const [group, index] = btn.dataset.remove.split('|');
           level.tasks[group].splice(Number(index), 1);
-          renderTaskList();
           renderLevelsList();
+          renderTaskList();
           updatePreview();
         });
       });
 
-      els.taskList.querySelectorAll('[data-edit-task]').forEach(btn => {
+      els.taskList.querySelectorAll('[data-edit]').forEach(btn => {
         btn.addEventListener('click', () => {
-          const [group, index] = btn.dataset.editTask.split('|');
+          const [group, index] = btn.dataset.edit.split('|');
           const task = level.tasks[group][Number(index)];
           if (group === 'choice') {
             els.choiceQuestionsBulk.value = task.question;
@@ -786,30 +792,18 @@
             els.choiceWrong1Bulk.value = task.wrongAnswers[0] || '';
             els.choiceWrong2Bulk.value = task.wrongAnswers[1] || '';
             els.choiceWrong3Bulk.value = task.wrongAnswers[2] || '';
-            level.tasks[group].splice(Number(index), 1);
           } else {
             els.inputQuestionsBulk.value = task.question;
             els.inputCorrectBulk.value = task.correctAnswer;
-            level.tasks[group].splice(Number(index), 1);
           }
-          renderTaskList();
+          level.tasks[group].splice(Number(index), 1);
           renderLevelsList();
+          renderTaskList();
           updatePreview();
         });
       });
 
       renderLevelWarnings(level);
-    }
-
-    function renderLevelWarnings(level) {
-      const warnings = [];
-      if (level.enabledTaskTypes.choice && level.tasks.choice.length === 0) {
-        warnings.push('У типа 1 включена галочка, но нет ни одного задания.');
-      }
-      if (level.enabledTaskTypes.input && level.tasks.input.length === 0) {
-        warnings.push('У типа 2 включена галочка, но нет ни одного задания.');
-      }
-      els.levelWarnings.innerHTML = warnings.map(text => `<div class="warning">${escapeHtml(text)}</div>`).join('');
     }
 
     function getConfig() {
@@ -848,14 +842,18 @@
     }
 
     function updatePreview() {
-      const html = buildGameHtml(getConfig());
-      els.previewFrame.srcdoc = html;
-      const time = new Date().toLocaleTimeString('ru-RU');
-      els.previewStatus.textContent = `Статус: превью обновлено в ${time}`;
+      try {
+        const html = buildGameHtml(getConfig());
+        els.previewFrame.srcdoc = html;
+        const time = new Date().toLocaleTimeString('ru-RU');
+        els.previewStatus.textContent = `Статус: превью обновлено в ${time}`;
+      } catch (error) {
+        els.previewStatus.textContent = `Ошибка превью: ${error.message}`;
+      }
     }
 
     function buildGameHtml(config) {
-      const safeConfig = JSON.stringify(config).replace(/<\//g, '<\\/');
+      const safeConfig = JSON.stringify(config).replace(/<\//g, '<\/');
       return `<!doctype html>
 <html lang="ru">
 <head>
@@ -875,47 +873,37 @@
     body { margin: 0; font-family: Inter, Arial, sans-serif; background: linear-gradient(var(--sky) 0 28%, var(--water-top) 28%, var(--water-bottom) 100%); color: #fff; overflow: hidden; }
     #game { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
     .card { background: var(--ui); border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; padding: 10px 14px; backdrop-filter: blur(8px); box-shadow: 0 8px 24px rgba(0,0,0,0.16); }
-    #hud { position: absolute; top: 10px; left: 10px; right: 10px; display: grid; grid-template-columns: repeat(6, minmax(100px, 1fr)); gap: 10px; z-index: 20; }
-    .label { font-size: 12px; opacity: 0.82; margin-bottom: 4px; }
+    #hud { position: absolute; top: 10px; left: 10px; right: 10px; display: grid; grid-template-columns: repeat(6, minmax(90px, 1fr)); gap: 10px; z-index: 20; }
+    .label { font-size: 12px; opacity: .82; margin-bottom: 4px; }
     .value { font-size: 20px; font-weight: 800; }
     #progressWrap { position: absolute; top: 100px; left: 12px; width: 340px; z-index: 20; }
     #progressBar { height: 16px; border-radius: 999px; background: rgba(255,255,255,0.16); overflow: hidden; border: 1px solid rgba(255,255,255,0.14); margin-top: 8px; }
-    #progressFill { width: 0%; height: 100%; background: linear-gradient(90deg, #ffe082, #ffca28); transition: width 0.2s ease; }
+    #progressFill { width: 0%; height: 100%; background: linear-gradient(90deg, #ffe082, #ffca28); transition: width .2s ease; }
     #message { position: absolute; top: 146px; left: 12px; z-index: 20; font-weight: 800; min-width: 260px; }
-    #biteBanner { position: absolute; top: 190px; left: 50%; transform: translateX(-50%) scale(0.92); z-index: 30; padding: 14px 28px; border-radius: 999px; background: linear-gradient(135deg, rgba(255,213,74,0.98), rgba(255,159,67,0.98)); color: #17324c; font-size: 30px; font-weight: 900; letter-spacing: 0.03em; box-shadow: 0 14px 30px rgba(0,0,0,0.22); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; }
-    #helpBtn { position: absolute; left: 12px; bottom: 14px; z-index: 26; width: 54px; height: 54px; border: none; border-radius: 999px; background: radial-gradient(circle at 30% 30%, #ffffff, #d8ebff 70%); color: #16324d; font-size: 24px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.22); }
-    #controlHint { position: absolute; left: 80px; bottom: 14px; max-width: 460px; line-height: 1.35; z-index: 20; display: none; }
-    #rodControls { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; gap: 26px; z-index: 25; }
-    .rodBtn { border: none; border-radius: 999px; width: 170px; height: 86px; font-size: 20px; font-weight: 900; cursor: pointer; color: #0c2740; user-select: none; touch-action: none; box-shadow: 0 12px 28px rgba(0,0,0,0.25); }
+    #rodControls { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; gap: 24px; z-index: 25; }
+    .rodBtn { border: none; border-radius: 999px; width: 170px; height: 86px; font-size: 20px; font-weight: 900; cursor: pointer; color: #0c2740; user-select: none; touch-action: none; box-shadow: 0 12px 28px rgba(0,0,0,.25); }
     #upBtn { background: radial-gradient(circle at 30% 30%, #d6f5ff, #7dd3fc 70%); }
     #downBtn { background: radial-gradient(circle at 30% 30%, #fff7c7, #ffd54a 70%); }
     #scene { position: absolute; inset: 0; }
-    #shore { position: absolute; left: 0; right: 0; top: 22%; height: 6px; background: rgba(255,255,255,0.22); z-index: 2; }
+    #shore { position: absolute; left: 0; right: 0; top: 22%; height: 6px; background: rgba(255,255,255,.22); z-index: 2; }
     #waterEffects { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
-    #surfaceWaves { position: absolute; left: -10%; right: -10%; top: 26%; height: 42px; background: radial-gradient(circle at 10% 60%, rgba(255,255,255,0.18) 0 24%, transparent 25%), radial-gradient(circle at 28% 40%, rgba(255,255,255,0.12) 0 20%, transparent 21%), radial-gradient(circle at 48% 58%, rgba(255,255,255,0.18) 0 23%, transparent 24%), radial-gradient(circle at 68% 42%, rgba(255,255,255,0.13) 0 20%, transparent 21%), radial-gradient(circle at 86% 60%, rgba(255,255,255,0.18) 0 24%, transparent 25%); animation: wavesDrift 11s linear infinite; }
-    .lightRay { position: absolute; top: 12%; width: 120px; height: 58%; background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02)); clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%); filter: blur(2px); opacity: 0.45; animation: rayPulse 5.5s ease-in-out infinite; }
-    .bubble { position: absolute; bottom: 12%; border-radius: 50%; background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8), rgba(255,255,255,0.16) 65%, rgba(255,255,255,0.06) 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); opacity: 0.75; animation: bubbleRise linear infinite; }
-    #plants { position: absolute; left: 0; right: 0; bottom: 12%; height: 22%; z-index: 1; pointer-events: none; }
-    .plant { position: absolute; bottom: 0; width: 18px; border-radius: 18px 18px 0 0; transform-origin: bottom center; background: linear-gradient(180deg, rgba(65,184,131,0.96), rgba(14,103,78,0.98)); box-shadow: inset -3px 0 5px rgba(0,0,0,0.14); animation: swayPlant ease-in-out infinite; }
+    #surfaceWaves { position: absolute; left: -10%; right: -10%; top: 26%; height: 42px; background: radial-gradient(circle at 10% 60%, rgba(255,255,255,.18) 0 24%, transparent 25%), radial-gradient(circle at 28% 40%, rgba(255,255,255,.12) 0 20%, transparent 21%), radial-gradient(circle at 48% 58%, rgba(255,255,255,.18) 0 23%, transparent 24%), radial-gradient(circle at 68% 42%, rgba(255,255,255,.13) 0 20%, transparent 21%), radial-gradient(circle at 86% 60%, rgba(255,255,255,.18) 0 24%, transparent 25%); animation: wavesDrift 11s linear infinite; }
+    .bubble { position: absolute; bottom: 12%; border-radius: 50%; background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.8), rgba(255,255,255,.16) 65%, rgba(255,255,255,.06) 100%); opacity: .75; animation: bubbleRise linear infinite; }
     #seabed { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; background: linear-gradient(#c9b17b, var(--sand)); z-index: 2; }
-    #rod { position: absolute; left: 19%; top: 5.5%; width: 18px; height: 158px; transform: rotate(28deg); transform-origin: top center; z-index: 6; pointer-events: none; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.18)); }
-    #rod::before { content: ''; position: absolute; inset: 0; border-radius: 16px; background: linear-gradient(180deg, #6a4727 0%, #8a5c34 20%, #c48a52 48%, #7b512d 78%, #5c3b20 100%); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08), inset -3px 0 8px rgba(0,0,0,0.18); }
-    #rod::after { content: ''; position: absolute; right: -10px; top: 20px; width: 20px; height: 20px; border-radius: 50%; border: 3px solid #d6b36a; background: radial-gradient(circle at 35% 35%, #fff2b3, #c9972f 70%); box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
-    #line { position: absolute; left: calc(20% + 85px); top: 13%; width: 3px; height: 40px; background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(221,235,255,0.78)); transform-origin: top center; z-index: 5; border-radius: 999px; box-shadow: 0 0 10px rgba(255,255,255,0.18); }
-    #hook { position: absolute; width: 24px; height: 24px; z-index: 7; pointer-events: none; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.28)); }
+    #rod { position: absolute; left: 19%; top: 5.5%; width: 18px; height: 158px; transform: rotate(28deg); transform-origin: top center; z-index: 6; pointer-events: none; }
+    #rod::before { content: ''; position: absolute; inset: 0; border-radius: 16px; background: linear-gradient(180deg, #6a4727 0%, #8a5c34 20%, #c48a52 48%, #7b512d 78%, #5c3b20 100%); }
+    #line { position: absolute; left: calc(20% + 85px); top: 13%; width: 3px; height: 40px; background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(221,235,255,.78)); transform-origin: top center; z-index: 5; border-radius: 999px; }
+    #hook { position: absolute; width: 24px; height: 24px; z-index: 7; pointer-events: none; }
     #hook::before { content: ''; position: absolute; inset: 0; border: 4px solid #f4f7fb; border-top-color: transparent; border-left-color: transparent; border-radius: 50%; transform: rotate(10deg); }
-    #hook::after { content: ''; position: absolute; right: 1px; bottom: 0; width: 7px; height: 7px; border-radius: 50% 50% 50% 0; background: #f4f7fb; transform: rotate(35deg); }
     #entities { position: absolute; inset: 0; z-index: 4; }
-    .entity { position: absolute; will-change: transform, opacity; user-select: none; font-size: 34px; z-index: 4; }
-    .fish { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.14)); }
-    .fish.rare { filter: drop-shadow(0 0 10px rgba(255,215,64,0.42)); }
-    .fish.caught { animation: pop 0.5s ease; }
-    .trash.hit { animation: spinOut 0.6s ease; }
-    #overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(3,13,24,0.62); z-index: 50; padding: 20px; }
+    .entity { position: absolute; will-change: transform; user-select: none; font-size: 34px; z-index: 4; }
+    .fish.caught { animation: pop .5s ease; }
+    .trash.hit { animation: spinOut .6s ease; }
+    #overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(3,13,24,.62); z-index: 50; padding: 20px; }
     #overlay.show { display: flex; }
-    .modal { width: min(560px, 96vw); background: var(--panel); color: #10263c; border-radius: 24px; padding: 22px; box-shadow: 0 24px 80px rgba(0,0,0,0.35); position: relative; z-index: 2; }
+    .modal { width: min(560px, 96vw); background: var(--panel); color: #10263c; border-radius: 24px; padding: 22px; box-shadow: 0 24px 80px rgba(0,0,0,.35); }
     #taskTimerBar { height: 12px; background: #dfe9f2; border-radius: 999px; overflow: hidden; margin: 12px 0 18px; }
-    #taskTimerFill { height: 100%; width: 100%; background: linear-gradient(90deg, #69db7c, #fcc419, #ff6b6b); transition: width 0.1s linear; }
+    #taskTimerFill { height: 100%; width: 100%; background: linear-gradient(90deg, #69db7c, #fcc419, #ff6b6b); transition: width .1s linear; }
     #taskTitle { font-size: 30px; font-weight: 800; margin: 10px 0 18px; }
     #answerInput { width: 100%; padding: 14px 16px; font-size: 22px; border-radius: 14px; border: 2px solid #d6e1ec; outline: none; margin-bottom: 12px; }
     #options { display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 10px; margin-bottom: 12px; }
@@ -923,16 +911,12 @@
     .optBtn, .secondaryBtn { background: #eaf2f8; color: #17324c; }
     .primaryBtn { background: #1677ff; color: white; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; }
-    #startScreen { position: absolute; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: linear-gradient(rgba(8,24,42,0.35), rgba(8,24,42,0.55)); padding: 20px; }
-    .flyFish { position: absolute; z-index: 60; pointer-events: none; font-size: 38px; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2)); animation: fishToHud 900ms cubic-bezier(.2,.8,.2,1) forwards; }
-    @keyframes pop { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4) translateY(-8px); } 100% { transform: scale(0.2); opacity: 0; } }
-    @keyframes spinOut { 0% { transform: rotate(0deg) scale(1); opacity: 1; } 100% { transform: rotate(220deg) scale(0.2); opacity: 0; } }
-    @keyframes fishToHud { 0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; } 40% { transform: translate(var(--mid-x), var(--mid-y)) scale(1.35) rotate(-12deg); opacity: 1; } 100% { transform: translate(var(--end-x), var(--end-y)) scale(0.35) rotate(18deg); opacity: 0; } }
+    #startScreen { position: absolute; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: linear-gradient(rgba(8,24,42,.35), rgba(8,24,42,.55)); padding: 20px; }
+    @keyframes pop { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4) translateY(-8px); } 100% { transform: scale(.2); opacity: 0; } }
+    @keyframes spinOut { 0% { transform: rotate(0deg) scale(1); opacity: 1; } 100% { transform: rotate(220deg) scale(.2); opacity: 0; } }
     @keyframes wavesDrift { 0% { transform: translateX(0); } 50% { transform: translateX(4%); } 100% { transform: translateX(0); } }
-    @keyframes rayPulse { 0%,100% { opacity: 0.32; transform: translateY(0) scaleX(1); } 50% { opacity: 0.58; transform: translateY(8px) scaleX(1.08); } }
-    @keyframes bubbleRise { 0% { transform: translateY(0) translateX(0) scale(0.9); opacity: 0; } 12% { opacity: 0.7; } 100% { transform: translateY(-72vh) translateX(22px) scale(1.15); opacity: 0; } }
-    @keyframes swayPlant { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(5deg); } }
-    @media (max-width: 900px) { #hud { grid-template-columns: repeat(3, 1fr); } #progressWrap { width: calc(100vw - 24px); top: 176px; } #message { top: 208px; max-width: calc(100vw - 24px); min-width: 0; } #biteBanner { top: 250px; font-size: 24px; } #controlHint { max-width: 240px; left: 74px; } #rodControls { gap: 14px; bottom: 12px; } .rodBtn { width: 126px; height: 68px; font-size: 18px; } }
+    @keyframes bubbleRise { 0% { transform: translateY(0) translateX(0) scale(.9); opacity: 0; } 12% { opacity: .7; } 100% { transform: translateY(-72vh) translateX(22px) scale(1.15); opacity: 0; } }
+    @media (max-width: 900px) { #hud { grid-template-columns: repeat(3, 1fr); } #progressWrap { width: calc(100vw - 24px); top: 176px; } #message { top: 208px; max-width: calc(100vw - 24px); min-width: 0; } #rodControls { gap: 14px; bottom: 12px; } .rodBtn { width: 126px; height: 68px; font-size: 18px; } }
   <\/style>
 <\/head>
 <body>
@@ -947,33 +931,15 @@
     </div>
     <div id="progressWrap"><div style="font-weight:800; margin-bottom:8px;">Прогресс уровня</div><div id="progressBar"><div id="progressFill"></div></div></div>
     <div id="message" class="card">Удерживайте «Вниз», чтобы опустить удочку, и «Вверх», чтобы поднять её.</div>
-    <div id="biteBanner">🎣 КЛЮЁТ!</div>
-    <button id="helpBtn" type="button" aria-label="Показать управление">❓</button>
-    <div id="controlHint" class="card">Управление: удерживайте кнопку «Вниз» или клавишу ↓ / S, чтобы плавно опускать удочку. Удерживайте кнопку «Вверх» или клавишу ↑ / W, чтобы поднимать её обратно. Отпустите — удочка остановится.</div>
     <div id="rodControls"><button id="upBtn" class="rodBtn" type="button">▲ ВВЕРХ</button><button id="downBtn" class="rodBtn" type="button">▼ ВНИЗ</button></div>
     <div id="scene">
       <div id="shore"></div>
       <div id="waterEffects">
         <div id="surfaceWaves"></div>
-        <div class="lightRay" style="left:12%; animation-delay:0s;"></div>
-        <div class="lightRay" style="left:34%; width:140px; animation-delay:1.2s;"></div>
-        <div class="lightRay" style="left:62%; width:110px; animation-delay:2.4s;"></div>
-        <div class="lightRay" style="left:80%; width:130px; animation-delay:0.8s;"></div>
         <div class="bubble" style="left:9%; width:14px; height:14px; animation-duration:7.5s; animation-delay:0s;"></div>
-        <div class="bubble" style="left:18%; width:10px; height:10px; animation-duration:6.2s; animation-delay:1.4s;"></div>
         <div class="bubble" style="left:28%; width:18px; height:18px; animation-duration:8.1s; animation-delay:0.6s;"></div>
-        <div class="bubble" style="left:41%; width:12px; height:12px; animation-duration:7.1s; animation-delay:2.2s;"></div>
         <div class="bubble" style="left:57%; width:16px; height:16px; animation-duration:8.7s; animation-delay:1.3s;"></div>
-        <div class="bubble" style="left:73%; width:11px; height:11px; animation-duration:6.8s; animation-delay:2.8s;"></div>
         <div class="bubble" style="left:86%; width:17px; height:17px; animation-duration:8.4s; animation-delay:0.9s;"></div>
-      </div>
-      <div id="plants">
-        <div class="plant" style="left:3%; height:96px; animation-duration:3.6s;"></div>
-        <div class="plant" style="left:6%; height:122px; animation-duration:4.4s; animation-delay:0.5s;"></div>
-        <div class="plant" style="left:11%; height:88px; animation-duration:3.9s; animation-delay:1.1s;"></div>
-        <div class="plant" style="left:79%; height:92px; animation-duration:4.1s; animation-delay:0.7s;"></div>
-        <div class="plant" style="left:84%; height:128px; animation-duration:4.8s; animation-delay:1.3s;"></div>
-        <div class="plant" style="left:89%; height:104px; animation-duration:3.7s; animation-delay:0.2s;"></div>
       </div>
       <div id="seabed"></div><div id="rod"></div><div id="line"></div><div id="hook"></div><div id="entities"></div>
     </div>
@@ -981,20 +947,13 @@
     <div id="startScreen">
       <div class="modal" style="max-width:720px; text-align:center;">
         <h1 style="margin:0 0 10px; font-size:42px;">${escapeHtml(config.title)}</h1>
-        <p style="font-size:20px; margin-bottom:16px;">Образовательная игра: ловите рыбу, решайте задания и набирайте очки.</p>
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:18px;">
-          <button id="difficultyEasy" class="secondaryBtn difficultyBtn" type="button" data-difficulty="easy" style="padding:16px 12px;">Лёгкий</button>
-          <button id="difficultyMedium" class="primaryBtn difficultyBtn" type="button" data-difficulty="medium" style="padding:16px 12px;">Средний</button>
-          <button id="difficultyHard" class="secondaryBtn difficultyBtn" type="button" data-difficulty="hard" style="padding:16px 12px;">Сложный</button>
-        </div>
+        <p style="font-size:20px; margin-bottom:16px;">Ловите рыбу, решайте задания и набирайте очки.</p>
         <div style="background:#eef5fb; border-radius:18px; padding:16px 18px; text-align:left; margin-bottom:18px; line-height:1.55; color:#17324c;">
           <div><b>Как играть:</b></div>
           <div>• Удерживайте <b>ВНИЗ</b> или клавишу <b>↓ / S</b>, чтобы опускать удочку.</div>
           <div>• Удерживайте <b>ВВЕРХ</b> или клавишу <b>↑ / W</b>, чтобы поднимать удочку.</div>
-          <div>• Поймали рыбу — решите задание, чтобы добавить её в улов.</div>
-          <div>• Если на уровне включены оба типа, игра выбирает задания случайно.</div>
+          <div>• Поймали рыбу — ответьте правильно, чтобы добавить её в улов.</div>
         </div>
-        <div id="difficultyHint" style="margin-bottom:16px; font-weight:700; color:#17324c;">Сейчас выбрана сложность: <b>средняя</b>.</div>
         <div class="row" style="justify-content:center;"><button id="startGameBtn" class="primaryBtn" type="button" style="font-size:22px; padding:16px 28px;">Начать игру</button></div>
       </div>
     </div>
@@ -1007,83 +966,517 @@
       scoreStart: CONFIG.scoreStart,
       levels: CONFIG.levels,
       fishTypes: [
-        { id: 'blue', emoji: '🐟', label: 'Синяя рыба', speedMultiplier: 1, nearHookBoost: 1.2, points: 5, rarity: 'common' },
-        { id: 'gold', emoji: '🐠', label: 'Золотая рыба', speedMultiplier: 1.18, nearHookBoost: 1.4, points: 7, rarity: 'rare' },
-        { id: 'tropical', emoji: '🐡', label: 'Колючая рыба', speedMultiplier: 0.88, nearHookBoost: 1.08, points: 6, rarity: 'common' }
+        { emoji: '🐟', label: 'Синяя рыба', speedMultiplier: 1, nearHookBoost: 1.2, points: 5 },
+        { emoji: '🐠', label: 'Золотая рыба', speedMultiplier: 1.18, nearHookBoost: 1.4, points: 7 },
+        { emoji: '🐡', label: 'Колючая рыба', speedMultiplier: 0.88, nearHookBoost: 1.08, points: 6 }
       ],
       trashTypes: [
-        { id: 'bottle', emoji: '🧴', label: 'Бутылка' },
-        { id: 'can', emoji: '🥫', label: 'Банка' },
-        { id: 'bag', emoji: '🛍️', label: 'Пакет' }
+        { emoji: '🧴', label: 'Бутылка' },
+        { emoji: '🥫', label: 'Банка' },
+        { emoji: '🛍️', label: 'Пакет' }
       ],
       gameplay: {
-        scoreFishCorrect: 5,
         scoreTrashPenalty: 3,
-        scoreWrongPenalty: 0,
         maxAttemptsPerLevel: 30,
         rod: { lowerSpeedPxPerSec: 260, raiseSpeedPxPerSec: 300, startLengthPx: 42, minLengthPx: 42, upperY: window.innerHeight * 0.13, minXRatio: 0.2, maxDepthRatio: 0.76, swayAmplitude: 6, swaySpeed: 0.006 }
       }
     };
 
     const el = {
-      entities: document.getElementById('entities'), line: document.getElementById('line'), hook: document.getElementById('hook'), rod: document.getElementById('rod'), overlay: document.getElementById('overlay'), modal: document.getElementById('modalContent'), upBtn: document.getElementById('upBtn'), downBtn: document.getElementById('downBtn'), startScreen: document.getElementById('startScreen'), startGameBtn: document.getElementById('startGameBtn'), message: document.getElementById('message'), biteBanner: document.getElementById('biteBanner'), scoreValue: document.getElementById('scoreValue'), levelValue: document.getElementById('levelValue'), caughtValue: document.getElementById('caughtValue'), trashValue: document.getElementById('trashValue'), attemptsValue: document.getElementById('attemptsValue'), timeValue: document.getElementById('timeValue'), progressFill: document.getElementById('progressFill'), helpBtn: document.getElementById('helpBtn'), controlHint: document.getElementById('controlHint'), difficultyHint: document.getElementById('difficultyHint'), difficultyButtons: Array.from(document.querySelectorAll('.difficultyBtn'))
+      entities: document.getElementById('entities'),
+      line: document.getElementById('line'),
+      hook: document.getElementById('hook'),
+      rod: document.getElementById('rod'),
+      overlay: document.getElementById('overlay'),
+      modal: document.getElementById('modalContent'),
+      upBtn: document.getElementById('upBtn'),
+      downBtn: document.getElementById('downBtn'),
+      startScreen: document.getElementById('startScreen'),
+      startGameBtn: document.getElementById('startGameBtn'),
+      message: document.getElementById('message'),
+      scoreValue: document.getElementById('scoreValue'),
+      levelValue: document.getElementById('levelValue'),
+      caughtValue: document.getElementById('caughtValue'),
+      trashValue: document.getElementById('trashValue'),
+      attemptsValue: document.getElementById('attemptsValue'),
+      timeValue: document.getElementById('timeValue'),
+      progressFill: document.getElementById('progressFill')
     };
 
-    const state = { running: false, lowering: false, raising: false, inTask: false, gameOver: false, levelIndex: 0, score: GAME_CONFIG.scoreStart, totalCaught: 0, totalTrash: 0, attempts: 0, levelCaught: 0, levelRemainingTime: 0, lineBaseY: GAME_CONFIG.gameplay.rod.upperY, lineLength: GAME_CONFIG.gameplay.rod.startLengthPx, hookX: 0, hookY: 0, entities: [], activeTask: null, activeEntityId: null, startedAt: performance.now(), lastTaskStartedAt: 0 };
+    const state = {
+      running: false,
+      lowering: false,
+      raising: false,
+      inTask: false,
+      gameOver: false,
+      levelIndex: 0,
+      score: GAME_CONFIG.scoreStart,
+      totalCaught: 0,
+      totalTrash: 0,
+      attempts: 0,
+      levelCaught: 0,
+      levelRemainingTime: 0,
+      lineBaseY: GAME_CONFIG.gameplay.rod.upperY,
+      lineLength: GAME_CONFIG.gameplay.rod.startLengthPx,
+      hookX: 0,
+      hookY: 0,
+      entities: [],
+      activeTask: null,
+      activeEntityId: null,
+      lastTaskStartedAt: 0,
+      startedAt: performance.now()
+    };
 
-    function difficultyScale() { const d = GAME_CONFIG.difficulty; if (d === 'easy') return { speed: 0.78, taskTime: 1.45, trash: 0.75 }; if (d === 'hard') return { speed: 1.35, taskTime: 0.75, trash: 1.2 }; return { speed: 1, taskTime: 1, trash: 1 }; }
-    function difficultyLabel(value) { return value === 'easy' ? 'лёгкая' : value === 'hard' ? 'сложная' : 'средняя'; }
-    function applyDifficultyUI() { el.difficultyButtons.forEach(btn => { const active = btn.dataset.difficulty === GAME_CONFIG.difficulty; btn.className = (active ? 'primaryBtn' : 'secondaryBtn') + ' difficultyBtn'; }); el.difficultyHint.innerHTML = 'Сейчас выбрана сложность: <b>' + difficultyLabel(GAME_CONFIG.difficulty) + '</b>.'; }
-    function currentLevel() { return GAME_CONFIG.levels[Math.min(state.levelIndex, GAME_CONFIG.levels.length - 1)]; }
+    function difficultyScale() {
+      if (GAME_CONFIG.difficulty === 'easy') return { speed: 0.78, taskTime: 1.45, trash: 0.75 };
+      if (GAME_CONFIG.difficulty === 'hard') return { speed: 1.35, taskTime: 0.75, trash: 1.2 };
+      return { speed: 1, taskTime: 1, trash: 1 };
+    }
+
+    function currentLevel() {
+      return GAME_CONFIG.levels[Math.min(state.levelIndex, GAME_CONFIG.levels.length - 1)];
+    }
+
     function rand(min, max) { return Math.random() * (max - min) + min; }
     function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-    function setMessage(text, kind) { el.message.textContent = text; el.message.style.background = kind === 'ok' ? 'rgba(46,204,113,0.9)' : kind === 'bad' ? 'rgba(255,107,107,0.9)' : 'rgba(8,24,42,0.82)'; }
-    function updateHUD() { el.scoreValue.textContent = state.score; el.levelValue.textContent = String(currentLevel().id); el.caughtValue.textContent = state.totalCaught; el.trashValue.textContent = state.totalTrash; el.attemptsValue.textContent = state.attempts; el.timeValue.textContent = Math.max(0, Math.ceil(state.levelRemainingTime)); el.progressFill.style.width = Math.min(100, (state.levelCaught / currentLevel().fishRequired) * 100) + '%'; }
-    function createEntityDom(entity) { const node = document.createElement('div'); node.className = 'entity ' + entity.kind + (entity.rarity === 'rare' ? ' rare' : ''); node.textContent = entity.emoji; el.entities.appendChild(node); entity.node = node; renderEntity(entity); }
-    function renderEntity(entity) { if (!entity.node) return; const t = performance.now(); const bobX = entity.kind === 'fish' ? Math.sin((t * 0.004) + entity.phase) * 4 : 0; const bobY = entity.kind === 'fish' ? Math.cos((t * 0.0032) + entity.phase) * 3 : 0; const rot = entity.kind === 'fish' ? Math.sin((t * 0.0025) + entity.phase) * 3 : 0; entity.node.style.transform = 'translate(' + (entity.x + bobX) + 'px, ' + (entity.y + bobY) + 'px) rotate(' + rot + 'deg)'; entity.node.style.opacity = entity.active ? '1' : '0'; }
-    function resetEntities() { state.entities = []; el.entities.innerHTML = ''; const w = window.innerWidth; const h = window.innerHeight; const diff = difficultyScale(); const level = currentLevel(); for (let i = 0; i < level.fishSpawnCount; i++) { const type = pick(GAME_CONFIG.fishTypes); const entity = { id: 'fish-' + Date.now() + '-' + i, kind: 'fish', label: type.label, emoji: type.emoji, rarity: type.rarity, pointValue: type.points, nearHookBoost: type.nearHookBoost, x: rand(0, w + 200), y: rand(h * 0.35, h * 0.78), speed: rand(level.fishSpeedMin, level.fishSpeedMax) * diff.speed * type.speedMultiplier, baseSpeed: 0, phase: rand(0, Math.PI * 2), verticalDrift: rand(-16, 16), width: 36, height: 36, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); } for (let i = 0; i < level.trashSpawnCount; i++) { if (Math.random() > level.trashProbability * diff.trash) continue; const type = pick(GAME_CONFIG.trashTypes); const entity = { id: 'trash-' + Date.now() + '-' + i, kind: 'trash', label: type.label, emoji: type.emoji, x: rand(0, w + 220), y: rand(h * 0.4, h * 0.82), speed: rand(35, 70) * diff.speed, baseSpeed: 0, phase: rand(0, Math.PI * 2), width: 34, height: 34, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); } }
-    function renderRod(time) { const maxDepth = window.innerHeight * GAME_CONFIG.gameplay.rod.maxDepthRatio; const sway = Math.sin(time * GAME_CONFIG.gameplay.rod.swaySpeed) * GAME_CONFIG.gameplay.rod.swayAmplitude; const idleWave = Math.sin(time * 0.0035) * 2.5; const length = clamp(state.lineLength, GAME_CONFIG.gameplay.rod.minLengthPx, maxDepth); const isMoving = state.lowering || state.raising; el.line.style.height = length + 'px'; el.line.style.transform = 'translateX(' + sway + 'px) scaleX(' + (isMoving ? 1.15 : 1) + ')'; el.line.style.width = isMoving ? '4px' : '3px'; const rodTilt = 28 + Math.sin(time * 0.0022) * 1.8 + (state.lowering ? 1.2 : 0) - (state.raising ? 1.2 : 0); el.rod.style.transform = 'rotate(' + rodTilt + 'deg)'; state.hookX = window.innerWidth * GAME_CONFIG.gameplay.rod.minXRatio + 85 + sway + idleWave; state.hookY = state.lineBaseY + length; el.hook.style.left = (state.hookX - 12) + 'px'; el.hook.style.top = (state.hookY - 8) + 'px'; el.hook.style.transform = 'rotate(' + (12 + Math.sin(time * 0.004) * 8) + 'deg)'; }
-    function scheduleRespawn(entity) { if (entity.respawning || !entity.node) return; entity.respawning = true; entity.active = false; renderEntity(entity); const delay = entity.kind === 'fish' ? rand(900, 2200) : rand(1200, 2600); setTimeout(() => { entity.x = window.innerWidth + rand(80, 320); entity.y = rand(window.innerHeight * 0.35, window.innerHeight * 0.82); if (entity.kind === 'fish') { entity.verticalDrift = rand(-16, 16); entity.speed = entity.baseSpeed; } entity.active = true; entity.respawning = false; renderEntity(entity); }, delay); }
-    function moveEntities(dt) { const h = window.innerHeight; const hookInfluenceRadius = 150; for (const entity of state.entities) { if (!entity.active) continue; if (entity.kind === 'fish') { const dx = state.hookX - (entity.x + entity.width / 2); const dy = state.hookY - (entity.y + entity.height / 2); const distance = Math.hypot(dx, dy); const proximity = clamp(1 - distance / hookInfluenceRadius, 0, 1); entity.speed = entity.baseSpeed * (1 + proximity * ((entity.nearHookBoost || 1.15) - 1)); entity.y += Math.sin((performance.now() * 0.0025) + entity.phase) * 0.18; entity.y += Math.sin((performance.now() * 0.0012) + entity.phase * 1.7) * 0.26; entity.y += entity.verticalDrift * 0.015 * dt * 60; if (entity.y < h * 0.34 || entity.y > h * 0.79) entity.verticalDrift *= -1; } entity.x -= entity.speed * dt; if (entity.x < -120) { scheduleRespawn(entity); continue; } renderEntity(entity); } }
-    function intersects(entity) { const hookRect = { x: state.hookX - 10, y: state.hookY - 10, w: 20, h: 20 }; const entityRect = { x: entity.x, y: entity.y, w: entity.width, h: entity.height }; return !(hookRect.x + hookRect.w < entityRect.x || hookRect.x > entityRect.x + entityRect.w || hookRect.y + hookRect.h < entityRect.y || hookRect.y > entityRect.y + entityRect.h); }
-    function showBiteBanner() { el.biteBanner.style.opacity = '1'; el.biteBanner.style.transform = 'translateX(-50%) scale(1)'; setTimeout(() => { el.biteBanner.style.opacity = '0'; el.biteBanner.style.transform = 'translateX(-50%) scale(0.92)'; }, 900); }
-    function handleTrashHit(entity) { state.totalTrash += 1; state.score -= GAME_CONFIG.gameplay.scoreTrashPenalty; entity.node.classList.add('hit'); setMessage('Ой! Попался мусор: ' + entity.label + '. -' + GAME_CONFIG.gameplay.scoreTrashPenalty + ' очка', 'bad'); setTimeout(() => { entity.node.className = 'entity trash'; scheduleRespawn(entity); }, 500); updateHUD(); if (state.score <= 0) finishGame(false, 'Очки упали до нуля.'); }
-    function handleFishCatch(entity) { entity.active = false; entity.node.classList.add('caught'); state.activeEntityId = entity.id; showBiteBanner(); openTask(entity); }
-    function getAvailableTaskTypes(level) { const available = []; if (level.enabledTaskTypes.choice && level.tasks.choice.length) available.push('choice'); if (level.enabledTaskTypes.input && level.tasks.input.length) available.push('input'); return available; }
-    function shuffle(arr) { return arr.slice().sort(() => Math.random() - 0.5); }
-    function buildTask() { const level = currentLevel(); const availableTypes = getAvailableTaskTypes(level); if (!availableTypes.length) return null; const pickedType = pick(availableTypes); const task = JSON.parse(JSON.stringify(pick(level.tasks[pickedType]))); if (pickedType === 'choice') { task.options = shuffle([task.correctAnswer, ...task.wrongAnswers]); task.answerMode = 'choice'; task.answer = task.correctAnswer; task.prompt = task.question; } else { task.answerMode = 'input'; task.answer = task.correctAnswer; task.prompt = task.question; } task.timeLimit = Math.max(4, level.taskTimeSec * difficultyScale().taskTime); return task; }
-    function openTask(entity) { state.inTask = true; const task = buildTask(); if (!task) { state.inTask = false; setMessage('Для этого уровня нет доступных заданий. Добавьте задания в редакторе.', 'bad'); scheduleRespawn(entity); return; } state.activeTask = task; state.lastTaskStartedAt = performance.now(); el.overlay.classList.add('show'); renderTaskModal(task, entity); runTaskTimer(); }
-    function renderTaskModal(task, entity) { const optionsHtml = task.answerMode === 'choice' ? '<div id="options">' + task.options.map(opt => '<button class="optBtn" data-answer="' + String(opt).replace(/"/g, '&quot;') + '">' + opt + '</button>').join('') + '</div>' : '<input id="answerInput" placeholder="Введите ответ" autocomplete="off" /><div class="row"><button id="submitAnswer" class="primaryBtn">Ответить</button></div>'; el.modal.innerHTML = '<h2 style="margin:0 0 8px;">Клюёт! ' + entity.emoji + '</h2><p style="margin:0 0 12px;">Решите задание, чтобы добавить рыбу в улов.</p><div id="taskTimerBar"><div id="taskTimerFill"></div></div><div id="taskTitle">' + task.prompt + '</div>' + optionsHtml + '<div class="row"><button id="skipTask" class="secondaryBtn">Не успеваю</button></div>'; if (task.answerMode === 'choice') { el.modal.querySelectorAll('.optBtn').forEach(btn => btn.addEventListener('click', () => submitTaskAnswer(btn.dataset.answer))); } else { const input = document.getElementById('answerInput'); const submit = document.getElementById('submitAnswer'); input.focus(); input.addEventListener('keydown', e => { if (e.key === 'Enter') submitTaskAnswer(input.value); }); submit.addEventListener('click', () => submitTaskAnswer(input.value)); } document.getElementById('skipTask').addEventListener('click', () => failTask('Рыба уплыла.')); }
-    function runTaskTimer() { const fill = () => { if (!state.inTask || !state.activeTask) return; const passed = (performance.now() - state.lastTaskStartedAt) / 1000; const left = Math.max(0, state.activeTask.timeLimit - passed); const bar = document.getElementById('taskTimerFill'); if (bar) bar.style.width = (left / state.activeTask.timeLimit) * 100 + '%'; if (left <= 0) { failTask('Время вышло. Рыба уплыла.'); return; } requestAnimationFrame(fill); }; requestAnimationFrame(fill); }
     function normalizeAnswer(value) { return String(value).trim().toLowerCase().replace(/ё/g, 'е'); }
-    function submitTaskAnswer(raw) { if (!state.inTask || !state.activeTask) return; const ok = normalizeAnswer(raw) === normalizeAnswer(state.activeTask.answer); if (ok) completeTask(); else failTask('Неверный ответ. Рыба уплыла.'); }
-    function animateFishToHud(fish) { if (!fish || !fish.node) return; const fishRect = fish.node.getBoundingClientRect(); const targetRect = el.caughtValue.getBoundingClientRect(); const flyer = document.createElement('div'); flyer.className = 'flyFish'; flyer.textContent = fish.emoji; flyer.style.left = fishRect.left + 'px'; flyer.style.top = fishRect.top + 'px'; flyer.style.setProperty('--mid-x', ((targetRect.left - fishRect.left) * 0.45) + 'px'); flyer.style.setProperty('--mid-y', (((targetRect.top - fishRect.top) * 0.2) - 50) + 'px'); flyer.style.setProperty('--end-x', (targetRect.left - fishRect.left) + 'px'); flyer.style.setProperty('--end-y', (targetRect.top - fishRect.top) + 'px'); document.body.appendChild(flyer); flyer.addEventListener('animationend', () => flyer.remove()); }
-    function completeTask() { const fish = state.entities.find(x => x.id === state.activeEntityId); state.score += (fish && fish.pointValue) || GAME_CONFIG.gameplay.scoreFishCorrect; state.totalCaught += 1; state.levelCaught += 1; setMessage('Отлично! ' + ((fish && fish.label) || 'Рыба') + ' поймана. +' + ((fish && fish.pointValue) || GAME_CONFIG.gameplay.scoreFishCorrect) + ' очков', 'ok'); if (fish && fish.node) { animateFishToHud(fish); fish.node.remove(); } state.entities = state.entities.filter(x => x.id !== state.activeEntityId); closeTask(); refillFishIfNeeded(); updateHUD(); if (state.levelCaught >= currentLevel().fishRequired) nextLevelOrFinish(); }
-    function failTask(msg) { const fish = state.entities.find(x => x.id === state.activeEntityId); if (fish) { fish.node.className = 'entity fish' + (fish.rarity === 'rare' ? ' rare' : ''); scheduleRespawn(fish); } if (GAME_CONFIG.gameplay.scoreWrongPenalty > 0) state.score -= GAME_CONFIG.gameplay.scoreWrongPenalty; setMessage(msg, 'bad'); closeTask(); updateHUD(); if (state.score <= 0) finishGame(false, 'Очки упали до нуля.'); }
-    function closeTask() { state.inTask = false; state.activeTask = null; state.activeEntityId = null; el.overlay.classList.remove('show'); }
-    function refillFishIfNeeded() { const level = currentLevel(); const fishCount = state.entities.filter(e => e.kind === 'fish').length; if (fishCount >= level.fishSpawnCount) return; const type = pick(GAME_CONFIG.fishTypes); const entity = { id: 'fish-' + Date.now() + '-' + Math.random(), kind: 'fish', label: type.label, emoji: type.emoji, rarity: type.rarity, pointValue: type.points, nearHookBoost: type.nearHookBoost, x: window.innerWidth + rand(80, 260), y: rand(window.innerHeight * 0.35, window.innerHeight * 0.78), speed: rand(level.fishSpeedMin, level.fishSpeedMax) * difficultyScale().speed * type.speedMultiplier, baseSpeed: 0, phase: rand(0, Math.PI * 2), verticalDrift: rand(-16, 16), width: 36, height: 36, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); }
-    function nextLevelOrFinish() { if (state.levelIndex >= GAME_CONFIG.levels.length - 1) { finishGame(true, 'Все уровни пройдены!'); return; } state.levelIndex += 1; state.levelCaught = 0; state.levelRemainingTime = currentLevel().levelTimeLimitSec; state.lineLength = GAME_CONFIG.gameplay.rod.startLengthPx; resetEntities(); updateHUD(); setMessage('Уровень ' + currentLevel().id + ': ' + currentLevel().name, 'ok'); }
-    function finishGame(win, reason) { state.gameOver = true; state.running = false; closeTask(); const spent = Math.round((performance.now() - state.startedAt) / 1000); el.overlay.classList.add('show'); el.modal.innerHTML = '<h2 style="font-size:34px; margin:0 0 8px;">' + (win ? 'Победа!' : 'Игра окончена') + '</h2><p style="font-size:19px; margin-bottom:14px;">' + reason + '</p><div style="background:#eef5fb; border-radius:18px; padding:16px 18px; margin-top:10px; line-height:1.7;"><div><b>Поймано рыб:</b> ' + state.totalCaught + '</div><div><b>Собрано мусора:</b> ' + state.totalTrash + '</div><div><b>Общие очки:</b> ' + state.score + '</div><div><b>Время игры:</b> ' + spent + ' сек.</div><div><b>Достигнутый уровень:</b> ' + currentLevel().id + '</div></div><div class="row" style="margin-top:18px; justify-content:center;"><button id="restartBtn" class="primaryBtn" type="button">Играть снова</button></div>'; document.getElementById('restartBtn').addEventListener('click', startGame); }
-    function startGame() { state.running = true; state.lowering = false; state.raising = false; state.inTask = false; state.gameOver = false; state.levelIndex = 0; state.score = GAME_CONFIG.scoreStart; state.totalCaught = 0; state.totalTrash = 0; state.attempts = 0; state.levelCaught = 0; state.levelRemainingTime = currentLevel().levelTimeLimitSec; state.lineLength = GAME_CONFIG.gameplay.rod.startLengthPx; state.startedAt = performance.now(); el.overlay.classList.remove('show'); el.startScreen.style.display = 'none'; el.controlHint.style.display = 'none'; resetEntities(); updateHUD(); renderRod(performance.now()); setMessage('Игра началась. Сложность: ' + difficultyLabel(GAME_CONFIG.difficulty) + '.'); lastTs = performance.now(); requestAnimationFrame(loop); }
-    function attachControls() { const startLower = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.lowering = true; state.raising = false; }; const stopLower = e => { e.preventDefault && e.preventDefault(); state.lowering = false; }; const startRaise = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.raising = true; state.lowering = false; }; const stopRaise = e => { e.preventDefault && e.preventDefault(); state.raising = false; }; ['pointerdown','mousedown','touchstart'].forEach(evt => el.downBtn.addEventListener(evt, startLower)); ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.downBtn.addEventListener(evt, stopLower)); ['pointerdown','mousedown','touchstart'].forEach(evt => el.upBtn.addEventListener(evt, startRaise)); ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.upBtn.addEventListener(evt, stopRaise)); window.addEventListener('keydown', e => { if (!state.running || state.inTask) return; const key = e.key.toLowerCase(); if (e.key === 'ArrowDown' || key === 's') { state.lowering = true; state.raising = false; } if (e.key === 'ArrowUp' || key === 'w') { state.raising = true; state.lowering = false; } }); window.addEventListener('keyup', e => { const key = e.key.toLowerCase(); if (e.key === 'ArrowDown' || key === 's') state.lowering = false; if (e.key === 'ArrowUp' || key === 'w') state.raising = false; }); window.addEventListener('resize', () => renderRod(performance.now())); el.helpBtn.addEventListener('click', () => { const visible = el.controlHint.style.display === 'block'; el.controlHint.style.display = visible ? 'none' : 'block'; }); el.difficultyButtons.forEach(btn => btn.addEventListener('click', () => { GAME_CONFIG.difficulty = btn.dataset.difficulty; applyDifficultyUI(); })); el.startGameBtn.addEventListener('click', startGame); }
-    function checkCollisions() { if (state.inTask || state.gameOver) return; for (const entity of state.entities) { if (!entity.active) continue; if (!intersects(entity)) continue; state.attempts += 1; updateHUD(); if (entity.kind === 'trash') { handleTrashHit(entity); break; } if (entity.kind === 'fish') { handleFishCatch(entity); break; } } }
+    function shuffle(arr) { return arr.slice().sort(() => Math.random() - 0.5); }
+
+    function updateHUD() {
+      el.scoreValue.textContent = state.score;
+      el.levelValue.textContent = String(currentLevel().id);
+      el.caughtValue.textContent = state.totalCaught;
+      el.trashValue.textContent = state.totalTrash;
+      el.attemptsValue.textContent = state.attempts;
+      el.timeValue.textContent = Math.max(0, Math.ceil(state.levelRemainingTime));
+      el.progressFill.style.width = Math.min(100, (state.levelCaught / currentLevel().fishRequired) * 100) + '%';
+    }
+
+    function setMessage(text, type) {
+      el.message.textContent = text;
+      el.message.style.background = type === 'ok' ? 'rgba(46,204,113,0.9)' : type === 'bad' ? 'rgba(255,107,107,0.9)' : 'rgba(8,24,42,0.82)';
+    }
+
+    function createEntityDom(entity) {
+      const node = document.createElement('div');
+      node.className = 'entity ' + entity.kind;
+      node.textContent = entity.emoji;
+      el.entities.appendChild(node);
+      entity.node = node;
+      renderEntity(entity);
+    }
+
+    function renderEntity(entity) {
+      if (!entity.node) return;
+      const t = performance.now();
+      const bobX = entity.kind === 'fish' ? Math.sin((t * 0.004) + entity.phase) * 4 : 0;
+      const bobY = entity.kind === 'fish' ? Math.cos((t * 0.0032) + entity.phase) * 3 : 0;
+      entity.node.style.transform = 'translate(' + (entity.x + bobX) + 'px, ' + (entity.y + bobY) + 'px)';
+      entity.node.style.opacity = entity.active ? '1' : '0';
+    }
+
+    function resetEntities() {
+      state.entities = [];
+      el.entities.innerHTML = '';
+      const level = currentLevel();
+      const diff = difficultyScale();
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      for (let i = 0; i < level.fishSpawnCount; i += 1) {
+        const type = pick(GAME_CONFIG.fishTypes);
+        const fish = {
+          id: 'fish-' + Date.now() + '-' + i,
+          kind: 'fish',
+          label: type.label,
+          emoji: type.emoji,
+          pointValue: type.points,
+          nearHookBoost: type.nearHookBoost,
+          x: rand(0, w + 200),
+          y: rand(h * 0.35, h * 0.78),
+          speed: rand(level.fishSpeedMin, level.fishSpeedMax) * diff.speed * type.speedMultiplier,
+          baseSpeed: 0,
+          phase: rand(0, Math.PI * 2),
+          verticalDrift: rand(-16, 16),
+          width: 36,
+          height: 36,
+          active: true,
+          respawning: false
+        };
+        fish.baseSpeed = fish.speed;
+        createEntityDom(fish);
+        state.entities.push(fish);
+      }
+
+      for (let i = 0; i < level.trashSpawnCount; i += 1) {
+        if (Math.random() > level.trashProbability * diff.trash) continue;
+        const type = pick(GAME_CONFIG.trashTypes);
+        const trash = {
+          id: 'trash-' + Date.now() + '-' + i,
+          kind: 'trash',
+          label: type.label,
+          emoji: type.emoji,
+          x: rand(0, w + 220),
+          y: rand(h * 0.4, h * 0.82),
+          speed: rand(35, 70) * diff.speed,
+          baseSpeed: 0,
+          phase: rand(0, Math.PI * 2),
+          width: 34,
+          height: 34,
+          active: true,
+          respawning: false
+        };
+        trash.baseSpeed = trash.speed;
+        createEntityDom(trash);
+        state.entities.push(trash);
+      }
+    }
+
+    function renderRod(time) {
+      const maxDepth = window.innerHeight * GAME_CONFIG.gameplay.rod.maxDepthRatio;
+      const sway = Math.sin(time * GAME_CONFIG.gameplay.rod.swaySpeed) * GAME_CONFIG.gameplay.rod.swayAmplitude;
+      const length = clamp(state.lineLength, GAME_CONFIG.gameplay.rod.minLengthPx, maxDepth);
+      el.line.style.height = length + 'px';
+      el.line.style.transform = 'translateX(' + sway + 'px)';
+      state.hookX = window.innerWidth * GAME_CONFIG.gameplay.rod.minXRatio + 85 + sway;
+      state.hookY = state.lineBaseY + length;
+      el.hook.style.left = (state.hookX - 12) + 'px';
+      el.hook.style.top = (state.hookY - 8) + 'px';
+    }
+
+    function scheduleRespawn(entity) {
+      if (entity.respawning || !entity.node) return;
+      entity.respawning = true;
+      entity.active = false;
+      renderEntity(entity);
+      const delay = entity.kind === 'fish' ? rand(900, 2200) : rand(1200, 2600);
+      setTimeout(() => {
+        entity.x = window.innerWidth + rand(80, 320);
+        entity.y = rand(window.innerHeight * 0.35, window.innerHeight * 0.82);
+        entity.speed = entity.baseSpeed;
+        entity.verticalDrift = rand(-16, 16);
+        entity.active = true;
+        entity.respawning = false;
+        renderEntity(entity);
+      }, delay);
+    }
+
+    function moveEntities(dt) {
+      const h = window.innerHeight;
+      const hookRadius = 150;
+      for (const entity of state.entities) {
+        if (!entity.active) continue;
+        if (entity.kind === 'fish') {
+          const dx = state.hookX - (entity.x + entity.width / 2);
+          const dy = state.hookY - (entity.y + entity.height / 2);
+          const dist = Math.hypot(dx, dy);
+          const proximity = clamp(1 - dist / hookRadius, 0, 1);
+          entity.speed = entity.baseSpeed * (1 + proximity * ((entity.nearHookBoost || 1.15) - 1));
+          entity.y += entity.verticalDrift * 0.015 * dt * 60;
+          if (entity.y < h * 0.34 || entity.y > h * 0.79) entity.verticalDrift *= -1;
+        }
+        entity.x -= entity.speed * dt;
+        if (entity.x < -120) {
+          scheduleRespawn(entity);
+          continue;
+        }
+        renderEntity(entity);
+      }
+    }
+
+    function intersects(entity) {
+      const hookRect = { x: state.hookX - 10, y: state.hookY - 10, w: 20, h: 20 };
+      const entityRect = { x: entity.x, y: entity.y, w: entity.width, h: entity.height };
+      return !(hookRect.x + hookRect.w < entityRect.x || hookRect.x > entityRect.x + entityRect.w || hookRect.y + hookRect.h < entityRect.y || hookRect.y > entityRect.y + entityRect.h);
+    }
+
+    function getAvailableTaskTypes(level) {
+      const available = [];
+      if (level.enabledTaskTypes.choice && level.tasks.choice.length) available.push('choice');
+      if (level.enabledTaskTypes.input && level.tasks.input.length) available.push('input');
+      return available;
+    }
+
+    function buildTask() {
+      const level = currentLevel();
+      const availableTypes = getAvailableTaskTypes(level);
+      if (!availableTypes.length) return null;
+      const type = pick(availableTypes);
+      const task = JSON.parse(JSON.stringify(pick(level.tasks[type])));
+      task.prompt = task.question;
+      task.answer = task.correctAnswer;
+      task.timeLimit = Math.max(4, level.taskTimeSec * difficultyScale().taskTime);
+      if (type === 'choice') {
+        task.answerMode = 'choice';
+        task.options = shuffle([task.correctAnswer, ...task.wrongAnswers]);
+      } else {
+        task.answerMode = 'input';
+      }
+      return task;
+    }
+
+    function renderTaskModal(task, entity) {
+      const optionsHtml = task.answerMode === 'choice'
+        ? '<div id="options">' + task.options.map(opt => '<button class="optBtn" data-answer="' + String(opt).replace(/"/g, '&quot;') + '">' + opt + '</button>').join('') + '</div>'
+        : '<input id="answerInput" placeholder="Введите ответ" autocomplete="off" /><div class="row"><button id="submitAnswer" class="primaryBtn">Ответить</button></div>';
+
+      el.modal.innerHTML = '<h2 style="margin:0 0 8px;">Клюёт! ' + entity.emoji + '</h2><p style="margin:0 0 12px;">Решите задание, чтобы добавить рыбу в улов.</p><div id="taskTimerBar"><div id="taskTimerFill"></div></div><div id="taskTitle">' + task.prompt + '</div>' + optionsHtml + '<div class="row"><button id="skipTask" class="secondaryBtn">Не успеваю</button></div>';
+
+      if (task.answerMode === 'choice') {
+        el.modal.querySelectorAll('.optBtn').forEach(btn => btn.addEventListener('click', () => submitTaskAnswer(btn.dataset.answer)));
+      } else {
+        const input = document.getElementById('answerInput');
+        const submit = document.getElementById('submitAnswer');
+        input.focus();
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') submitTaskAnswer(input.value);
+        });
+        submit.addEventListener('click', () => submitTaskAnswer(input.value));
+      }
+
+      document.getElementById('skipTask').addEventListener('click', () => failTask('Рыба уплыла.'));
+    }
+
+    function runTaskTimer() {
+      const fill = () => {
+        if (!state.inTask || !state.activeTask) return;
+        const passed = (performance.now() - state.lastTaskStartedAt) / 1000;
+        const left = Math.max(0, state.activeTask.timeLimit - passed);
+        const bar = document.getElementById('taskTimerFill');
+        if (bar) bar.style.width = (left / state.activeTask.timeLimit) * 100 + '%';
+        if (left <= 0) {
+          failTask('Время вышло. Рыба уплыла.');
+          return;
+        }
+        requestAnimationFrame(fill);
+      };
+      requestAnimationFrame(fill);
+    }
+
+    function openTask(entity) {
+      state.inTask = true;
+      const task = buildTask();
+      if (!task) {
+        state.inTask = false;
+        setMessage('Для этого уровня нет доступных заданий. Добавьте задания в редакторе.', 'bad');
+        scheduleRespawn(entity);
+        return;
+      }
+      state.activeTask = task;
+      state.activeEntityId = entity.id;
+      state.lastTaskStartedAt = performance.now();
+      el.overlay.classList.add('show');
+      renderTaskModal(task, entity);
+      runTaskTimer();
+    }
+
+    function closeTask() {
+      state.inTask = false;
+      state.activeTask = null;
+      state.activeEntityId = null;
+      el.overlay.classList.remove('show');
+    }
+
+    function completeTask() {
+      const fish = state.entities.find(x => x.id === state.activeEntityId);
+      state.score += (fish && fish.pointValue) || 5;
+      state.totalCaught += 1;
+      state.levelCaught += 1;
+      setMessage('Отлично! Рыба поймана.', 'ok');
+      if (fish && fish.node) fish.node.remove();
+      state.entities = state.entities.filter(x => x.id !== state.activeEntityId);
+      closeTask();
+      refillFishIfNeeded();
+      updateHUD();
+      if (state.levelCaught >= currentLevel().fishRequired) nextLevelOrFinish();
+    }
+
+    function failTask(msg) {
+      const fish = state.entities.find(x => x.id === state.activeEntityId);
+      if (fish) scheduleRespawn(fish);
+      setMessage(msg, 'bad');
+      closeTask();
+      updateHUD();
+    }
+
+    function submitTaskAnswer(raw) {
+      if (!state.inTask || !state.activeTask) return;
+      const ok = normalizeAnswer(raw) === normalizeAnswer(state.activeTask.answer);
+      if (ok) completeTask();
+      else failTask('Неверный ответ. Рыба уплыла.');
+    }
+
+    function refillFishIfNeeded() {
+      const level = currentLevel();
+      const fishCount = state.entities.filter(e => e.kind === 'fish').length;
+      if (fishCount >= level.fishSpawnCount) return;
+      const type = pick(GAME_CONFIG.fishTypes);
+      const fish = {
+        id: 'fish-' + Date.now() + '-' + Math.random(),
+        kind: 'fish',
+        label: type.label,
+        emoji: type.emoji,
+        pointValue: type.points,
+        nearHookBoost: type.nearHookBoost,
+        x: window.innerWidth + rand(80, 260),
+        y: rand(window.innerHeight * 0.35, window.innerHeight * 0.78),
+        speed: rand(level.fishSpeedMin, level.fishSpeedMax) * difficultyScale().speed * type.speedMultiplier,
+        baseSpeed: 0,
+        phase: rand(0, Math.PI * 2),
+        verticalDrift: rand(-16, 16),
+        width: 36,
+        height: 36,
+        active: true,
+        respawning: false
+      };
+      fish.baseSpeed = fish.speed;
+      createEntityDom(fish);
+      state.entities.push(fish);
+    }
+
+    function handleTrashHit(entity) {
+      state.totalTrash += 1;
+      state.score -= GAME_CONFIG.gameplay.scoreTrashPenalty;
+      entity.node.classList.add('hit');
+      setMessage('Ой! Попался мусор: ' + entity.label, 'bad');
+      setTimeout(() => scheduleRespawn(entity), 300);
+      updateHUD();
+      if (state.score <= 0) finishGame(false, 'Очки упали до нуля.');
+    }
+
+    function handleFishCatch(entity) {
+      entity.active = false;
+      entity.node.classList.add('caught');
+      openTask(entity);
+    }
+
+    function checkCollisions() {
+      if (state.inTask || state.gameOver) return;
+      for (const entity of state.entities) {
+        if (!entity.active) continue;
+        if (!intersects(entity)) continue;
+        state.attempts += 1;
+        updateHUD();
+        if (entity.kind === 'trash') {
+          handleTrashHit(entity);
+          break;
+        }
+        if (entity.kind === 'fish') {
+          handleFishCatch(entity);
+          break;
+        }
+      }
+    }
+
+    function nextLevelOrFinish() {
+      if (state.levelIndex >= GAME_CONFIG.levels.length - 1) {
+        finishGame(true, 'Все уровни пройдены!');
+        return;
+      }
+      state.levelIndex += 1;
+      state.levelCaught = 0;
+      state.levelRemainingTime = currentLevel().levelTimeLimitSec;
+      state.lineLength = GAME_CONFIG.gameplay.rod.startLengthPx;
+      resetEntities();
+      updateHUD();
+      setMessage('Уровень ' + currentLevel().id + ': ' + currentLevel().name, 'ok');
+    }
+
+    function finishGame(win, reason) {
+      state.gameOver = true;
+      state.running = false;
+      closeTask();
+      el.overlay.classList.add('show');
+      el.modal.innerHTML = '<h2 style="font-size:34px; margin:0 0 8px;">' + (win ? 'Победа!' : 'Игра окончена') + '</h2><p style="font-size:19px; margin-bottom:14px;">' + reason + '</p><div class="row" style="margin-top:18px; justify-content:center;"><button id="restartBtn" class="primaryBtn" type="button">Играть снова</button></div>';
+      document.getElementById('restartBtn').addEventListener('click', startGame);
+    }
+
+    function startGame() {
+      state.running = true;
+      state.lowering = false;
+      state.raising = false;
+      state.inTask = false;
+      state.gameOver = false;
+      state.levelIndex = 0;
+      state.score = GAME_CONFIG.scoreStart;
+      state.totalCaught = 0;
+      state.totalTrash = 0;
+      state.attempts = 0;
+      state.levelCaught = 0;
+      state.levelRemainingTime = currentLevel().levelTimeLimitSec;
+      state.lineLength = GAME_CONFIG.gameplay.rod.startLengthPx;
+      state.startedAt = performance.now();
+      el.overlay.classList.remove('show');
+      el.startScreen.style.display = 'none';
+      resetEntities();
+      updateHUD();
+      renderRod(performance.now());
+      setMessage('Игра началась.', 'ok');
+      lastTs = performance.now();
+      requestAnimationFrame(loop);
+    }
+
+    function attachControls() {
+      const startLower = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.lowering = true; state.raising = false; };
+      const stopLower = e => { e.preventDefault && e.preventDefault(); state.lowering = false; };
+      const startRaise = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.raising = true; state.lowering = false; };
+      const stopRaise = e => { e.preventDefault && e.preventDefault(); state.raising = false; };
+
+      ['pointerdown','mousedown','touchstart'].forEach(evt => el.downBtn.addEventListener(evt, startLower));
+      ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.downBtn.addEventListener(evt, stopLower));
+      ['pointerdown','mousedown','touchstart'].forEach(evt => el.upBtn.addEventListener(evt, startRaise));
+      ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.upBtn.addEventListener(evt, stopRaise));
+
+      window.addEventListener('keydown', e => {
+        if (!state.running || state.inTask) return;
+        const key = e.key.toLowerCase();
+        if (e.key === 'ArrowDown' || key === 's') { state.lowering = true; state.raising = false; }
+        if (e.key === 'ArrowUp' || key === 'w') { state.raising = true; state.lowering = false; }
+      });
+
+      window.addEventListener('keyup', e => {
+        const key = e.key.toLowerCase();
+        if (e.key === 'ArrowDown' || key === 's') state.lowering = false;
+        if (e.key === 'ArrowUp' || key === 'w') state.raising = false;
+      });
+
+      window.addEventListener('resize', () => renderRod(performance.now()));
+      el.startGameBtn.addEventListener('click', startGame);
+    }
+
     let lastTs = performance.now();
-    function loop(ts) { if (!state.running) return; const dt = Math.min(0.033, (ts - lastTs) / 1000); lastTs = ts; if (!state.inTask && !state.gameOver) { const maxDepth = window.innerHeight * GAME_CONFIG.gameplay.rod.maxDepthRatio; if (state.lowering) state.lineLength += GAME_CONFIG.gameplay.rod.lowerSpeedPxPerSec * dt; if (state.raising) state.lineLength -= GAME_CONFIG.gameplay.rod.raiseSpeedPxPerSec * dt; state.lineLength = clamp(state.lineLength, GAME_CONFIG.gameplay.rod.minLengthPx, maxDepth); state.levelRemainingTime -= dt; if (state.levelRemainingTime <= 0) { finishGame(false, 'Закончилось время уровня.'); return; } if (state.attempts >= GAME_CONFIG.gameplay.maxAttemptsPerLevel) { finishGame(false, 'Закончились попытки на уровне.'); return; } moveEntities(dt); checkCollisions(); updateHUD(); } renderRod(ts); requestAnimationFrame(loop); }
-    function init() { attachControls(); resetEntities(); updateHUD(); renderRod(performance.now()); applyDifficultyUI(); }
+    function loop(ts) {
+      if (!state.running) return;
+      const dt = Math.min(0.033, (ts - lastTs) / 1000);
+      lastTs = ts;
+      if (!state.inTask && !state.gameOver) {
+        const maxDepth = window.innerHeight * GAME_CONFIG.gameplay.rod.maxDepthRatio;
+        if (state.lowering) state.lineLength += GAME_CONFIG.gameplay.rod.lowerSpeedPxPerSec * dt;
+        if (state.raising) state.lineLength -= GAME_CONFIG.gameplay.rod.raiseSpeedPxPerSec * dt;
+        state.lineLength = clamp(state.lineLength, GAME_CONFIG.gameplay.rod.minLengthPx, maxDepth);
+        state.levelRemainingTime -= dt;
+        if (state.levelRemainingTime <= 0) { finishGame(false, 'Закончилось время уровня.'); return; }
+        if (state.attempts >= GAME_CONFIG.gameplay.maxAttemptsPerLevel) { finishGame(false, 'Закончились попытки на уровне.'); return; }
+        moveEntities(dt);
+        checkCollisions();
+        updateHUD();
+      }
+      renderRod(ts);
+      requestAnimationFrame(loop);
+    }
+
+    function init() {
+      attachControls();
+      resetEntities();
+      updateHUD();
+      renderRod(performance.now());
+    }
+
     init();
   <\/script>
 </body>
 </html>`;
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
     }
 
     function bindEvents() {
@@ -1103,8 +1496,8 @@
         els.enableChoice,
         els.enableInput
       ].forEach(control => {
-        control.addEventListener('input', syncLevelFromInputs);
-        control.addEventListener('change', syncLevelFromInputs);
+        control.addEventListener('input', () => { syncLevelFromInputs(); updatePreview(); });
+        control.addEventListener('change', () => { syncLevelFromInputs(); updatePreview(); });
       });
 
       els.addLevelBtn.addEventListener('click', addLevel);
@@ -1117,7 +1510,7 @@
       els.exportJsonBtn.addEventListener('click', exportJson);
     }
 
-    function init() {
+    function initEditor() {
       renderLevelsList();
       renderLevelEditor();
       renderTaskList();
@@ -1125,7 +1518,7 @@
       updatePreview();
     }
 
-    init();
+    initEditor();
   </script>
 </body>
 </html>

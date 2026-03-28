@@ -587,7 +587,19 @@
           <button id="modeDivision" class="secondaryBtn modeBtn" type="button" data-mode="division" style="padding:16px 12px;">Деление</button>
           <button id="modeMixed" class="primaryBtn modeBtn" type="button" data-mode="mixed" style="padding:16px 12px;">Всё вместе</button>
         </div>
-        <div id="modeHint" style="margin-bottom:16px; font-weight:700; color:#17324c;">Сейчас выбран режим: <b>умножение и деление</b>.</div>e:22px; padding:16px 28px;">Начать игру</button></div>
+        <div id="modeHint" style="margin-bottom:12px; font-weight:700; color:#17324c;">Сейчас выбран режим: <b>умножение и деление</b>.</div>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:18px;">
+          <button id="table2Btn" class="secondaryBtn tableBtn" type="button" data-table="2" style="padding:14px 10px;">Таблица 2</button>
+          <button id="table3Btn" class="secondaryBtn tableBtn" type="button" data-table="3" style="padding:14px 10px;">Таблица 3</button>
+          <button id="table4Btn" class="secondaryBtn tableBtn" type="button" data-table="4" style="padding:14px 10px;">Таблица 4</button>
+          <button id="table5Btn" class="secondaryBtn tableBtn" type="button" data-table="5" style="padding:14px 10px;">Таблица 5</button>
+          <button id="table6Btn" class="secondaryBtn tableBtn" type="button" data-table="6" style="padding:14px 10px;">Таблица 6</button>
+          <button id="table7Btn" class="secondaryBtn tableBtn" type="button" data-table="7" style="padding:14px 10px;">Таблица 7</button>
+          <button id="table8Btn" class="secondaryBtn tableBtn" type="button" data-table="8" style="padding:14px 10px;">Таблица 8</button>
+          <button id="table9Btn" class="secondaryBtn tableBtn" type="button" data-table="9" style="padding:14px 10px;">Таблица 9</button>
+        </div>
+        <div id="tableHint" style="margin-bottom:16px; font-weight:700; color:#17324c;">Сейчас выбрана таблица: <b>все таблицы</b>.</div>
+        <div class="row" style="justify-content:center;"><button id="startGameBtn" class="primaryBtn" type="button" style="font-size:22px; padding:16px 28px;">Начать игру</button></div>
       </div>
     </div>
   </div>
@@ -596,12 +608,13 @@
     const GAME_CONFIG = {
       settings: {
         difficulty: 'medium',
+        taskMode: 'mixed',
+        tableFocus: 'all',
         answerMode: 'mixed',
         taskType: 'mixed',
         scoreStart: 10,
         scoreFishCorrect: 5,
- difficulty: 'medium',
-        taskMode: 'mixed',lty: 3,
+        scoreTrashPenalty: 3,
         scoreWrongPenalty: 0,
         maxAttemptsPerLevel: 30,
         levelTimeLimitSec: 90,
@@ -681,10 +694,19 @@
       helpBtn: document.getElementById('helpBtn'),
       controlHint: document.getElementById('controlHint'),
       difficultyHint: document.getElementById('difficultyHint'),
-      difficultyButtons: Array.from(document.querySelectorAll('.difficultdifficultyHint: document.getElementById('difficultyHint'),
       modeHint: document.getElementById('modeHint'),
+      tableHint: document.getElementById('tableHint'),
       difficultyButtons: Array.from(document.querySelectorAll('.difficultyBtn')),
-      modeButtons: Array.from(document.querySelectorAll('.modeBtn')) false,
+      modeButtons: Array.from(document.querySelectorAll('.modeBtn')),
+      tableButtons: Array.from(document.querySelectorAll('.tableBtn'))
+    };
+
+    const state = {
+      running: false,
+      lowering: false,
+      raising: false,
+      inTask: false,
+      gameOver: false,
       levelIndex: 0,
       score: GAME_CONFIG.settings.scoreStart,
       totalCaught: 0,
@@ -704,7 +726,9 @@
     };
 
     function difficultyScale() {
-      const d = GAME_CONFIG.settings.Time: 0.75, trash: 1.2 };
+      const d = GAME_CONFIG.settings.difficulty;
+      if (d === 'easy') return { speed: 0.78, taskTime: 1.45, trash: 0.75 };
+      if (d === 'hard') return { speed: 1.35, taskTime: 0.75, trash: 1.2 };
       return { speed: 1, taskTime: 1, trash: 1 };
     }
 
@@ -712,14 +736,12 @@
       return value === 'easy' ? 'лёгкая' : value === 'hard' ? 'сложная' : 'средняя';
     }
 
-    function applyDifficultyUI() {
-      el.difficultyButtons.forEach(btn => {
-        const active = btn.dataset.difficulty === GAME_CONFIG.settfunction difficultyLabel(value) {
-      return value === 'easy' ? 'лёгкая' : value === 'hard' ? 'сложная' : 'средняя';
-    }
-
     function modeLabel(value) {
       return value === 'multiply' ? 'умножение' : value === 'division' ? 'деление' : 'умножение и деление';
+    }
+
+    function tableLabel(value) {
+      return value === 'all' ? 'все таблицы' : 'таблица на ' + value;
     }
 
     function applyDifficultyUI() {
@@ -731,9 +753,21 @@
         const active = btn.dataset.mode === GAME_CONFIG.settings.taskMode;
         btn.className = (active ? 'primaryBtn' : 'secondaryBtn') + ' modeBtn';
       });
+      el.tableButtons.forEach(btn => {
+        const active = btn.dataset.table === String(GAME_CONFIG.settings.tableFocus);
+        btn.className = (active ? 'primaryBtn' : 'secondaryBtn') + ' tableBtn';
+      });
       el.difficultyHint.innerHTML = 'Сейчас выбрана сложность: <b>' + difficultyLabel(GAME_CONFIG.settings.difficulty) + '</b>.';
       el.modeHint.innerHTML = 'Сейчас выбран режим: <b>' + modeLabel(GAME_CONFIG.settings.taskMode) + '</b>.';
-    }.length)]; }
+      el.tableHint.innerHTML = 'Сейчас выбрана таблица: <b>' + tableLabel(GAME_CONFIG.settings.tableFocus) + '</b>.';
+    }
+
+    function currentLevel() {
+      return GAME_CONFIG.levels[Math.min(state.levelIndex, GAME_CONFIG.levels.length - 1)];
+    }
+
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
     function setMessage(text, kind) {
@@ -936,14 +970,9 @@
     }
 
     function buildTask() {
-      const mode = GAME_CONFIG.settings.taskMode || 'mixed';
-      let pool = [];
-
-      if (mode === 'multiply') pool = GAME_CONFIG.taskPools.multiply;
-      else if (mode === 'division') pool = GAME_CONFIG.taskPools.division;
-      else pool = [.function buildTask() {
       const level = currentLevel();
       const baseMode = GAME_CONFIG.settings.taskMode || 'mixed';
+      const tableFocus = GAME_CONFIG.settings.tableFocus || 'all';
       let mode = baseMode;
 
       if (baseMode === 'mixed') {
@@ -956,10 +985,27 @@
       else if (mode === 'division') pool = GAME_CONFIG.taskPools.division;
       else pool = [...GAME_CONFIG.taskPools.multiply, ...GAME_CONFIG.taskPools.division];
 
+      if (tableFocus !== 'all') {
+        const marker = String(tableFocus);
+        pool = pool.filter(task => task.prompt.includes(marker + ' ×') || task.prompt.includes('× ' + marker) || task.prompt.includes(marker + ' ÷') || task.prompt.includes('÷ ' + marker));
+      }
+
+      if (!pool.length) {
+        pool = [...GAME_CONFIG.taskPools.multiply, ...GAME_CONFIG.taskPools.division];
+      }
+
       const task = structuredClone(pick(pool));
       task.answerMode = 'input';
       return task;
-    }   el.overlay.classList.add('show');
+    }
+
+    function openTask(entity) {
+      state.inTask = true;
+      const task = buildTask();
+      task.timeLimit = Math.max(4, currentLevel().taskTimeSec * difficultyScale().taskTime);
+      state.activeTask = task;
+      state.lastTaskStartedAt = performance.now();
+      el.overlay.classList.add('show');
       renderTaskModal(task, entity);
       runTaskTimer();
     }
@@ -1205,18 +1251,24 @@
         applyDifficultyUI();
       }));
 
-      el.startGameBtn.addEventListener('click', startGame);
-    }
-
-    function checkColliel.difficultyButtons.forEach(btn => btn.addEventListener('click', () => {
-        GAME_CONFIG.settings.difficulty = btn.dataset.difficulty;
-        applyDifficultyUI();
-      }));
-
       el.modeButtons.forEach(btn => btn.addEventListener('click', () => {
         GAME_CONFIG.settings.taskMode = btn.dataset.mode;
         applyDifficultyUI();
-      }));tinue;
+      }));
+
+      el.tableButtons.forEach(btn => btn.addEventListener('click', () => {
+        GAME_CONFIG.settings.tableFocus = btn.dataset.table;
+        applyDifficultyUI();
+      }));
+
+      el.startGameBtn.addEventListener('click', startGame);
+    }
+
+    function checkCollisions() {
+      if (state.inTask || state.gameOver) return;
+      for (const entity of state.entities) {
+        if (!entity.active) continue;
+        if (!intersects(entity)) continue;
         state.attempts += 1;
         updateHUD();
         if (entity.kind === 'trash') {

@@ -639,25 +639,15 @@
         { id: 3, fishRequired: 6, fishTypes: ['gold', 'tropical'], trashProbability: 0.65, taskTimeSec: 8 }
       ],
       taskPools: {
-        choice: [
-          { prompt: 'Какой газ необходим человеку для дыхания?', answer: 'Кислород', options: ['Кислород', 'Водород', 'Азот', 'Углекислый газ'] },
-          { prompt: 'Столица Японии?', answer: 'Токио', options: ['Пекин', 'Сеул', 'Токио', 'Бангкок'] },
-          { prompt: 'Сколько сторон у шестиугольника?', answer: '6', options: ['5', '6', '7', '8'] },
-          { prompt: 'Какой океан самый большой?', answer: 'Тихий океан', options: ['Атлантический океан', 'Тихий океан', 'Индийский океан', 'Северный Ледовитый океан'] },
-          { prompt: 'Кто написал «Руслан и Людмила»?', answer: 'Пушкин', options: ['Лермонтов', 'Толстой', 'Пушкин', 'Чехов'] },
-          { prompt: 'Какой материк самый жаркий?', answer: 'Африка', options: ['Евразия', 'Африка', 'Австралия', 'Южная Америка'] },
-          { prompt: 'Какой инструмент измеряет температуру?', answer: 'Термометр', options: ['Барометр', 'Термометр', 'Компас', 'Линейка'] },
-          { prompt: 'Какая планета ближе всего к Солнцу?', answer: 'Меркурий', options: ['Венера', 'Марс', 'Меркурий', 'Юпитер'] }
+        multiply: [
+          { prompt: '2 × 3', answer: '6' }, { prompt: '3 × 4', answer: '12' }, { prompt: '4 × 5', answer: '20' },
+          { prompt: '5 × 6', answer: '30' }, { prompt: '6 × 7', answer: '42' }, { prompt: '7 × 8', answer: '56' },
+          { prompt: '8 × 9', answer: '72' }, { prompt: '9 × 9', answer: '81' }
         ],
-        input: [
-          { prompt: 'Как называется процесс превращения воды в пар?', answer: 'Испарение' },
-          { prompt: 'Сколько будет 9 × 8?', answer: '72' },
-          { prompt: 'Кто открыл Америку?', answer: 'Колумб' },
-          { prompt: 'Как называется главная река Египта?', answer: 'Нил' },
-          { prompt: 'Какой язык изучают в Англии как родной?', answer: 'Английский' },
-          { prompt: 'Часть речи, которая обозначает предмет?', answer: 'Существительное' },
-          { prompt: 'Самая большая планета Солнечной системы?', answer: 'Юпитер' },
-          { prompt: 'Как называется фигура с тремя сторонами?', answer: 'Треугольник' }
+        division: [
+          { prompt: '6 ÷ 3', answer: '2' }, { prompt: '12 ÷ 4', answer: '3' }, { prompt: '20 ÷ 5', answer: '4' },
+          { prompt: '30 ÷ 6', answer: '5' }, { prompt: '42 ÷ 7', answer: '6' }, { prompt: '56 ÷ 8', answer: '7' },
+          { prompt: '72 ÷ 9', answer: '8' }, { prompt: '81 ÷ 9', answer: '9' }
         ]
       }
     };
@@ -939,13 +929,15 @@
     }
 
     function buildTask() {
-      const pools = GAME_CONFIG.taskPools;
-      const availableTypes = [];
-      if (pools.choice && pools.choice.length) availableTypes.push('choice');
-      if (pools.input && pools.input.length) availableTypes.push('input');
-      const pickedType = pick(availableTypes);
-      const task = structuredClone(pick(pools[pickedType]));
-      task.answerMode = pickedType;
+      const mode = GAME_CONFIG.settings.taskMode || 'mixed';
+      let pool = [];
+
+      if (mode === 'multiply') pool = GAME_CONFIG.taskPools.multiply;
+      else if (mode === 'division') pool = GAME_CONFIG.taskPools.division;
+      else pool = [...GAME_CONFIG.taskPools.multiply, ...GAME_CONFIG.taskPools.division];
+
+      const task = structuredClone(pick(pool));
+      task.answerMode = 'input';
       return task;
     }
 

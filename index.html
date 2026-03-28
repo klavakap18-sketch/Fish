@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Редактор игры «Рыбалка»</title>
+  <title>Редактор игры «Рыбалка» — уровни и задания</title>
   <style>
     :root {
       --bg: #f3f7fb;
@@ -13,6 +13,8 @@
       --line: #d9e5f0;
       --accent: #1677ff;
       --accent-2: #0ea5e9;
+      --danger: #ef4444;
+      --success: #16a34a;
       --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
       --radius: 18px;
     }
@@ -27,7 +29,7 @@
 
     .app {
       display: grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 480px 1fr;
       min-height: 100vh;
       gap: 18px;
       padding: 18px;
@@ -39,6 +41,7 @@
       box-shadow: var(--shadow);
       overflow: hidden;
       border: 1px solid rgba(15, 23, 42, 0.06);
+      min-height: 0;
     }
 
     .sidebar {
@@ -65,7 +68,7 @@
     .preview-header p {
       margin: 0;
       color: var(--muted);
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .sidebar-body {
@@ -86,6 +89,11 @@
     .section h3 {
       margin: 0 0 12px;
       font-size: 18px;
+    }
+
+    .section h4 {
+      margin: 0 0 10px;
+      font-size: 15px;
     }
 
     .grid {
@@ -109,16 +117,9 @@
       color: var(--text);
     }
 
-    input,
-    select,
-    textarea,
-    button {
-      font: inherit;
-    }
+    input, select, textarea, button { font: inherit; }
 
-    input,
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
       padding: 11px 12px;
       border: 1px solid #cdd9e5;
@@ -128,7 +129,7 @@
     }
 
     textarea {
-      min-height: 88px;
+      min-height: 90px;
       resize: vertical;
     }
 
@@ -147,41 +148,63 @@
       font-weight: 800;
     }
 
-    .primary {
-      background: var(--accent);
-      color: white;
-    }
+    .primary { background: var(--accent); color: white; }
+    .secondary { background: #eaf2fb; color: var(--text); }
+    .danger { background: #fee2e2; color: #991b1b; }
+    .success { background: #dcfce7; color: #166534; }
 
-    .secondary {
-      background: #eaf2fb;
-      color: var(--text);
-    }
-
-    .danger {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .task-list {
+    .levels-list, .task-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      max-height: 320px;
+      max-height: 280px;
       overflow: auto;
     }
 
-    .task-card {
+    .level-card, .task-card {
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 12px;
       background: white;
     }
 
-    .task-top {
+    .level-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(22,119,255,0.08);
+    }
+
+    .card-top {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       align-items: flex-start;
+    }
+
+    .card-title {
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .meta, .note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      font-size: 12px;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #eef5ff;
+      color: #265792;
     }
 
     .task-type {
@@ -193,15 +216,24 @@
       margin-bottom: 5px;
     }
 
-    .task-prompt {
-      font-weight: 800;
-      margin-bottom: 6px;
+    .inline-checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 6px;
     }
 
-    .task-meta {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.4;
+    .check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .check input {
+      width: auto;
+      transform: scale(1.15);
     }
 
     .preview {
@@ -242,20 +274,25 @@
       background: white;
     }
 
-    .note {
-      color: var(--muted);
+    .warning {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff7ed;
+      color: #9a3412;
       font-size: 13px;
-      line-height: 1.45;
-      margin-top: 8px;
+      font-weight: 700;
     }
 
-    @media (max-width: 1100px) {
-      .app {
-        grid-template-columns: 1fr;
-      }
-      iframe {
-        min-height: 620px;
-      }
+    .subsection {
+      border-top: 1px dashed var(--line);
+      padding-top: 14px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+      iframe { min-height: 620px; }
     }
   </style>
 </head>
@@ -264,12 +301,12 @@
     <aside class="panel sidebar">
       <div class="sidebar-header">
         <h1>Редактор «Рыбалка»</h1>
-        <p>Первая рабочая версия редактора: меняйте параметры слева, а игра сразу обновляется справа через <code>iframe.srcdoc</code>.</p>
+        <p>Версия с уровнями: можно добавлять уровни, включать типы заданий по галочкам и сразу смотреть превью игры справа.</p>
       </div>
 
       <div class="sidebar-body">
         <section class="section">
-          <h3>Основные настройки</h3>
+          <h3>Общие настройки игры</h3>
           <div class="field">
             <label for="gameTitle">Название игры</label>
             <input id="gameTitle" value="🎣 Рыбалка" />
@@ -284,24 +321,45 @@
               </select>
             </div>
             <div class="field">
-              <label for="fishRequired">Рыб на уровень</label>
-              <input id="fishRequired" type="number" min="1" max="20" value="4" />
-            </div>
-          </div>
-          <div class="grid">
-            <div class="field">
               <label for="scoreStart">Стартовые очки</label>
               <input id="scoreStart" type="number" min="0" max="100" value="10" />
-            </div>
-            <div class="field">
-              <label for="levelTimeLimitSec">Время уровня, сек</label>
-              <input id="levelTimeLimitSec" type="number" min="20" max="300" value="90" />
             </div>
           </div>
         </section>
 
         <section class="section">
-          <h3>Рыбы и мусор</h3>
+          <div class="card-top">
+            <div>
+              <h3 style="margin-bottom:6px;">Уровни</h3>
+              <div class="note">У каждого уровня свои параметры и свои задания.</div>
+            </div>
+            <button id="addLevelBtn" class="primary">Добавить уровень</button>
+          </div>
+          <div id="levelsList" class="levels-list" style="margin-top:12px;"></div>
+        </section>
+
+        <section class="section">
+          <h3 id="levelEditorTitle">Редактор уровня</h3>
+          <div class="grid">
+            <div class="field">
+              <label for="levelName">Название уровня</label>
+              <input id="levelName" placeholder="Например: Уровень 1" />
+            </div>
+            <div class="field">
+              <label for="fishRequired">Рыб для прохождения</label>
+              <input id="fishRequired" type="number" min="1" max="20" value="4" />
+            </div>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="levelTimeLimitSec">Время уровня, сек</label>
+              <input id="levelTimeLimitSec" type="number" min="20" max="300" value="90" />
+            </div>
+            <div class="field">
+              <label for="taskTimeSec">Время на задание, сек</label>
+              <input id="taskTimeSec" type="number" min="3" max="60" value="12" />
+            </div>
+          </div>
           <div class="grid">
             <div class="field">
               <label for="fishSpawnCount">Рыб на сцене</label>
@@ -322,59 +380,67 @@
               <input id="fishSpeedMax" type="number" min="10" max="300" value="105" />
             </div>
           </div>
-          <div class="grid">
-            <div class="field">
-              <label for="trashProbability">Вероятность мусора (0–1)</label>
-              <input id="trashProbability" type="number" min="0" max="1" step="0.05" value="0.35" />
+          <div class="field">
+            <label for="trashProbability">Вероятность мусора (0–1)</label>
+            <input id="trashProbability" type="number" min="0" max="1" step="0.05" value="0.35" />
+          </div>
+
+          <div class="subsection">
+            <h4>Типы заданий уровня</h4>
+            <div class="inline-checks">
+              <label class="check"><input id="enableChoice" type="checkbox" checked /> Тип 1: выбор ответа</label>
+              <label class="check"><input id="enableInput" type="checkbox" checked /> Тип 2: ввод верного ответа</label>
             </div>
-            <div class="field">
-              <label for="taskTimeSec">Время на задание, сек</label>
-              <input id="taskTimeSec" type="number" min="3" max="60" value="12" />
-            </div>
+            <div class="note">Нужно оставить включённым хотя бы один тип.</div>
           </div>
         </section>
 
         <section class="section">
-          <h3>Добавить задание</h3>
+          <h3>Добавить задание — тип 1</h3>
+          <div class="note">Три колонки: вопрос, правильный ответ, неправильные ответы.</div>
+          <div class="field">
+            <label for="choiceQuestion">Вопрос</label>
+            <input id="choiceQuestion" placeholder="Например: Сколько будет 2 + 3?" />
+          </div>
           <div class="grid">
             <div class="field">
-              <label for="taskType">Тип</label>
-              <select id="taskType">
-                <option value="math">Математика</option>
-                <option value="question">Вопрос</option>
-              </select>
+              <label for="choiceCorrect">Правильный ответ</label>
+              <input id="choiceCorrect" placeholder="5" />
             </div>
             <div class="field">
-              <label for="taskDifficulty">Сложность</label>
-              <select id="taskDifficulty">
-                <option value="easy">Лёгкая</option>
-                <option value="medium" selected>Средняя</option>
-                <option value="hard">Сложная</option>
-              </select>
+              <label for="choiceWrong">Неправильные ответы через ;</label>
+              <input id="choiceWrong" placeholder="4; 6; 7" />
             </div>
-          </div>
-          <div class="field">
-            <label for="taskPrompt">Текст задания</label>
-            <input id="taskPrompt" placeholder="Например: 8 + 5" />
-          </div>
-          <div class="field">
-            <label for="taskAnswer">Правильный ответ</label>
-            <input id="taskAnswer" placeholder="Например: 13" />
-          </div>
-          <div class="field">
-            <label for="taskOptions">Варианты ответа через ;</label>
-            <input id="taskOptions" placeholder="10;13;15;18" />
           </div>
           <div class="btn-row">
-            <button id="addTaskBtn" class="primary">Добавить задание</button>
-            <button id="resetTasksBtn" class="secondary">Сбросить к базовым</button>
+            <button id="addChoiceTaskBtn" class="primary">Добавить задание типа 1</button>
           </div>
         </section>
 
         <section class="section">
-          <h3>Список заданий</h3>
+          <h3>Добавить задание — тип 2</h3>
+          <div class="note">Две колонки: вопрос и написать верный ответ.</div>
+          <div class="field">
+            <label for="inputQuestion">Вопрос</label>
+            <input id="inputQuestion" placeholder="Например: Столица Франции" />
+          </div>
+          <div class="field">
+            <label for="inputCorrect">Верный ответ</label>
+            <input id="inputCorrect" placeholder="Париж" />
+          </div>
+          <div class="btn-row">
+            <button id="addInputTaskBtn" class="primary">Добавить задание типа 2</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <h3>Задания выбранного уровня</h3>
           <div id="taskList" class="task-list"></div>
-          <div class="note">Сейчас это первая версия редактора. Можно добавлять, удалять и сразу проверять задания в превью.</div>
+          <div id="levelWarnings"></div>
+          <div class="btn-row">
+            <button id="duplicateLevelBtn" class="secondary">Дублировать уровень</button>
+            <button id="deleteLevelBtn" class="danger">Удалить уровень</button>
+          </div>
         </section>
       </div>
     </aside>
@@ -399,62 +465,64 @@
   </div>
 
   <script>
-    const BASE_TASKS = {
-      math: {
-        easy: [
-          { prompt: '3 + 4', answer: '7' },
-          { prompt: '10 - 6', answer: '4' }
+    const DEFAULT_LEVEL = (id) => ({
+      id,
+      name: `Уровень ${id}`,
+      fishRequired: 4,
+      levelTimeLimitSec: 90,
+      fishSpawnCount: 6,
+      trashSpawnCount: 4,
+      fishSpeedMin: 55,
+      fishSpeedMax: 105,
+      trashProbability: 0.35,
+      taskTimeSec: 12,
+      enabledTaskTypes: { choice: true, input: true },
+      tasks: {
+        choice: [
+          { type: 'choice', question: 'Сколько будет 2 + 3?', correctAnswer: '5', wrongAnswers: ['4', '6', '7'] },
+          { type: 'choice', question: 'Какое время года идёт после весны?', correctAnswer: 'лето', wrongAnswers: ['зима', 'осень'] }
         ],
-        medium: [
-          { prompt: '8 + 7', answer: '15' },
-          { prompt: '14 - 5', answer: '9' },
-          { prompt: '6 × 3', answer: '18' }
-        ],
-        hard: [
-          { prompt: '12 × 4', answer: '48' },
-          { prompt: '36 ÷ 6 + 7', answer: '13' }
-        ]
-      },
-      question: {
-        easy: [
-          { prompt: 'Какое время года идёт после весны?', answer: 'лето', options: ['зима', 'лето', 'осень'] },
-          { prompt: 'Сколько дней в неделе?', answer: '7', options: ['5', '6', '7'] }
-        ],
-        medium: [
-          { prompt: 'Столица Франции?', answer: 'Париж', options: ['Рим', 'Париж', 'Берлин'] },
-          { prompt: 'Сколько будет 2 дюжины?', answer: '24', options: ['12', '24', '20'] }
-        ],
-        hard: [
-          { prompt: 'Как называется самая большая планета Солнечной системы?', answer: 'Юпитер', options: ['Марс', 'Юпитер', 'Венера'] },
-          { prompt: 'Сколько градусов в прямом угле?', answer: '90', options: ['45', '90', '120'] }
+        input: [
+          { type: 'input', question: 'Столица Франции', correctAnswer: 'Париж' },
+          { type: 'input', question: 'Сколько дней в неделе?', correctAnswer: '7' }
         ]
       }
-    };
+    });
 
     const state = {
-      tasks: structuredClone(BASE_TASKS)
+      levels: [DEFAULT_LEVEL(1)],
+      selectedLevelId: 1
     };
 
     const els = {
       gameTitle: document.getElementById('gameTitle'),
       difficulty: document.getElementById('difficulty'),
-      fishRequired: document.getElementById('fishRequired'),
       scoreStart: document.getElementById('scoreStart'),
+      addLevelBtn: document.getElementById('addLevelBtn'),
+      levelsList: document.getElementById('levelsList'),
+      levelEditorTitle: document.getElementById('levelEditorTitle'),
+      levelName: document.getElementById('levelName'),
+      fishRequired: document.getElementById('fishRequired'),
       levelTimeLimitSec: document.getElementById('levelTimeLimitSec'),
+      taskTimeSec: document.getElementById('taskTimeSec'),
       fishSpawnCount: document.getElementById('fishSpawnCount'),
       trashSpawnCount: document.getElementById('trashSpawnCount'),
       fishSpeedMin: document.getElementById('fishSpeedMin'),
       fishSpeedMax: document.getElementById('fishSpeedMax'),
       trashProbability: document.getElementById('trashProbability'),
-      taskTimeSec: document.getElementById('taskTimeSec'),
-      taskType: document.getElementById('taskType'),
-      taskDifficulty: document.getElementById('taskDifficulty'),
-      taskPrompt: document.getElementById('taskPrompt'),
-      taskAnswer: document.getElementById('taskAnswer'),
-      taskOptions: document.getElementById('taskOptions'),
-      addTaskBtn: document.getElementById('addTaskBtn'),
-      resetTasksBtn: document.getElementById('resetTasksBtn'),
+      enableChoice: document.getElementById('enableChoice'),
+      enableInput: document.getElementById('enableInput'),
+      choiceQuestion: document.getElementById('choiceQuestion'),
+      choiceCorrect: document.getElementById('choiceCorrect'),
+      choiceWrong: document.getElementById('choiceWrong'),
+      inputQuestion: document.getElementById('inputQuestion'),
+      inputCorrect: document.getElementById('inputCorrect'),
+      addChoiceTaskBtn: document.getElementById('addChoiceTaskBtn'),
+      addInputTaskBtn: document.getElementById('addInputTaskBtn'),
       taskList: document.getElementById('taskList'),
+      levelWarnings: document.getElementById('levelWarnings'),
+      duplicateLevelBtn: document.getElementById('duplicateLevelBtn'),
+      deleteLevelBtn: document.getElementById('deleteLevelBtn'),
       previewFrame: document.getElementById('previewFrame'),
       previewStatus: document.getElementById('previewStatus'),
       refreshPreviewBtn: document.getElementById('refreshPreviewBtn'),
@@ -462,91 +530,241 @@
       exportJsonBtn: document.getElementById('exportJsonBtn')
     };
 
-    function getConfig() {
-      return {
-        title: els.gameTitle.value.trim() || '🎣 Рыбалка',
-        difficulty: els.difficulty.value,
-        fishRequired: Math.max(1, Number(els.fishRequired.value) || 4),
-        scoreStart: Math.max(0, Number(els.scoreStart.value) || 10),
-        levelTimeLimitSec: Math.max(20, Number(els.levelTimeLimitSec.value) || 90),
-        fishSpawnCount: Math.max(1, Number(els.fishSpawnCount.value) || 6),
-        trashSpawnCount: Math.max(0, Number(els.trashSpawnCount.value) || 4),
-        fishSpeedMin: Math.max(10, Number(els.fishSpeedMin.value) || 55),
-        fishSpeedMax: Math.max(10, Number(els.fishSpeedMax.value) || 105),
-        trashProbability: Math.min(1, Math.max(0, Number(els.trashProbability.value) || 0.35)),
-        taskTimeSec: Math.max(3, Number(els.taskTimeSec.value) || 12),
-        tasks: structuredClone(state.tasks)
-      };
+    function clone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function getSelectedLevel() {
+      return state.levels.find(level => level.id === state.selectedLevelId) || state.levels[0];
+    }
+
+    function selectLevel(id) {
+      state.selectedLevelId = id;
+      renderLevelsList();
+      renderLevelEditor();
+      renderTaskList();
+      updatePreview();
+    }
+
+    function addLevel() {
+      const nextId = Math.max(0, ...state.levels.map(l => l.id)) + 1;
+      state.levels.push(DEFAULT_LEVEL(nextId));
+      selectLevel(nextId);
+    }
+
+    function duplicateLevel() {
+      const level = getSelectedLevel();
+      if (!level) return;
+      const nextId = Math.max(0, ...state.levels.map(l => l.id)) + 1;
+      const copy = clone(level);
+      copy.id = nextId;
+      copy.name = level.name + ' (копия)';
+      state.levels.push(copy);
+      selectLevel(nextId);
+    }
+
+    function deleteLevel() {
+      if (state.levels.length === 1) {
+        alert('Нельзя удалить единственный уровень.');
+        return;
+      }
+      state.levels = state.levels.filter(level => level.id !== state.selectedLevelId);
+      state.selectedLevelId = state.levels[0].id;
+      renderLevelsList();
+      renderLevelEditor();
+      renderTaskList();
+      updatePreview();
+    }
+
+    function renderLevelsList() {
+      els.levelsList.innerHTML = '';
+      state.levels.forEach(level => {
+        const activeTypes = [];
+        if (level.enabledTaskTypes.choice) activeTypes.push('тип 1');
+        if (level.enabledTaskTypes.input) activeTypes.push('тип 2');
+        const card = document.createElement('div');
+        card.className = 'level-card' + (level.id === state.selectedLevelId ? ' active' : '');
+        card.innerHTML = `
+          <div class="card-top">
+            <div>
+              <div class="card-title">${escapeHtml(level.name)}</div>
+              <div class="meta">ID: ${level.id} · Рыб: ${level.fishRequired} · Время: ${level.levelTimeLimitSec} сек</div>
+              <div class="chips">
+                <span class="chip">${activeTypes.join(' + ') || 'нет типов'}</span>
+                <span class="chip">заданий: ${level.tasks.choice.length + level.tasks.input.length}</span>
+              </div>
+            </div>
+            <button class="secondary" data-open-level="${level.id}">Открыть</button>
+          </div>
+        `;
+        els.levelsList.appendChild(card);
+      });
+
+      els.levelsList.querySelectorAll('[data-open-level]').forEach(btn => {
+        btn.addEventListener('click', () => selectLevel(Number(btn.dataset.openLevel)));
+      });
+    }
+
+    function renderLevelEditor() {
+      const level = getSelectedLevel();
+      if (!level) return;
+      els.levelEditorTitle.textContent = `Редактор уровня: ${level.name}`;
+      els.levelName.value = level.name;
+      els.fishRequired.value = level.fishRequired;
+      els.levelTimeLimitSec.value = level.levelTimeLimitSec;
+      els.taskTimeSec.value = level.taskTimeSec;
+      els.fishSpawnCount.value = level.fishSpawnCount;
+      els.trashSpawnCount.value = level.trashSpawnCount;
+      els.fishSpeedMin.value = level.fishSpeedMin;
+      els.fishSpeedMax.value = level.fishSpeedMax;
+      els.trashProbability.value = level.trashProbability;
+      els.enableChoice.checked = level.enabledTaskTypes.choice;
+      els.enableInput.checked = level.enabledTaskTypes.input;
+    }
+
+    function syncLevelFromInputs() {
+      const level = getSelectedLevel();
+      if (!level) return;
+      const choiceEnabled = els.enableChoice.checked;
+      const inputEnabled = els.enableInput.checked;
+      if (!choiceEnabled && !inputEnabled) {
+        alert('Нужно оставить хотя бы один тип заданий включённым.');
+        els.enableChoice.checked = true;
+      }
+      level.name = els.levelName.value.trim() || `Уровень ${level.id}`;
+      level.fishRequired = Math.max(1, Number(els.fishRequired.value) || 4);
+      level.levelTimeLimitSec = Math.max(20, Number(els.levelTimeLimitSec.value) || 90);
+      level.taskTimeSec = Math.max(3, Number(els.taskTimeSec.value) || 12);
+      level.fishSpawnCount = Math.max(1, Number(els.fishSpawnCount.value) || 6);
+      level.trashSpawnCount = Math.max(0, Number(els.trashSpawnCount.value) || 4);
+      level.fishSpeedMin = Math.max(10, Number(els.fishSpeedMin.value) || 55);
+      level.fishSpeedMax = Math.max(level.fishSpeedMin, Number(els.fishSpeedMax.value) || 105);
+      level.trashProbability = Math.min(1, Math.max(0, Number(els.trashProbability.value) || 0.35));
+      level.enabledTaskTypes.choice = els.enableChoice.checked;
+      level.enabledTaskTypes.input = els.enableInput.checked;
+      renderLevelsList();
+      renderTaskList();
+      updatePreview();
+    }
+
+    function addChoiceTask() {
+      const level = getSelectedLevel();
+      const question = els.choiceQuestion.value.trim();
+      const correctAnswer = els.choiceCorrect.value.trim();
+      const wrongAnswers = els.choiceWrong.value.split(';').map(v => v.trim()).filter(Boolean);
+      if (!question || !correctAnswer || wrongAnswers.length === 0) {
+        alert('Для задания типа 1 заполните вопрос, правильный ответ и хотя бы один неправильный ответ.');
+        return;
+      }
+      level.tasks.choice.push({ type: 'choice', question, correctAnswer, wrongAnswers });
+      els.choiceQuestion.value = '';
+      els.choiceCorrect.value = '';
+      els.choiceWrong.value = '';
+      renderTaskList();
+      renderLevelsList();
+      updatePreview();
+    }
+
+    function addInputTask() {
+      const level = getSelectedLevel();
+      const question = els.inputQuestion.value.trim();
+      const correctAnswer = els.inputCorrect.value.trim();
+      if (!question || !correctAnswer) {
+        alert('Для задания типа 2 заполните вопрос и верный ответ.');
+        return;
+      }
+      level.tasks.input.push({ type: 'input', question, correctAnswer });
+      els.inputQuestion.value = '';
+      els.inputCorrect.value = '';
+      renderTaskList();
+      renderLevelsList();
+      updatePreview();
     }
 
     function renderTaskList() {
+      const level = getSelectedLevel();
+      els.taskList.innerHTML = '';
       const items = [];
-      for (const taskType of Object.keys(state.tasks)) {
-        for (const difficulty of Object.keys(state.tasks[taskType])) {
-          state.tasks[taskType][difficulty].forEach((task, index) => {
-            items.push({ taskType, difficulty, index, task });
-          });
-        }
+      level.tasks.choice.forEach((task, index) => items.push({ task, index, group: 'choice' }));
+      level.tasks.input.forEach((task, index) => items.push({ task, index, group: 'input' }));
+
+      if (!items.length) {
+        els.taskList.innerHTML = '<div class="task-card"><div class="meta">Пока нет заданий. Добавьте задания выше.</div></div>';
       }
 
-      els.taskList.innerHTML = '';
       items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'task-card';
-        const options = item.task.options ? item.task.options.join(', ') : '—';
+        const wrong = item.group === 'choice' ? item.task.wrongAnswers.join(', ') : '—';
         card.innerHTML = `
-          <div class="task-top">
+          <div class="card-top">
             <div>
-              <div class="task-type">${item.taskType} · ${item.difficulty}</div>
-              <div class="task-prompt">${item.task.prompt}</div>
-              <div class="task-meta"><b>Ответ:</b> ${item.task.answer}</div>
-              <div class="task-meta"><b>Варианты:</b> ${options}</div>
+              <div class="task-type">${item.group === 'choice' ? 'Тип 1 · выбор ответа' : 'Тип 2 · ввод ответа'}</div>
+              <div class="card-title">${escapeHtml(item.task.question)}</div>
+              <div class="meta"><b>Верный ответ:</b> ${escapeHtml(item.task.correctAnswer)}</div>
+              <div class="meta"><b>Неправильные ответы:</b> ${escapeHtml(wrong)}</div>
             </div>
-            <button class="danger" data-remove="${item.taskType}|${item.difficulty}|${item.index}">Удалить</button>
+            <div class="btn-row" style="margin-top:0; justify-content:flex-end;">
+              <button class="secondary" data-edit-task="${item.group}|${item.index}">Редактировать</button>
+              <button class="danger" data-remove-task="${item.group}|${item.index}">Удалить</button>
+            </div>
           </div>
         `;
         els.taskList.appendChild(card);
       });
 
-      els.taskList.querySelectorAll('[data-remove]').forEach(btn => {
+      els.taskList.querySelectorAll('[data-remove-task]').forEach(btn => {
         btn.addEventListener('click', () => {
-          const [taskType, difficulty, index] = btn.dataset.remove.split('|');
-          state.tasks[taskType][difficulty].splice(Number(index), 1);
+          const [group, index] = btn.dataset.removeTask.split('|');
+          level.tasks[group].splice(Number(index), 1);
           renderTaskList();
+          renderLevelsList();
           updatePreview();
         });
       });
+
+      els.taskList.querySelectorAll('[data-edit-task]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const [group, index] = btn.dataset.editTask.split('|');
+          const task = level.tasks[group][Number(index)];
+          if (group === 'choice') {
+            els.choiceQuestion.value = task.question;
+            els.choiceCorrect.value = task.correctAnswer;
+            els.choiceWrong.value = task.wrongAnswers.join('; ');
+            level.tasks[group].splice(Number(index), 1);
+          } else {
+            els.inputQuestion.value = task.question;
+            els.inputCorrect.value = task.correctAnswer;
+            level.tasks[group].splice(Number(index), 1);
+          }
+          renderTaskList();
+          renderLevelsList();
+          updatePreview();
+        });
+      });
+
+      renderLevelWarnings(level);
     }
 
-    function addTask() {
-      const taskType = els.taskType.value;
-      const difficulty = els.taskDifficulty.value;
-      const prompt = els.taskPrompt.value.trim();
-      const answer = els.taskAnswer.value.trim();
-      const optionsRaw = els.taskOptions.value.trim();
-
-      if (!prompt || !answer) {
-        alert('Заполните текст задания и правильный ответ.');
-        return;
+    function renderLevelWarnings(level) {
+      const warnings = [];
+      if (level.enabledTaskTypes.choice && level.tasks.choice.length === 0) {
+        warnings.push('У типа 1 включена галочка, но нет ни одного задания.');
       }
-
-      const task = { prompt, answer };
-      if (optionsRaw) {
-        task.options = optionsRaw.split(';').map(v => v.trim()).filter(Boolean);
+      if (level.enabledTaskTypes.input && level.tasks.input.length === 0) {
+        warnings.push('У типа 2 включена галочка, но нет ни одного задания.');
       }
-
-      state.tasks[taskType][difficulty].push(task);
-      els.taskPrompt.value = '';
-      els.taskAnswer.value = '';
-      els.taskOptions.value = '';
-      renderTaskList();
-      updatePreview();
+      els.levelWarnings.innerHTML = warnings.map(text => `<div class="warning">${escapeHtml(text)}</div>`).join('');
     }
 
-    function resetTasks() {
-      state.tasks = structuredClone(BASE_TASKS);
-      renderTaskList();
-      updatePreview();
+    function getConfig() {
+      syncLevelFromInputs();
+      return {
+        title: els.gameTitle.value.trim() || '🎣 Рыбалка',
+        difficulty: els.difficulty.value,
+        scoreStart: Math.max(0, Number(els.scoreStart.value) || 10),
+        levels: clone(state.levels)
+      };
     }
 
     function exportJson() {
@@ -567,7 +785,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'fishing-game-generated.html';
+      a.download = 'fishing-game.html';
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -719,7 +937,7 @@
           <div>• Удерживайте <b>ВНИЗ</b> или клавишу <b>↓ / S</b>, чтобы опускать удочку.</div>
           <div>• Удерживайте <b>ВВЕРХ</b> или клавишу <b>↑ / W</b>, чтобы поднимать удочку.</div>
           <div>• Поймали рыбу — решите задание, чтобы добавить её в улов.</div>
-          <div>• Мусор отнимает очки.</div>
+          <div>• Если на уровне включены оба типа, игра выбирает задания случайно.</div>
         </div>
         <div id="difficultyHint" style="margin-bottom:16px; font-weight:700; color:#17324c;">Сейчас выбрана сложность: <b>средняя</b>.</div>
         <div class="row" style="justify-content:center;"><button id="startGameBtn" class="primaryBtn" type="button" style="font-size:22px; padding:16px 28px;">Начать игру</button></div>
@@ -729,90 +947,74 @@
   <script>
     const CONFIG = ${safeConfig};
     const GAME_CONFIG = {
-      settings: {
-        difficulty: CONFIG.difficulty,
-        answerMode: 'mixed',
-        taskType: 'mixed',
-        scoreStart: CONFIG.scoreStart,
+      title: CONFIG.title,
+      difficulty: CONFIG.difficulty,
+      scoreStart: CONFIG.scoreStart,
+      levels: CONFIG.levels,
+      fishTypes: [
+        { id: 'blue', emoji: '🐟', label: 'Синяя рыба', speedMultiplier: 1, nearHookBoost: 1.2, points: 5, rarity: 'common' },
+        { id: 'gold', emoji: '🐠', label: 'Золотая рыба', speedMultiplier: 1.18, nearHookBoost: 1.4, points: 7, rarity: 'rare' },
+        { id: 'tropical', emoji: '🐡', label: 'Колючая рыба', speedMultiplier: 0.88, nearHookBoost: 1.08, points: 6, rarity: 'common' }
+      ],
+      trashTypes: [
+        { id: 'bottle', emoji: '🧴', label: 'Бутылка' },
+        { id: 'can', emoji: '🥫', label: 'Банка' },
+        { id: 'bag', emoji: '🛍️', label: 'Пакет' }
+      ],
+      gameplay: {
         scoreFishCorrect: 5,
         scoreTrashPenalty: 3,
         scoreWrongPenalty: 0,
         maxAttemptsPerLevel: 30,
-        levelTimeLimitSec: CONFIG.levelTimeLimitSec,
-        timePerTaskSec: CONFIG.taskTimeSec,
-        rod: { lowerSpeedPxPerSec: 260, raiseSpeedPxPerSec: 300, startLengthPx: 42, minLengthPx: 42, upperY: window.innerHeight * 0.13, minXRatio: 0.2, maxDepthRatio: 0.76, swayAmplitude: 6, swaySpeed: 0.006 },
-        fish: {
-          spawnCount: CONFIG.fishSpawnCount,
-          minSpeed: CONFIG.fishSpeedMin,
-          maxSpeed: CONFIG.fishSpeedMax,
-          types: [
-            { id: 'blue', emoji: '🐟', label: 'Синяя рыба', speedMultiplier: 1, nearHookBoost: 1.2, points: 5, rarity: 'common' },
-            { id: 'gold', emoji: '🐠', label: 'Золотая рыба', speedMultiplier: 1.18, nearHookBoost: 1.4, points: 7, rarity: 'rare' },
-            { id: 'tropical', emoji: '🐡', label: 'Колючая рыба', speedMultiplier: 0.88, nearHookBoost: 1.08, points: 6, rarity: 'common' }
-          ]
-        },
-        trash: {
-          enabled: true,
-          spawnCount: CONFIG.trashSpawnCount,
-          minSpeed: 35,
-          maxSpeed: 70,
-          types: [
-            { id: 'bottle', emoji: '🧴', label: 'Бутылка' },
-            { id: 'can', emoji: '🥫', label: 'Банка' },
-            { id: 'bag', emoji: '🛍️', label: 'Пакет' }
-          ]
-        }
-      },
-      levels: [
-        { id: 1, fishRequired: CONFIG.fishRequired, fishTypes: ['blue', 'gold'], trashProbability: CONFIG.trashProbability, taskTimeSec: CONFIG.taskTimeSec },
-        { id: 2, fishRequired: CONFIG.fishRequired + 1, fishTypes: ['blue', 'gold', 'tropical'], trashProbability: Math.min(1, CONFIG.trashProbability + 0.15), taskTimeSec: Math.max(4, CONFIG.taskTimeSec - 2) },
-        { id: 3, fishRequired: CONFIG.fishRequired + 2, fishTypes: ['gold', 'tropical'], trashProbability: Math.min(1, CONFIG.trashProbability + 0.3), taskTimeSec: Math.max(4, CONFIG.taskTimeSec - 4) }
-      ],
-      taskPools: CONFIG.tasks
+        rod: { lowerSpeedPxPerSec: 260, raiseSpeedPxPerSec: 300, startLengthPx: 42, minLengthPx: 42, upperY: window.innerHeight * 0.13, minXRatio: 0.2, maxDepthRatio: 0.76, swayAmplitude: 6, swaySpeed: 0.006 }
+      }
     };
 
     const el = {
       entities: document.getElementById('entities'), line: document.getElementById('line'), hook: document.getElementById('hook'), rod: document.getElementById('rod'), overlay: document.getElementById('overlay'), modal: document.getElementById('modalContent'), upBtn: document.getElementById('upBtn'), downBtn: document.getElementById('downBtn'), startScreen: document.getElementById('startScreen'), startGameBtn: document.getElementById('startGameBtn'), message: document.getElementById('message'), biteBanner: document.getElementById('biteBanner'), scoreValue: document.getElementById('scoreValue'), levelValue: document.getElementById('levelValue'), caughtValue: document.getElementById('caughtValue'), trashValue: document.getElementById('trashValue'), attemptsValue: document.getElementById('attemptsValue'), timeValue: document.getElementById('timeValue'), progressFill: document.getElementById('progressFill'), helpBtn: document.getElementById('helpBtn'), controlHint: document.getElementById('controlHint'), difficultyHint: document.getElementById('difficultyHint'), difficultyButtons: Array.from(document.querySelectorAll('.difficultyBtn'))
     };
-    const state = { running: false, lowering: false, raising: false, inTask: false, gameOver: false, levelIndex: 0, score: GAME_CONFIG.settings.scoreStart, totalCaught: 0, totalTrash: 0, attempts: 0, levelCaught: 0, levelRemainingTime: GAME_CONFIG.settings.levelTimeLimitSec, lineBaseY: GAME_CONFIG.settings.rod.upperY, lineLength: GAME_CONFIG.settings.rod.startLengthPx, hookX: 0, hookY: 0, entities: [], activeTask: null, activeEntityId: null, startedAt: performance.now(), lastTaskStartedAt: 0 };
-    function difficultyScale() { const d = GAME_CONFIG.settings.difficulty; if (d === 'easy') return { speed: 0.78, taskTime: 1.45, trash: 0.75 }; if (d === 'hard') return { speed: 1.35, taskTime: 0.75, trash: 1.2 }; return { speed: 1, taskTime: 1, trash: 1 }; }
+
+    const state = { running: false, lowering: false, raising: false, inTask: false, gameOver: false, levelIndex: 0, score: GAME_CONFIG.scoreStart, totalCaught: 0, totalTrash: 0, attempts: 0, levelCaught: 0, levelRemainingTime: 0, lineBaseY: GAME_CONFIG.gameplay.rod.upperY, lineLength: GAME_CONFIG.gameplay.rod.startLengthPx, hookX: 0, hookY: 0, entities: [], activeTask: null, activeEntityId: null, startedAt: performance.now(), lastTaskStartedAt: 0 };
+
+    function difficultyScale() { const d = GAME_CONFIG.difficulty; if (d === 'easy') return { speed: 0.78, taskTime: 1.45, trash: 0.75 }; if (d === 'hard') return { speed: 1.35, taskTime: 0.75, trash: 1.2 }; return { speed: 1, taskTime: 1, trash: 1 }; }
     function difficultyLabel(value) { return value === 'easy' ? 'лёгкая' : value === 'hard' ? 'сложная' : 'средняя'; }
-    function applyDifficultyUI() { el.difficultyButtons.forEach(btn => { const active = btn.dataset.difficulty === GAME_CONFIG.settings.difficulty; btn.className = (active ? 'primaryBtn' : 'secondaryBtn') + ' difficultyBtn'; }); el.difficultyHint.innerHTML = 'Сейчас выбрана сложность: <b>' + difficultyLabel(GAME_CONFIG.settings.difficulty) + '</b>.'; }
+    function applyDifficultyUI() { el.difficultyButtons.forEach(btn => { const active = btn.dataset.difficulty === GAME_CONFIG.difficulty; btn.className = (active ? 'primaryBtn' : 'secondaryBtn') + ' difficultyBtn'; }); el.difficultyHint.innerHTML = 'Сейчас выбрана сложность: <b>' + difficultyLabel(GAME_CONFIG.difficulty) + '</b>.'; }
     function currentLevel() { return GAME_CONFIG.levels[Math.min(state.levelIndex, GAME_CONFIG.levels.length - 1)]; }
     function rand(min, max) { return Math.random() * (max - min) + min; }
     function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
     function setMessage(text, kind) { el.message.textContent = text; el.message.style.background = kind === 'ok' ? 'rgba(46,204,113,0.9)' : kind === 'bad' ? 'rgba(255,107,107,0.9)' : 'rgba(8,24,42,0.82)'; }
     function updateHUD() { el.scoreValue.textContent = state.score; el.levelValue.textContent = String(currentLevel().id); el.caughtValue.textContent = state.totalCaught; el.trashValue.textContent = state.totalTrash; el.attemptsValue.textContent = state.attempts; el.timeValue.textContent = Math.max(0, Math.ceil(state.levelRemainingTime)); el.progressFill.style.width = Math.min(100, (state.levelCaught / currentLevel().fishRequired) * 100) + '%'; }
-    function getFishTypesForLevel() { return GAME_CONFIG.settings.fish.types.filter(t => currentLevel().fishTypes.includes(t.id)); }
     function createEntityDom(entity) { const node = document.createElement('div'); node.className = 'entity ' + entity.kind + (entity.rarity === 'rare' ? ' rare' : ''); node.textContent = entity.emoji; el.entities.appendChild(node); entity.node = node; renderEntity(entity); }
     function renderEntity(entity) { if (!entity.node) return; const t = performance.now(); const bobX = entity.kind === 'fish' ? Math.sin((t * 0.004) + entity.phase) * 4 : 0; const bobY = entity.kind === 'fish' ? Math.cos((t * 0.0032) + entity.phase) * 3 : 0; const rot = entity.kind === 'fish' ? Math.sin((t * 0.0025) + entity.phase) * 3 : 0; entity.node.style.transform = 'translate(' + (entity.x + bobX) + 'px, ' + (entity.y + bobY) + 'px) rotate(' + rot + 'deg)'; entity.node.style.opacity = entity.active ? '1' : '0'; }
-    function resetEntities() { state.entities = []; el.entities.innerHTML = ''; const w = window.innerWidth; const h = window.innerHeight; const diff = difficultyScale(); for (let i = 0; i < GAME_CONFIG.settings.fish.spawnCount; i++) { const type = pick(getFishTypesForLevel()); const entity = { id: 'fish-' + Date.now() + '-' + i, kind: 'fish', label: type.label, emoji: type.emoji, rarity: type.rarity, pointValue: type.points, nearHookBoost: type.nearHookBoost, x: rand(0, w + 200), y: rand(h * 0.35, h * 0.78), speed: rand(GAME_CONFIG.settings.fish.minSpeed, GAME_CONFIG.settings.fish.maxSpeed) * diff.speed * type.speedMultiplier, baseSpeed: 0, phase: rand(0, Math.PI * 2), verticalDrift: rand(-16, 16), width: 36, height: 36, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); } if (GAME_CONFIG.settings.trash.enabled) { for (let i = 0; i < GAME_CONFIG.settings.trash.spawnCount; i++) { if (Math.random() > currentLevel().trashProbability * diff.trash) continue; const type = pick(GAME_CONFIG.settings.trash.types); const entity = { id: 'trash-' + Date.now() + '-' + i, kind: 'trash', label: type.label, emoji: type.emoji, x: rand(0, w + 220), y: rand(h * 0.4, h * 0.82), speed: rand(GAME_CONFIG.settings.trash.minSpeed, GAME_CONFIG.settings.trash.maxSpeed) * diff.speed, baseSpeed: 0, phase: rand(0, Math.PI * 2), width: 34, height: 34, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); } } }
-    function renderRod(time) { const maxDepth = window.innerHeight * GAME_CONFIG.settings.rod.maxDepthRatio; const sway = Math.sin(time * GAME_CONFIG.settings.rod.swaySpeed) * GAME_CONFIG.settings.rod.swayAmplitude; const idleWave = Math.sin(time * 0.0035) * 2.5; const length = clamp(state.lineLength, GAME_CONFIG.settings.rod.minLengthPx, maxDepth); const isMoving = state.lowering || state.raising; el.line.style.height = length + 'px'; el.line.style.transform = 'translateX(' + sway + 'px) scaleX(' + (isMoving ? 1.15 : 1) + ')'; el.line.style.width = isMoving ? '4px' : '3px'; const rodTilt = 28 + Math.sin(time * 0.0022) * 1.8 + (state.lowering ? 1.2 : 0) - (state.raising ? 1.2 : 0); el.rod.style.transform = 'rotate(' + rodTilt + 'deg)'; state.hookX = window.innerWidth * GAME_CONFIG.settings.rod.minXRatio + 85 + sway + idleWave; state.hookY = state.lineBaseY + length; el.hook.style.left = (state.hookX - 12) + 'px'; el.hook.style.top = (state.hookY - 8) + 'px'; el.hook.style.transform = 'rotate(' + (12 + Math.sin(time * 0.004) * 8) + 'deg)'; }
+    function resetEntities() { state.entities = []; el.entities.innerHTML = ''; const w = window.innerWidth; const h = window.innerHeight; const diff = difficultyScale(); const level = currentLevel(); for (let i = 0; i < level.fishSpawnCount; i++) { const type = pick(GAME_CONFIG.fishTypes); const entity = { id: 'fish-' + Date.now() + '-' + i, kind: 'fish', label: type.label, emoji: type.emoji, rarity: type.rarity, pointValue: type.points, nearHookBoost: type.nearHookBoost, x: rand(0, w + 200), y: rand(h * 0.35, h * 0.78), speed: rand(level.fishSpeedMin, level.fishSpeedMax) * diff.speed * type.speedMultiplier, baseSpeed: 0, phase: rand(0, Math.PI * 2), verticalDrift: rand(-16, 16), width: 36, height: 36, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); } for (let i = 0; i < level.trashSpawnCount; i++) { if (Math.random() > level.trashProbability * diff.trash) continue; const type = pick(GAME_CONFIG.trashTypes); const entity = { id: 'trash-' + Date.now() + '-' + i, kind: 'trash', label: type.label, emoji: type.emoji, x: rand(0, w + 220), y: rand(h * 0.4, h * 0.82), speed: rand(35, 70) * diff.speed, baseSpeed: 0, phase: rand(0, Math.PI * 2), width: 34, height: 34, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); } }
+    function renderRod(time) { const maxDepth = window.innerHeight * GAME_CONFIG.gameplay.rod.maxDepthRatio; const sway = Math.sin(time * GAME_CONFIG.gameplay.rod.swaySpeed) * GAME_CONFIG.gameplay.rod.swayAmplitude; const idleWave = Math.sin(time * 0.0035) * 2.5; const length = clamp(state.lineLength, GAME_CONFIG.gameplay.rod.minLengthPx, maxDepth); const isMoving = state.lowering || state.raising; el.line.style.height = length + 'px'; el.line.style.transform = 'translateX(' + sway + 'px) scaleX(' + (isMoving ? 1.15 : 1) + ')'; el.line.style.width = isMoving ? '4px' : '3px'; const rodTilt = 28 + Math.sin(time * 0.0022) * 1.8 + (state.lowering ? 1.2 : 0) - (state.raising ? 1.2 : 0); el.rod.style.transform = 'rotate(' + rodTilt + 'deg)'; state.hookX = window.innerWidth * GAME_CONFIG.gameplay.rod.minXRatio + 85 + sway + idleWave; state.hookY = state.lineBaseY + length; el.hook.style.left = (state.hookX - 12) + 'px'; el.hook.style.top = (state.hookY - 8) + 'px'; el.hook.style.transform = 'rotate(' + (12 + Math.sin(time * 0.004) * 8) + 'deg)'; }
     function scheduleRespawn(entity) { if (entity.respawning || !entity.node) return; entity.respawning = true; entity.active = false; renderEntity(entity); const delay = entity.kind === 'fish' ? rand(900, 2200) : rand(1200, 2600); setTimeout(() => { entity.x = window.innerWidth + rand(80, 320); entity.y = rand(window.innerHeight * 0.35, window.innerHeight * 0.82); if (entity.kind === 'fish') { entity.verticalDrift = rand(-16, 16); entity.speed = entity.baseSpeed; } entity.active = true; entity.respawning = false; renderEntity(entity); }, delay); }
     function moveEntities(dt) { const h = window.innerHeight; const hookInfluenceRadius = 150; for (const entity of state.entities) { if (!entity.active) continue; if (entity.kind === 'fish') { const dx = state.hookX - (entity.x + entity.width / 2); const dy = state.hookY - (entity.y + entity.height / 2); const distance = Math.hypot(dx, dy); const proximity = clamp(1 - distance / hookInfluenceRadius, 0, 1); entity.speed = entity.baseSpeed * (1 + proximity * ((entity.nearHookBoost || 1.15) - 1)); entity.y += Math.sin((performance.now() * 0.0025) + entity.phase) * 0.18; entity.y += Math.sin((performance.now() * 0.0012) + entity.phase * 1.7) * 0.26; entity.y += entity.verticalDrift * 0.015 * dt * 60; if (entity.y < h * 0.34 || entity.y > h * 0.79) entity.verticalDrift *= -1; } entity.x -= entity.speed * dt; if (entity.x < -120) { scheduleRespawn(entity); continue; } renderEntity(entity); } }
     function intersects(entity) { const hookRect = { x: state.hookX - 10, y: state.hookY - 10, w: 20, h: 20 }; const entityRect = { x: entity.x, y: entity.y, w: entity.width, h: entity.height }; return !(hookRect.x + hookRect.w < entityRect.x || hookRect.x > entityRect.x + entityRect.w || hookRect.y + hookRect.h < entityRect.y || hookRect.y > entityRect.y + entityRect.h); }
     function showBiteBanner() { el.biteBanner.style.opacity = '1'; el.biteBanner.style.transform = 'translateX(-50%) scale(1)'; setTimeout(() => { el.biteBanner.style.opacity = '0'; el.biteBanner.style.transform = 'translateX(-50%) scale(0.92)'; }, 900); }
-    function handleTrashHit(entity) { state.totalTrash += 1; state.score -= GAME_CONFIG.settings.scoreTrashPenalty; entity.node.classList.add('hit'); setMessage('Ой! Попался мусор: ' + entity.label + '. -' + GAME_CONFIG.settings.scoreTrashPenalty + ' очка', 'bad'); setTimeout(() => { entity.node.className = 'entity trash'; scheduleRespawn(entity); }, 500); updateHUD(); if (state.score <= 0) finishGame(false, 'Очки упали до нуля.'); }
+    function handleTrashHit(entity) { state.totalTrash += 1; state.score -= GAME_CONFIG.gameplay.scoreTrashPenalty; entity.node.classList.add('hit'); setMessage('Ой! Попался мусор: ' + entity.label + '. -' + GAME_CONFIG.gameplay.scoreTrashPenalty + ' очка', 'bad'); setTimeout(() => { entity.node.className = 'entity trash'; scheduleRespawn(entity); }, 500); updateHUD(); if (state.score <= 0) finishGame(false, 'Очки упали до нуля.'); }
     function handleFishCatch(entity) { entity.active = false; entity.node.classList.add('caught'); state.activeEntityId = entity.id; showBiteBanner(); openTask(entity); }
-    function buildTask() { const difficulty = GAME_CONFIG.settings.difficulty; const mode = GAME_CONFIG.settings.taskType; const answerMode = GAME_CONFIG.settings.answerMode; const poolKey = mode === 'mixed' ? (Math.random() > 0.5 ? 'math' : 'question') : mode; const pool = GAME_CONFIG.taskPools[poolKey][difficulty]; const task = structuredClone(pick(pool)); if (!task.options && (answerMode === 'choice' || (answerMode === 'mixed' && Math.random() > 0.5))) { const correct = task.answer; const distractors = new Set([correct]); while (distractors.size < 4) { const n = String(Number(correct) + Math.floor(rand(-5, 6))); distractors.add(Number.isNaN(Number(correct)) ? correct + Math.floor(rand(1, 4)) : n); } task.options = Array.from(distractors).sort(() => Math.random() - 0.5); } task.answerMode = task.options ? 'choice' : 'input'; return task; }
-    function openTask(entity) { state.inTask = true; const task = buildTask(); task.timeLimit = Math.max(4, currentLevel().taskTimeSec * difficultyScale().taskTime); state.activeTask = task; state.lastTaskStartedAt = performance.now(); el.overlay.classList.add('show'); renderTaskModal(task, entity); runTaskTimer(); }
+    function getAvailableTaskTypes(level) { const available = []; if (level.enabledTaskTypes.choice && level.tasks.choice.length) available.push('choice'); if (level.enabledTaskTypes.input && level.tasks.input.length) available.push('input'); return available; }
+    function shuffle(arr) { return arr.slice().sort(() => Math.random() - 0.5); }
+    function buildTask() { const level = currentLevel(); const availableTypes = getAvailableTaskTypes(level); if (!availableTypes.length) return null; const pickedType = pick(availableTypes); const task = JSON.parse(JSON.stringify(pick(level.tasks[pickedType]))); if (pickedType === 'choice') { task.options = shuffle([task.correctAnswer, ...task.wrongAnswers]); task.answerMode = 'choice'; task.answer = task.correctAnswer; task.prompt = task.question; } else { task.answerMode = 'input'; task.answer = task.correctAnswer; task.prompt = task.question; } task.timeLimit = Math.max(4, level.taskTimeSec * difficultyScale().taskTime); return task; }
+    function openTask(entity) { state.inTask = true; const task = buildTask(); if (!task) { state.inTask = false; setMessage('Для этого уровня нет доступных заданий. Добавьте задания в редакторе.', 'bad'); scheduleRespawn(entity); return; } state.activeTask = task; state.lastTaskStartedAt = performance.now(); el.overlay.classList.add('show'); renderTaskModal(task, entity); runTaskTimer(); }
     function renderTaskModal(task, entity) { const optionsHtml = task.answerMode === 'choice' ? '<div id="options">' + task.options.map(opt => '<button class="optBtn" data-answer="' + String(opt).replace(/"/g, '&quot;') + '">' + opt + '</button>').join('') + '</div>' : '<input id="answerInput" placeholder="Введите ответ" autocomplete="off" /><div class="row"><button id="submitAnswer" class="primaryBtn">Ответить</button></div>'; el.modal.innerHTML = '<h2 style="margin:0 0 8px;">Клюёт! ' + entity.emoji + '</h2><p style="margin:0 0 12px;">Решите задание, чтобы добавить рыбу в улов.</p><div id="taskTimerBar"><div id="taskTimerFill"></div></div><div id="taskTitle">' + task.prompt + '</div>' + optionsHtml + '<div class="row"><button id="skipTask" class="secondaryBtn">Не успеваю</button></div>'; if (task.answerMode === 'choice') { el.modal.querySelectorAll('.optBtn').forEach(btn => btn.addEventListener('click', () => submitTaskAnswer(btn.dataset.answer))); } else { const input = document.getElementById('answerInput'); const submit = document.getElementById('submitAnswer'); input.focus(); input.addEventListener('keydown', e => { if (e.key === 'Enter') submitTaskAnswer(input.value); }); submit.addEventListener('click', () => submitTaskAnswer(input.value)); } document.getElementById('skipTask').addEventListener('click', () => failTask('Рыба уплыла.')); }
     function runTaskTimer() { const fill = () => { if (!state.inTask || !state.activeTask) return; const passed = (performance.now() - state.lastTaskStartedAt) / 1000; const left = Math.max(0, state.activeTask.timeLimit - passed); const bar = document.getElementById('taskTimerFill'); if (bar) bar.style.width = (left / state.activeTask.timeLimit) * 100 + '%'; if (left <= 0) { failTask('Время вышло. Рыба уплыла.'); return; } requestAnimationFrame(fill); }; requestAnimationFrame(fill); }
     function normalizeAnswer(value) { return String(value).trim().toLowerCase().replace(/ё/g, 'е'); }
     function submitTaskAnswer(raw) { if (!state.inTask || !state.activeTask) return; const ok = normalizeAnswer(raw) === normalizeAnswer(state.activeTask.answer); if (ok) completeTask(); else failTask('Неверный ответ. Рыба уплыла.'); }
     function animateFishToHud(fish) { if (!fish || !fish.node) return; const fishRect = fish.node.getBoundingClientRect(); const targetRect = el.caughtValue.getBoundingClientRect(); const flyer = document.createElement('div'); flyer.className = 'flyFish'; flyer.textContent = fish.emoji; flyer.style.left = fishRect.left + 'px'; flyer.style.top = fishRect.top + 'px'; flyer.style.setProperty('--mid-x', ((targetRect.left - fishRect.left) * 0.45) + 'px'); flyer.style.setProperty('--mid-y', (((targetRect.top - fishRect.top) * 0.2) - 50) + 'px'); flyer.style.setProperty('--end-x', (targetRect.left - fishRect.left) + 'px'); flyer.style.setProperty('--end-y', (targetRect.top - fishRect.top) + 'px'); document.body.appendChild(flyer); flyer.addEventListener('animationend', () => flyer.remove()); }
-    function completeTask() { const fish = state.entities.find(x => x.id === state.activeEntityId); state.score += (fish && fish.pointValue) || GAME_CONFIG.settings.scoreFishCorrect; state.totalCaught += 1; state.levelCaught += 1; setMessage('Отлично! ' + ((fish && fish.label) || 'Рыба') + ' поймана. +' + ((fish && fish.pointValue) || GAME_CONFIG.settings.scoreFishCorrect) + ' очков', 'ok'); if (fish && fish.node) { animateFishToHud(fish); fish.node.remove(); } state.entities = state.entities.filter(x => x.id !== state.activeEntityId); closeTask(); refillFishIfNeeded(); updateHUD(); if (state.levelCaught >= currentLevel().fishRequired) nextLevelOrFinish(); }
-    function failTask(msg) { const fish = state.entities.find(x => x.id === state.activeEntityId); if (fish) { fish.node.className = 'entity fish' + (fish.rarity === 'rare' ? ' rare' : ''); scheduleRespawn(fish); } if (GAME_CONFIG.settings.scoreWrongPenalty > 0) state.score -= GAME_CONFIG.settings.scoreWrongPenalty; setMessage(msg, 'bad'); closeTask(); updateHUD(); if (state.score <= 0) finishGame(false, 'Очки упали до нуля.'); }
+    function completeTask() { const fish = state.entities.find(x => x.id === state.activeEntityId); state.score += (fish && fish.pointValue) || GAME_CONFIG.gameplay.scoreFishCorrect; state.totalCaught += 1; state.levelCaught += 1; setMessage('Отлично! ' + ((fish && fish.label) || 'Рыба') + ' поймана. +' + ((fish && fish.pointValue) || GAME_CONFIG.gameplay.scoreFishCorrect) + ' очков', 'ok'); if (fish && fish.node) { animateFishToHud(fish); fish.node.remove(); } state.entities = state.entities.filter(x => x.id !== state.activeEntityId); closeTask(); refillFishIfNeeded(); updateHUD(); if (state.levelCaught >= currentLevel().fishRequired) nextLevelOrFinish(); }
+    function failTask(msg) { const fish = state.entities.find(x => x.id === state.activeEntityId); if (fish) { fish.node.className = 'entity fish' + (fish.rarity === 'rare' ? ' rare' : ''); scheduleRespawn(fish); } if (GAME_CONFIG.gameplay.scoreWrongPenalty > 0) state.score -= GAME_CONFIG.gameplay.scoreWrongPenalty; setMessage(msg, 'bad'); closeTask(); updateHUD(); if (state.score <= 0) finishGame(false, 'Очки упали до нуля.'); }
     function closeTask() { state.inTask = false; state.activeTask = null; state.activeEntityId = null; el.overlay.classList.remove('show'); }
-    function refillFishIfNeeded() { const fishCount = state.entities.filter(e => e.kind === 'fish').length; if (fishCount >= GAME_CONFIG.settings.fish.spawnCount) return; const type = pick(getFishTypesForLevel()); const entity = { id: 'fish-' + Date.now() + '-' + Math.random(), kind: 'fish', label: type.label, emoji: type.emoji, rarity: type.rarity, pointValue: type.points, nearHookBoost: type.nearHookBoost, x: window.innerWidth + rand(80, 260), y: rand(window.innerHeight * 0.35, window.innerHeight * 0.78), speed: rand(GAME_CONFIG.settings.fish.minSpeed, GAME_CONFIG.settings.fish.maxSpeed) * difficultyScale().speed * type.speedMultiplier, baseSpeed: 0, phase: rand(0, Math.PI * 2), verticalDrift: rand(-16, 16), width: 36, height: 36, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); }
-    function nextLevelOrFinish() { if (state.levelIndex >= GAME_CONFIG.levels.length - 1) { finishGame(true, 'Все уровни пройдены!'); return; } state.levelIndex += 1; state.levelCaught = 0; state.levelRemainingTime = GAME_CONFIG.settings.levelTimeLimitSec; state.lineLength = GAME_CONFIG.settings.rod.startLengthPx; resetEntities(); updateHUD(); setMessage('Уровень ' + currentLevel().id + '. Новые рыбы и больше мусора!', 'ok'); }
+    function refillFishIfNeeded() { const level = currentLevel(); const fishCount = state.entities.filter(e => e.kind === 'fish').length; if (fishCount >= level.fishSpawnCount) return; const type = pick(GAME_CONFIG.fishTypes); const entity = { id: 'fish-' + Date.now() + '-' + Math.random(), kind: 'fish', label: type.label, emoji: type.emoji, rarity: type.rarity, pointValue: type.points, nearHookBoost: type.nearHookBoost, x: window.innerWidth + rand(80, 260), y: rand(window.innerHeight * 0.35, window.innerHeight * 0.78), speed: rand(level.fishSpeedMin, level.fishSpeedMax) * difficultyScale().speed * type.speedMultiplier, baseSpeed: 0, phase: rand(0, Math.PI * 2), verticalDrift: rand(-16, 16), width: 36, height: 36, active: true, respawning: false }; entity.baseSpeed = entity.speed; createEntityDom(entity); state.entities.push(entity); }
+    function nextLevelOrFinish() { if (state.levelIndex >= GAME_CONFIG.levels.length - 1) { finishGame(true, 'Все уровни пройдены!'); return; } state.levelIndex += 1; state.levelCaught = 0; state.levelRemainingTime = currentLevel().levelTimeLimitSec; state.lineLength = GAME_CONFIG.gameplay.rod.startLengthPx; resetEntities(); updateHUD(); setMessage('Уровень ' + currentLevel().id + ': ' + currentLevel().name, 'ok'); }
     function finishGame(win, reason) { state.gameOver = true; state.running = false; closeTask(); const spent = Math.round((performance.now() - state.startedAt) / 1000); el.overlay.classList.add('show'); el.modal.innerHTML = '<h2 style="font-size:34px; margin:0 0 8px;">' + (win ? 'Победа!' : 'Игра окончена') + '</h2><p style="font-size:19px; margin-bottom:14px;">' + reason + '</p><div style="background:#eef5fb; border-radius:18px; padding:16px 18px; margin-top:10px; line-height:1.7;"><div><b>Поймано рыб:</b> ' + state.totalCaught + '</div><div><b>Собрано мусора:</b> ' + state.totalTrash + '</div><div><b>Общие очки:</b> ' + state.score + '</div><div><b>Время игры:</b> ' + spent + ' сек.</div><div><b>Достигнутый уровень:</b> ' + currentLevel().id + '</div></div><div class="row" style="margin-top:18px; justify-content:center;"><button id="restartBtn" class="primaryBtn" type="button">Играть снова</button></div>'; document.getElementById('restartBtn').addEventListener('click', startGame); }
-    function startGame() { state.running = true; state.lowering = false; state.raising = false; state.inTask = false; state.gameOver = false; state.levelIndex = 0; state.score = GAME_CONFIG.settings.scoreStart; state.totalCaught = 0; state.totalTrash = 0; state.attempts = 0; state.levelCaught = 0; state.levelRemainingTime = GAME_CONFIG.settings.levelTimeLimitSec; state.lineLength = GAME_CONFIG.settings.rod.startLengthPx; state.startedAt = performance.now(); el.overlay.classList.remove('show'); el.startScreen.style.display = 'none'; el.controlHint.style.display = 'none'; resetEntities(); updateHUD(); renderRod(performance.now()); setMessage('Игра началась. Сложность: ' + difficultyLabel(GAME_CONFIG.settings.difficulty) + '.'); lastTs = performance.now(); requestAnimationFrame(loop); }
-    function attachControls() { const startLower = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.lowering = true; state.raising = false; }; const stopLower = e => { e.preventDefault && e.preventDefault(); state.lowering = false; }; const startRaise = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.raising = true; state.lowering = false; }; const stopRaise = e => { e.preventDefault && e.preventDefault(); state.raising = false; }; ['pointerdown','mousedown','touchstart'].forEach(evt => el.downBtn.addEventListener(evt, startLower)); ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.downBtn.addEventListener(evt, stopLower)); ['pointerdown','mousedown','touchstart'].forEach(evt => el.upBtn.addEventListener(evt, startRaise)); ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.upBtn.addEventListener(evt, stopRaise)); window.addEventListener('keydown', e => { if (!state.running || state.inTask) return; const key = e.key.toLowerCase(); if (e.key === 'ArrowDown' || key === 's') { state.lowering = true; state.raising = false; } if (e.key === 'ArrowUp' || key === 'w') { state.raising = true; state.lowering = false; } }); window.addEventListener('keyup', e => { const key = e.key.toLowerCase(); if (e.key === 'ArrowDown' || key === 's') state.lowering = false; if (e.key === 'ArrowUp' || key === 'w') state.raising = false; }); window.addEventListener('resize', () => renderRod(performance.now())); el.helpBtn.addEventListener('click', () => { const visible = el.controlHint.style.display === 'block'; el.controlHint.style.display = visible ? 'none' : 'block'; }); el.difficultyButtons.forEach(btn => btn.addEventListener('click', () => { GAME_CONFIG.settings.difficulty = btn.dataset.difficulty; applyDifficultyUI(); })); el.startGameBtn.addEventListener('click', startGame); }
+    function startGame() { state.running = true; state.lowering = false; state.raising = false; state.inTask = false; state.gameOver = false; state.levelIndex = 0; state.score = GAME_CONFIG.scoreStart; state.totalCaught = 0; state.totalTrash = 0; state.attempts = 0; state.levelCaught = 0; state.levelRemainingTime = currentLevel().levelTimeLimitSec; state.lineLength = GAME_CONFIG.gameplay.rod.startLengthPx; state.startedAt = performance.now(); el.overlay.classList.remove('show'); el.startScreen.style.display = 'none'; el.controlHint.style.display = 'none'; resetEntities(); updateHUD(); renderRod(performance.now()); setMessage('Игра началась. Сложность: ' + difficultyLabel(GAME_CONFIG.difficulty) + '.'); lastTs = performance.now(); requestAnimationFrame(loop); }
+    function attachControls() { const startLower = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.lowering = true; state.raising = false; }; const stopLower = e => { e.preventDefault && e.preventDefault(); state.lowering = false; }; const startRaise = e => { e.preventDefault && e.preventDefault(); if (state.gameOver || state.inTask || !state.running) return; state.raising = true; state.lowering = false; }; const stopRaise = e => { e.preventDefault && e.preventDefault(); state.raising = false; }; ['pointerdown','mousedown','touchstart'].forEach(evt => el.downBtn.addEventListener(evt, startLower)); ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.downBtn.addEventListener(evt, stopLower)); ['pointerdown','mousedown','touchstart'].forEach(evt => el.upBtn.addEventListener(evt, startRaise)); ['pointerup','pointerleave','mouseup','touchend','touchcancel'].forEach(evt => el.upBtn.addEventListener(evt, stopRaise)); window.addEventListener('keydown', e => { if (!state.running || state.inTask) return; const key = e.key.toLowerCase(); if (e.key === 'ArrowDown' || key === 's') { state.lowering = true; state.raising = false; } if (e.key === 'ArrowUp' || key === 'w') { state.raising = true; state.lowering = false; } }); window.addEventListener('keyup', e => { const key = e.key.toLowerCase(); if (e.key === 'ArrowDown' || key === 's') state.lowering = false; if (e.key === 'ArrowUp' || key === 'w') state.raising = false; }); window.addEventListener('resize', () => renderRod(performance.now())); el.helpBtn.addEventListener('click', () => { const visible = el.controlHint.style.display === 'block'; el.controlHint.style.display = visible ? 'none' : 'block'; }); el.difficultyButtons.forEach(btn => btn.addEventListener('click', () => { GAME_CONFIG.difficulty = btn.dataset.difficulty; applyDifficultyUI(); })); el.startGameBtn.addEventListener('click', startGame); }
     function checkCollisions() { if (state.inTask || state.gameOver) return; for (const entity of state.entities) { if (!entity.active) continue; if (!intersects(entity)) continue; state.attempts += 1; updateHUD(); if (entity.kind === 'trash') { handleTrashHit(entity); break; } if (entity.kind === 'fish') { handleFishCatch(entity); break; } } }
     let lastTs = performance.now();
-    function loop(ts) { if (!state.running) return; const dt = Math.min(0.033, (ts - lastTs) / 1000); lastTs = ts; if (!state.inTask && !state.gameOver) { const maxDepth = window.innerHeight * GAME_CONFIG.settings.rod.maxDepthRatio; if (state.lowering) state.lineLength += GAME_CONFIG.settings.rod.lowerSpeedPxPerSec * dt; if (state.raising) state.lineLength -= GAME_CONFIG.settings.rod.raiseSpeedPxPerSec * dt; state.lineLength = clamp(state.lineLength, GAME_CONFIG.settings.rod.minLengthPx, maxDepth); state.levelRemainingTime -= dt; if (state.levelRemainingTime <= 0) { finishGame(false, 'Закончилось время уровня.'); return; } if (state.attempts >= GAME_CONFIG.settings.maxAttemptsPerLevel) { finishGame(false, 'Закончились попытки на уровне.'); return; } moveEntities(dt); checkCollisions(); updateHUD(); } renderRod(ts); requestAnimationFrame(loop); }
+    function loop(ts) { if (!state.running) return; const dt = Math.min(0.033, (ts - lastTs) / 1000); lastTs = ts; if (!state.inTask && !state.gameOver) { const maxDepth = window.innerHeight * GAME_CONFIG.gameplay.rod.maxDepthRatio; if (state.lowering) state.lineLength += GAME_CONFIG.gameplay.rod.lowerSpeedPxPerSec * dt; if (state.raising) state.lineLength -= GAME_CONFIG.gameplay.rod.raiseSpeedPxPerSec * dt; state.lineLength = clamp(state.lineLength, GAME_CONFIG.gameplay.rod.minLengthPx, maxDepth); state.levelRemainingTime -= dt; if (state.levelRemainingTime <= 0) { finishGame(false, 'Закончилось время уровня.'); return; } if (state.attempts >= GAME_CONFIG.gameplay.maxAttemptsPerLevel) { finishGame(false, 'Закончились попытки на уровне.'); return; } moveEntities(dt); checkCollisions(); updateHUD(); } renderRod(ts); requestAnimationFrame(loop); }
     function init() { attachControls(); resetEntities(); updateHUD(); renderRod(performance.now()); applyDifficultyUI(); }
     init();
   <\/script>
@@ -829,32 +1031,43 @@
         .replace(/'/g, '&#39;');
     }
 
-    function init() {
-      renderTaskList();
-      updatePreview();
-
+    function bindEvents() {
       [
         els.gameTitle,
         els.difficulty,
-        els.fishRequired,
         els.scoreStart,
+        els.levelName,
+        els.fishRequired,
         els.levelTimeLimitSec,
+        els.taskTimeSec,
         els.fishSpawnCount,
         els.trashSpawnCount,
         els.fishSpeedMin,
         els.fishSpeedMax,
         els.trashProbability,
-        els.taskTimeSec
+        els.enableChoice,
+        els.enableInput
       ].forEach(control => {
-        control.addEventListener('input', updatePreview);
-        control.addEventListener('change', updatePreview);
+        control.addEventListener('input', syncLevelFromInputs);
+        control.addEventListener('change', syncLevelFromInputs);
       });
 
-      els.addTaskBtn.addEventListener('click', addTask);
-      els.resetTasksBtn.addEventListener('click', resetTasks);
+      els.addLevelBtn.addEventListener('click', addLevel);
+      els.duplicateLevelBtn.addEventListener('click', duplicateLevel);
+      els.deleteLevelBtn.addEventListener('click', deleteLevel);
+      els.addChoiceTaskBtn.addEventListener('click', addChoiceTask);
+      els.addInputTaskBtn.addEventListener('click', addInputTask);
       els.refreshPreviewBtn.addEventListener('click', updatePreview);
       els.downloadHtmlBtn.addEventListener('click', downloadHtml);
       els.exportJsonBtn.addEventListener('click', exportJson);
+    }
+
+    function init() {
+      renderLevelsList();
+      renderLevelEditor();
+      renderTaskList();
+      bindEvents();
+      updatePreview();
     }
 
     init();

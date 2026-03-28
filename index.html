@@ -396,40 +396,53 @@
         </section>
 
         <section class="section">
-          <h3>Добавить задание — тип 1</h3>
-          <div class="note">Три колонки: вопрос, правильный ответ, неправильные ответы.</div>
-          <div class="field">
-            <label for="choiceQuestion">Вопрос</label>
-            <input id="choiceQuestion" placeholder="Например: Сколько будет 2 + 3?" />
+          <h3>Массовый ввод заданий — тип 1</h3>
+          <div class="note">Как на таблице: одна строка вопроса соответствует одной строке правильного ответа и строкам с неправильными ответами.</div>
+          <div class="grid">
+            <div class="field">
+              <label for="choiceQuestionsBulk">Вопросы</label>
+              <textarea id="choiceQuestionsBulk" placeholder="Каждая строка — один вопрос"></textarea>
+            </div>
+            <div class="field">
+              <label for="choiceCorrectBulk">Правильные ответы</label>
+              <textarea id="choiceCorrectBulk" placeholder="Каждая строка — правильный ответ для строки вопроса"></textarea>
+            </div>
           </div>
           <div class="grid">
             <div class="field">
-              <label for="choiceCorrect">Правильный ответ</label>
-              <input id="choiceCorrect" placeholder="5" />
+              <label for="choiceWrong1Bulk">Неправильный ответ 1</label>
+              <textarea id="choiceWrong1Bulk" placeholder="Каждая строка — первый неправильный ответ"></textarea>
             </div>
             <div class="field">
-              <label for="choiceWrong">Неправильные ответы через ;</label>
-              <input id="choiceWrong" placeholder="4; 6; 7" />
+              <label for="choiceWrong2Bulk">Неправильный ответ 2</label>
+              <textarea id="choiceWrong2Bulk" placeholder="Каждая строка — второй неправильный ответ"></textarea>
             </div>
           </div>
-          <div class="btn-row">
-            <button id="addChoiceTaskBtn" class="primary">Добавить задание типа 1</button>
+          <div class="field">
+            <label for="choiceWrong3Bulk">Неправильный ответ 3</label>
+            <textarea id="choiceWrong3Bulk" placeholder="Каждая строка — третий неправильный ответ"></textarea>
           </div>
+          <div class="btn-row">
+            <button id="addChoiceTaskBtn" class="primary">Добавить задания типа 1</button>
+          </div>
+          <div class="note">Каждая строка собирается в одно задание. Для типа 1 нужен вопрос, правильный ответ и минимум один неправильный ответ.</div>
         </section>
 
         <section class="section">
-          <h3>Добавить задание — тип 2</h3>
-          <div class="note">Две колонки: вопрос и написать верный ответ.</div>
-          <div class="field">
-            <label for="inputQuestion">Вопрос</label>
-            <input id="inputQuestion" placeholder="Например: Столица Франции" />
-          </div>
-          <div class="field">
-            <label for="inputCorrect">Верный ответ</label>
-            <input id="inputCorrect" placeholder="Париж" />
+          <h3>Массовый ввод заданий — тип 2</h3>
+          <div class="note">Каждая строка вопроса должна соответствовать строке с верным ответом.</div>
+          <div class="grid">
+            <div class="field">
+              <label for="inputQuestionsBulk">Вопросы</label>
+              <textarea id="inputQuestionsBulk" placeholder="Каждая строка — один вопрос"></textarea>
+            </div>
+            <div class="field">
+              <label for="inputCorrectBulk">Верные ответы</label>
+              <textarea id="inputCorrectBulk" placeholder="Каждая строка — верный ответ для строки вопроса"></textarea>
+            </div>
           </div>
           <div class="btn-row">
-            <button id="addInputTaskBtn" class="primary">Добавить задание типа 2</button>
+            <button id="addInputTaskBtn" class="primary">Добавить задания типа 2</button>
           </div>
         </section>
 
@@ -512,11 +525,13 @@
       trashProbability: document.getElementById('trashProbability'),
       enableChoice: document.getElementById('enableChoice'),
       enableInput: document.getElementById('enableInput'),
-      choiceQuestion: document.getElementById('choiceQuestion'),
-      choiceCorrect: document.getElementById('choiceCorrect'),
-      choiceWrong: document.getElementById('choiceWrong'),
-      inputQuestion: document.getElementById('inputQuestion'),
-      inputCorrect: document.getElementById('inputCorrect'),
+      choiceQuestionsBulk: document.getElementById('choiceQuestionsBulk'),
+      choiceCorrectBulk: document.getElementById('choiceCorrectBulk'),
+      choiceWrong1Bulk: document.getElementById('choiceWrong1Bulk'),
+      choiceWrong2Bulk: document.getElementById('choiceWrong2Bulk'),
+      choiceWrong3Bulk: document.getElementById('choiceWrong3Bulk'),
+      inputQuestionsBulk: document.getElementById('inputQuestionsBulk'),
+      inputCorrectBulk: document.getElementById('inputCorrectBulk'),
       addChoiceTaskBtn: document.getElementById('addChoiceTaskBtn'),
       addInputTaskBtn: document.getElementById('addInputTaskBtn'),
       taskList: document.getElementById('taskList'),
@@ -647,19 +662,46 @@
       updatePreview();
     }
 
+    function splitLines(value) {
+      return String(value)
+        .replace(/
+/g, '')
+        .split('
+')
+        .map(line => line.trim());
+    }
+
     function addChoiceTask() {
       const level = getSelectedLevel();
-      const question = els.choiceQuestion.value.trim();
-      const correctAnswer = els.choiceCorrect.value.trim();
-      const wrongAnswers = els.choiceWrong.value.split(';').map(v => v.trim()).filter(Boolean);
-      if (!question || !correctAnswer || wrongAnswers.length === 0) {
-        alert('Для задания типа 1 заполните вопрос, правильный ответ и хотя бы один неправильный ответ.');
+      const questions = splitLines(els.choiceQuestionsBulk.value);
+      const correctAnswers = splitLines(els.choiceCorrectBulk.value);
+      const wrong1 = splitLines(els.choiceWrong1Bulk.value);
+      const wrong2 = splitLines(els.choiceWrong2Bulk.value);
+      const wrong3 = splitLines(els.choiceWrong3Bulk.value);
+      const maxLen = Math.max(questions.length, correctAnswers.length, wrong1.length, wrong2.length, wrong3.length);
+      let added = 0;
+
+      for (let i = 0; i < maxLen; i += 1) {
+        const question = questions[i] || '';
+        const correctAnswer = correctAnswers[i] || '';
+        const wrongAnswers = [wrong1[i] || '', wrong2[i] || '', wrong3[i] || '']
+          .map(v => v.trim())
+          .filter(Boolean);
+        if (!question || !correctAnswer || wrongAnswers.length === 0) continue;
+        level.tasks.choice.push({ type: 'choice', question, correctAnswer, wrongAnswers });
+        added += 1;
+      }
+
+      if (!added) {
+        alert('Не найдено полностью заполненных строк для типа 1. Нужны вопрос, правильный ответ и хотя бы один неправильный ответ в одной строке.');
         return;
       }
-      level.tasks.choice.push({ type: 'choice', question, correctAnswer, wrongAnswers });
-      els.choiceQuestion.value = '';
-      els.choiceCorrect.value = '';
-      els.choiceWrong.value = '';
+
+      els.choiceQuestionsBulk.value = '';
+      els.choiceCorrectBulk.value = '';
+      els.choiceWrong1Bulk.value = '';
+      els.choiceWrong2Bulk.value = '';
+      els.choiceWrong3Bulk.value = '';
       renderTaskList();
       renderLevelsList();
       updatePreview();
@@ -667,15 +709,26 @@
 
     function addInputTask() {
       const level = getSelectedLevel();
-      const question = els.inputQuestion.value.trim();
-      const correctAnswer = els.inputCorrect.value.trim();
-      if (!question || !correctAnswer) {
-        alert('Для задания типа 2 заполните вопрос и верный ответ.');
+      const questions = splitLines(els.inputQuestionsBulk.value);
+      const correctAnswers = splitLines(els.inputCorrectBulk.value);
+      const maxLen = Math.max(questions.length, correctAnswers.length);
+      let added = 0;
+
+      for (let i = 0; i < maxLen; i += 1) {
+        const question = questions[i] || '';
+        const correctAnswer = correctAnswers[i] || '';
+        if (!question || !correctAnswer) continue;
+        level.tasks.input.push({ type: 'input', question, correctAnswer });
+        added += 1;
+      }
+
+      if (!added) {
+        alert('Не найдено полностью заполненных строк для типа 2. Нужны вопрос и верный ответ в одной строке.');
         return;
       }
-      level.tasks.input.push({ type: 'input', question, correctAnswer });
-      els.inputQuestion.value = '';
-      els.inputCorrect.value = '';
+
+      els.inputQuestionsBulk.value = '';
+      els.inputCorrectBulk.value = '';
       renderTaskList();
       renderLevelsList();
       updatePreview();
@@ -728,13 +781,15 @@
           const [group, index] = btn.dataset.editTask.split('|');
           const task = level.tasks[group][Number(index)];
           if (group === 'choice') {
-            els.choiceQuestion.value = task.question;
-            els.choiceCorrect.value = task.correctAnswer;
-            els.choiceWrong.value = task.wrongAnswers.join('; ');
+            els.choiceQuestionsBulk.value = task.question;
+            els.choiceCorrectBulk.value = task.correctAnswer;
+            els.choiceWrong1Bulk.value = task.wrongAnswers[0] || '';
+            els.choiceWrong2Bulk.value = task.wrongAnswers[1] || '';
+            els.choiceWrong3Bulk.value = task.wrongAnswers[2] || '';
             level.tasks[group].splice(Number(index), 1);
           } else {
-            els.inputQuestion.value = task.question;
-            els.inputCorrect.value = task.correctAnswer;
+            els.inputQuestionsBulk.value = task.question;
+            els.inputCorrectBulk.value = task.correctAnswer;
             level.tasks[group].splice(Number(index), 1);
           }
           renderTaskList();

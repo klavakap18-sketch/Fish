@@ -581,8 +581,13 @@
           <div>• Поймали рыбу — решите задание, чтобы добавить её в улов.</div>
           <div>• Мусор отнимает очки.</div>
         </div>
-        <div id="difficultyHint" style="margin-bottom:16px; font-weight:700; color:#17324c;">Сейчас выбрана сложность: <b>средняя</b>.</div>
-        <div class="row" style="justify-content:center;"><button id="startGameBtn" class="primaryBtn" type="button" style="font-size:22px; padding:16px 28px;">Начать игру</button></div>
+        <div id="difficultyHint" style="margin-bottom:12px; font-weight:700; color:#17324c;">Сейчас выбрана сложность: <b>средняя</b>.</div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:18px;">
+          <button id="modeMultiply" class="secondaryBtn modeBtn" type="button" data-mode="multiply" style="padding:16px 12px;">Умножение</button>
+          <button id="modeDivision" class="secondaryBtn modeBtn" type="button" data-mode="division" style="padding:16px 12px;">Деление</button>
+          <button id="modeMixed" class="primaryBtn modeBtn" type="button" data-mode="mixed" style="padding:16px 12px;">Всё вместе</button>
+        </div>
+        <div id="modeHint" style="margin-bottom:16px; font-weight:700; color:#17324c;">Сейчас выбран режим: <b>умножение и деление</b>.</div>e:22px; padding:16px 28px;">Начать игру</button></div>
       </div>
     </div>
   </div>
@@ -595,7 +600,8 @@
         taskType: 'mixed',
         scoreStart: 10,
         scoreFishCorrect: 5,
-        scoreTrashPenalty: 3,
+ difficulty: 'medium',
+        taskMode: 'mixed',lty: 3,
         scoreWrongPenalty: 0,
         maxAttemptsPerLevel: 30,
         levelTimeLimitSec: 90,
@@ -675,15 +681,10 @@
       helpBtn: document.getElementById('helpBtn'),
       controlHint: document.getElementById('controlHint'),
       difficultyHint: document.getElementById('difficultyHint'),
-      difficultyButtons: Array.from(document.querySelectorAll('.difficultyBtn'))
-    };
-
-    const state = {
-      running: false,
-      lowering: false,
-      raising: false,
-      inTask: false,
-      gameOver: false,
+      difficultyButtons: Array.from(document.querySelectorAll('.difficultdifficultyHint: document.getElementById('difficultyHint'),
+      modeHint: document.getElementById('modeHint'),
+      difficultyButtons: Array.from(document.querySelectorAll('.difficultyBtn')),
+      modeButtons: Array.from(document.querySelectorAll('.modeBtn')) false,
       levelIndex: 0,
       score: GAME_CONFIG.settings.scoreStart,
       totalCaught: 0,
@@ -703,9 +704,7 @@
     };
 
     function difficultyScale() {
-      const d = GAME_CONFIG.settings.difficulty;
-      if (d === 'easy') return { speed: 0.78, taskTime: 1.45, trash: 0.75 };
-      if (d === 'hard') return { speed: 1.35, taskTime: 0.75, trash: 1.2 };
+      const d = GAME_CONFIG.settings.Time: 0.75, trash: 1.2 };
       return { speed: 1, taskTime: 1, trash: 1 };
     }
 
@@ -715,18 +714,26 @@
 
     function applyDifficultyUI() {
       el.difficultyButtons.forEach(btn => {
+        const active = btn.dataset.difficulty === GAME_CONFIG.settfunction difficultyLabel(value) {
+      return value === 'easy' ? 'лёгкая' : value === 'hard' ? 'сложная' : 'средняя';
+    }
+
+    function modeLabel(value) {
+      return value === 'multiply' ? 'умножение' : value === 'division' ? 'деление' : 'умножение и деление';
+    }
+
+    function applyDifficultyUI() {
+      el.difficultyButtons.forEach(btn => {
         const active = btn.dataset.difficulty === GAME_CONFIG.settings.difficulty;
         btn.className = (active ? 'primaryBtn' : 'secondaryBtn') + ' difficultyBtn';
       });
+      el.modeButtons.forEach(btn => {
+        const active = btn.dataset.mode === GAME_CONFIG.settings.taskMode;
+        btn.className = (active ? 'primaryBtn' : 'secondaryBtn') + ' modeBtn';
+      });
       el.difficultyHint.innerHTML = 'Сейчас выбрана сложность: <b>' + difficultyLabel(GAME_CONFIG.settings.difficulty) + '</b>.';
-    }
-
-    function currentLevel() {
-      return GAME_CONFIG.levels[Math.min(state.levelIndex, GAME_CONFIG.levels.length - 1)];
-    }
-
-    function rand(min, max) { return Math.random() * (max - min) + min; }
-    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+      el.modeHint.innerHTML = 'Сейчас выбран режим: <b>' + modeLabel(GAME_CONFIG.settings.taskMode) + '</b>.';
+    }.length)]; }
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
     function setMessage(text, kind) {
@@ -934,20 +941,25 @@
 
       if (mode === 'multiply') pool = GAME_CONFIG.taskPools.multiply;
       else if (mode === 'division') pool = GAME_CONFIG.taskPools.division;
+      else pool = [.function buildTask() {
+      const level = currentLevel();
+      const baseMode = GAME_CONFIG.settings.taskMode || 'mixed';
+      let mode = baseMode;
+
+      if (baseMode === 'mixed') {
+        if (level.id === 1) mode = 'multiply';
+        else if (level.id >= 3) mode = Math.random() > 0.5 ? 'multiply' : 'division';
+      }
+
+      let pool = [];
+      if (mode === 'multiply') pool = GAME_CONFIG.taskPools.multiply;
+      else if (mode === 'division') pool = GAME_CONFIG.taskPools.division;
       else pool = [...GAME_CONFIG.taskPools.multiply, ...GAME_CONFIG.taskPools.division];
 
       const task = structuredClone(pick(pool));
       task.answerMode = 'input';
       return task;
-    }
-
-    function openTask(entity) {
-      state.inTask = true;
-      const task = buildTask();
-      task.timeLimit = Math.max(4, currentLevel().taskTimeSec * difficultyScale().taskTime);
-      state.activeTask = task;
-      state.lastTaskStartedAt = performance.now();
-      el.overlay.classList.add('show');
+    }   el.overlay.classList.add('show');
       renderTaskModal(task, entity);
       runTaskTimer();
     }
@@ -1196,11 +1208,15 @@
       el.startGameBtn.addEventListener('click', startGame);
     }
 
-    function checkCollisions() {
-      if (state.inTask || state.gameOver) return;
-      for (const entity of state.entities) {
-        if (!entity.active) continue;
-        if (!intersects(entity)) continue;
+    function checkColliel.difficultyButtons.forEach(btn => btn.addEventListener('click', () => {
+        GAME_CONFIG.settings.difficulty = btn.dataset.difficulty;
+        applyDifficultyUI();
+      }));
+
+      el.modeButtons.forEach(btn => btn.addEventListener('click', () => {
+        GAME_CONFIG.settings.taskMode = btn.dataset.mode;
+        applyDifficultyUI();
+      }));tinue;
         state.attempts += 1;
         updateHUD();
         if (entity.kind === 'trash') {

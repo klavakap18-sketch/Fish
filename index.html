@@ -663,7 +663,7 @@
     }
 
     function splitLines(value) {
-      return String(value)
+      return String(value || '')
         .replace(/
 /g, '')
         .split('
